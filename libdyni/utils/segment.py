@@ -10,7 +10,7 @@ class common_labels:
 
 class Segment:
     
-    def __init__(self, start_time, end_time, label=labels.unknown):
+    def __init__(self, start_time, end_time, label=common_labels.unknown):
         self._start_time = start_time
         self._end_time = end_time
         self._label = label

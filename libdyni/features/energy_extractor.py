@@ -1,8 +1,10 @@
 import numpy as np
+
 from libdyni.features.frame_feature_extractor import AudioFrameFeatureExtractor
 
 
 class EnergyExtractor(AudioFrameFeatureExtractor):
+    """Computes the energy of the signal."""
 
     def __init__(self):
         super().__init__()

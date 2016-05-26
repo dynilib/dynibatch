@@ -15,14 +15,13 @@ def get_file_durations(path):
                 pass # not an audio file
 
 
-def get_dataset_stats(segment_containers):
+def get_stats(segment_containers):
     """
     Returns the following segments statistics:
         - number of classes
-        - segment duration: min, max, mean, variance, histogram
-        - number of segments / class: min, max, mean, variance, histogram
-        - number of files / class: min, max, mean, variance, histogram
-        - total segments duration / class: min, max, mean, variance, histogram
+        - number of segments / class: min, max, mean, histogram
+        - number of active segments / class: min, max, mean, histogram
+        - number of active files / class: min, max, mean, histogram
     """
 
     stats = {}
@@ -42,6 +41,7 @@ def get_dataset_stats(segment_containers):
         stats_per_class['num_segments'] = sum(sc.n_segments_with_label(c) for sc in sc_subset)
         stats_per_class['num_active_segments'] = sum(sc.n_active_segments_with_label(c) for sc in sc_active_subset)
         stats_per_class['num_files'] = len(sc_subset)
+        stats_per_class['num_active_files'] = len(sc_active_subset)
 
         stats['per_class'][c] = stats_per_class
 
@@ -71,8 +71,15 @@ def get_dataset_stats(segment_containers):
     num_files_dict['min'] = np.min(num_files)
     num_files_dict['max'] = np.max(num_files)
     num_files_dict['mean'] = np.mean(num_files)
-    num_files_dict['var'] = np.var(num_files)
     stats['num_files'] = num_files_dict
+    
+    num_active_files = np.asarray( [ stats['per_class'][c]['num_active_files'] for c in classes ])
+    num_active_files_dict = {}
+    num_active_files_dict['list'] = num_active_files
+    num_active_files_dict['min'] = np.min(num_active_files)
+    num_active_files_dict['max'] = np.max(num_active_files)
+    num_active_files_dict['mean'] = np.mean(num_active_files)
+    stats['num_active_files'] = num_active_files_dict
     
     return stats
 

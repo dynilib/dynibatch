@@ -3,6 +3,7 @@
 import logging
 from enum import Enum
 from scipy.signal import hann
+import numpy as np
 import soundfile as sf
 
 
@@ -54,15 +55,21 @@ class AudioFrameGen:
     def execute(self, path):
         """ Yields the windowed frames"""
 
+        # make sure the file is mono
+        if not sf.info(path).channels == 1:
+            raise Exception("Please use only mono files")
+
         for frame in sf.blocks(path,
                 blocksize=self._win_size,
                 overlap=self._win_size-self._hop_size,
                 dtype="float32"):
-            if len(frame) == self._win_size: # the latest frame might be smaller TODO: write our own blocks method
-                if not self._win_type == Window.rect:
-                    yield self._window * frame
-                else:
-                    yield frame
+            if len(frame) < self._win_size:
+                # 0 pad last frame if needed
+                frame = np.pad(frame, (0,self._win_size-len(frame)), mode="constant")
+            if not self._win_type == Window.rect:
+                yield self._window * frame
+            else:
+                yield frame
 
 
 
