@@ -1,6 +1,12 @@
+import os
 import logging
 from itertools import compress
 
+import numpy as np
+import joblib
+
+from libdyni.utils.feature_container import FeatureContainer
+from libdyni.utils.segment_container import SegmentContainer
 from libdyni.features.segment_feature_extractor import SegmentFeatureExtractor
 from libdyni.features.segment_feature_extractor import SegmentFrameBasedFeatureExtractor
 from libdyni.features.audio_chunk_extractor import AudioChunkExtractor
@@ -41,7 +47,7 @@ class SegmentFeatureProcessor:
             - segment_container            
         Returns tuple (segment_container, segment_container_has_features)
         """
-
+            
         logger.debug("Processing {} segment container".format(segment_container.audio_path))
 
         # check if segment container already has all wanted features
@@ -51,10 +57,9 @@ class SegmentFeatureProcessor:
             return
 
         # get feature container if needed
-        if any(isinstance(fe, SegmentFrameBasedFeatureExtractor) for fe in
-               compress(self.__feature_extractors, [not hf for hf in has_features])):
+        if any(isinstance(fe, SegmentFrameBasedFeatureExtractor) for fe in compress(self.__feature_extractors, [not hf for hf in has_features])):
             fc, created = self.__frame_feature_pro.execute(
-                (self._audio_root, segment_container.audio_path))
+                    (self._audio_root, segment_container.audio_path))
             if created:
                 logger.debug("Feature container created")
 
@@ -67,3 +72,4 @@ class SegmentFeatureProcessor:
                 fe.execute(segment_container)
             else:
                 raise Exception("Segment feature extractor {} not implemented".format(fe.name))
+

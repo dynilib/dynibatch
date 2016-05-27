@@ -1,6 +1,7 @@
 import logging
 from libdyni.utils.segment_container import create_segment_containers_from_audio_files
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -10,12 +11,12 @@ class SegmentContainerGenerator:
     """
 
     def __init__(self,
-                 audio_root,
-                 label_parser,
-                 segment_feature_processor,
-                 dataset=None,
-                 seg_duration=0.5,
-                 seg_overlap=0.9):
+            audio_root,
+            label_parser,
+            segment_feature_processor,
+            dataset = None,
+            seg_duration=0.5,
+            seg_overlap=0.9):
 
         self._audio_root = audio_root
         self._label_parser = label_parser
@@ -27,9 +28,9 @@ class SegmentContainerGenerator:
     def start(self):
         # create segment container with fixed-length segments
         self._sc_gen = create_segment_containers_from_audio_files(
-            self._audio_root,
-            seg_duration=self._seg_duration,
-            seg_overlap=self._seg_overlap)
+                self._audio_root,
+                seg_duration=self._seg_duration,
+                seg_overlap=self._seg_overlap)
 
     def reset(self):
         self.start()
@@ -44,7 +45,7 @@ class SegmentContainerGenerator:
 
             # get label
             label = self._label_parser.get_label(sc.audio_path)
-
+            
             # set label
             sc.labels = label
 

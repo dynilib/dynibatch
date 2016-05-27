@@ -27,8 +27,8 @@ class ActivityDetection(sfe.SegmentFrameBasedFeatureExtractor):
     """
 
     def __init__(self,
-                 energy_threshold=0.2,
-                 spectral_flatness_threshold=0.3):
+            energy_threshold=0.2,
+            spectral_flatness_threshold=0.3):
         super().__init__()
         self.energy_threshold = energy_threshold
         self.spectral_flatness_threshold = spectral_flatness_threshold
@@ -52,24 +52,27 @@ class ActivityDetection(sfe.SegmentFrameBasedFeatureExtractor):
         # TODO (jul) make sure sc has required frame features
 
         energy95p = np.percentile(feature_container.features["energy"]["data"],
-                                  95)
+                95)
         if energy95p == 0:
-            raise Exception("The file {} is silent".format(
-                segment_container.audio_path))
+            raise Exception("The file {} is silent".format( \
+                    segment_container.audio_path))
 
         for s in segment_container.segments:
+
             start_ind = feature_container.time_to_frame_ind(s.start_time)
-            end_ind = start_ind + feature_container.time_to_frame_ind(s.duration)
+            end_ind =  start_ind + \
+                    feature_container.time_to_frame_ind(s.duration)
 
-        en = feature_container.features["energy"]["data"][start_ind:end_ind]
-        sf = feature_container.features["spectral_flatness"]["data"][start_ind:end_ind]
+            en = feature_container.features["energy"]["data"][start_ind:end_ind]
+            sf = feature_container.features["spectral_flatness"]["data"][start_ind:end_ind]
 
-        mean_en = np.mean(en)
-        energy_ratio = mean_en / energy95p
-        spectral_flatness_w_mean = \
-            np.average(sf, weights=en) if mean_en > 0 else 0.0
+            mean_en = np.mean(en)
+            energy_ratio = mean_en / energy95p
+            spectral_flatness_w_mean = \
+                    np.average(sf, weights=en) if mean_en > 0 else 0.0
 
-        if (energy_ratio > self.energy_threshold and spectral_flatness_w_mean < self.spectral_flatness_threshold):
-            s.activity = True
-        else:
-            s.activity = False
+            if (energy_ratio > self.energy_threshold and
+                    spectral_flatness_w_mean < self.spectral_flatness_threshold):
+                s.activity = True
+            else:
+                s.activity = False

@@ -9,6 +9,7 @@ class common_labels:
 
 
 class Segment:
+    
     def __init__(self, start_time, end_time, label=common_labels.unknown):
         self._start_time = start_time
         self._end_time = end_time
@@ -22,11 +23,11 @@ class Segment:
     @property
     def end_time(self):
         return self._end_time
-
+    
     @property
     def duration(self):
         return self._end_time - self._start_time
-
+    
     @property
     def label(self):
         return self._label
@@ -34,11 +35,11 @@ class Segment:
     @label.setter
     def label(self, label):
         self._label = label
-
+    
     @property
     def features(self):
         return self._features
-
+    
     @staticmethod
     def load(path):
         s = joblib.load(path)
@@ -63,11 +64,11 @@ def set_segment_labels(segments_from, segments_to, overlap_ratio=0.5):
         if _labels:
 
             # get key and value for max value
-            k = max(_labels, key=_labels.get)  # TODO manage several labels with max values
+            k = max(_labels, key=_labels.get) # TODO manage several labels with max values
             v = _labels[k]
 
             # check overlap ratio
-            if v >= (s_to.end_time - s_to.start_time) * overlap_ratio:
+            if v >= (s_to.end_time-s_to.start_time) * overlap_ratio:
                 s_to.label = k
                 continue
 
@@ -79,3 +80,4 @@ def _get_overlap(start1, end1, start2, end2):
     Get overlap between the intervals [start1, end1] and [start2, end2]
     """
     return max(0, min(end1, end2) - max(start1, start2))
+

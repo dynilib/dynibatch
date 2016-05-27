@@ -3,10 +3,11 @@ import os
 from itertools import compress
 
 import numpy as np
+import joblib
 
 from libdyni.utils import feature_container
 from libdyni.features import frame_feature_extractor as ffe
-
+    
 from libdyni.utils import audio
 
 __all__ = ['FrameFeatureProcessor']
@@ -33,15 +34,15 @@ class FrameFeatureProcessor(object):
     """
 
     def __init__(self,
-                 audio_frame_gen,
-                 feature_extractors,
-                 feature_container_root=None):
+            audio_frame_gen,
+            feature_extractors,
+            feature_container_root=None):
 
         # TODO (jul) use Python abc (Abstract Base Classes)?
         if not all(isinstance(fe, ffe.FrameFeatureExtractor)
-                   for fe in feature_extractors):
-            raise Exception('All feature extractors must be instances of' +
-                            'FrameFeatureExtractor.')
+                for fe in feature_extractors):
+            raise Exception('All feature extractors must be instances of' + 
+                    'FrameFeatureExtractor.')
 
         # TODO (jul): convert some attributes to properties to make them
         # immutable?
@@ -64,7 +65,7 @@ class FrameFeatureProcessor(object):
 
         if not type(audio_path) == tuple:
             raise Exception('The first argument must be a tuple' +
-                            '<audio path root>, <audio relative path>)')
+                    '<audio path root>, <audio relative path>)')
 
         fc = None
         has_features = [False for fe in self.feature_extractors]
@@ -75,15 +76,15 @@ class FrameFeatureProcessor(object):
         # (check https://github.com/dnouri/nolearn/blob/master/nolearn/cache.py)
         if self.feature_container_root:
             feature_container_path = os.path.join(
-                self.feature_container_root,
-                os.path.splitext(os.path.basename(audio_path[1]))[0] +
-                feature_container.FC_EXTENSION)
+                    self.feature_container_root,
+                    os.path.splitext(os.path.basename(audio_path[1]))[0] +
+                    feature_container.FC_EXTENSION)
             fc = feature_container.FeatureContainer.load(feature_container_path)
             if fc:
-                has_features = fc.has_features([(fe.name, fe.config) for fe in self.feature_extractors])
+                has_features = fc.has_features([(fe.name, fe.config) \
+                        for fe in self.feature_extractors])
                 if all(has_features):
-                    logger.debug(
-                        'Feature container {} with all required features found!'.format(feature_container_path))
+                    logger.debug('Feature container {} with all required features found!'.format(feature_container_path))
                     return fc, False
 
         # TODO (jul) move to audio_frame_gen module?
@@ -93,9 +94,9 @@ class FrameFeatureProcessor(object):
         if not fc or not any(has_features):
             # if fc has none of the desired features, create a new one
             fc = feature_container.FeatureContainer(audio_path[1],
-                                                    info.samplerate,
-                                                    self.audio_frame_gen.win_size,
-                                                    self.audio_frame_gen.hop_size)
+                    info.samplerate,
+                    self.audio_frame_gen.win_size,
+                    self.audio_frame_gen.hop_size)
 
         compute_spectrum = False
         compute_power_spectrum = False
@@ -104,9 +105,9 @@ class FrameFeatureProcessor(object):
             # allocate memory for features
             # TODO move to FeatureContainer constructor?
             fc.features[fe.name]["data"] = np.empty((n_samples, fe.size),
-                                                    dtype="float32")
+                    dtype="float32")
             fc.features[fe.name]["config"] = fe.config
-
+            
             # check what to compute
             if isinstance(fe, ffe.SpectrumFrameFeatureExtractor):
                 compute_spectrum = True
@@ -124,7 +125,7 @@ class FrameFeatureProcessor(object):
             # TODO (jul) run every feature extractor in a different process
             # TODO (jul) convert loop to matrix computation
             for fe in compress(self.feature_extractors,
-                               [not hf for hf in has_features]):
+                    [not hf for hf in has_features]):
                 if isinstance(fe, ffe.AudioFrameFeatureExtractor):
                     fc.features[fe.name]["data"][i] = fe.execute(frame)
                 elif isinstance(fe, ffe.SpectrumFrameFeatureExtractor):

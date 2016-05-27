@@ -4,3 +4,5 @@ class SegmentFeatureExtractor:
 
 class SegmentFrameBasedFeatureExtractor(SegmentFeatureExtractor):
     pass
+
+

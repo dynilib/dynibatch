@@ -3,6 +3,7 @@ from os.path import join, splitext
 from sklearn.externals import joblib
 from libdyni.features.segment_feature_extractor import SegmentFeatureExtractor
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -28,12 +29,12 @@ class ChirpletsChunkExtractor(SegmentFeatureExtractor):
     def execute(self, segment_container):
 
         chirplets = joblib.load(join(self._chirplets_root,
-                                     splitext(segment_container.audio_path)[0] + ".0.jl"))
+                splitext(segment_container.audio_path)[0] + ".0.jl"))
 
         for s in segment_container.segments:
-
+            
             start_ind = self.time_to_frame_ind(s.start_time)
-            end_ind = start_ind + self.time_to_frame_ind(s.duration)
+            end_ind =  start_ind + self.time_to_frame_ind(s.duration)
 
             # chirplets are not computed over the whole file (only over the greatest power
             # of 2 smaller than file size), so not all segments will have data
@@ -41,7 +42,6 @@ class ChirpletsChunkExtractor(SegmentFeatureExtractor):
                 break
 
             if self._scaler:
-                s.features[self.name] = (chirplets[:, start_ind:end_ind].T - self._scaler.mean_[0]) / \
-                                        self._scaler.scale_[0]
+                s.features[self.name] =  (chirplets[:, start_ind:end_ind].T - self._scaler.mean_[0]) / self._scaler.scale_[0]
             else:
-                s.features[self.name] = chirplets[:, start_ind:end_ind].T
+                s.features[self.name] =  chirplets[:, start_ind:end_ind].T
