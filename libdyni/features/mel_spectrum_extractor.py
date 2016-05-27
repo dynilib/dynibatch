@@ -17,11 +17,10 @@ class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
         spectrum.    
     """
 
-    #TODO (jul) add top_db for logamplitude
+    # TODO (jul) add top_db for logamplitude
 
     def __init__(self, sample_rate=44100, fft_size=512,
-            n_mels=128, min_freq=0, max_freq=22050, log_amp=True):
-
+                 n_mels=128, min_freq=0, max_freq=22050, log_amp=True):
         super().__init__()
 
         self.sample_rate = sample_rate
@@ -31,11 +30,11 @@ class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
         self.max_freq = max_freq
         self.log_amp = log_amp
         self._mel_basis = librosa.filters.mel(
-                sr=sample_rate,
-                n_fft=fft_size,
-                n_mels=n_mels,
-                fmin=min_freq,
-                fmax=max_freq)
+            sr=sample_rate,
+            n_fft=fft_size,
+            n_mels=n_mels,
+            fmin=min_freq,
+            fmax=max_freq)
 
     @property
     def name(self):
@@ -44,7 +43,7 @@ class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
     @property
     def size(self):
         return self.n_mels
-    
+
     @property
     def config(self):
         return {'sample_rate': self.sample_rate,
@@ -65,6 +64,6 @@ class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
 
         if self.log_amp:
             return librosa.logamplitude(
-                    np.dot(self._mel_basis, data),
-                    top_db=None)
+                np.dot(self._mel_basis, data),
+                top_db=None)
         return np.dot(self._mel_basis, data)

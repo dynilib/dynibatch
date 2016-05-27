@@ -7,13 +7,11 @@ from libdyni.utils.segment_container import SegmentContainer, load_segment_conta
 from libdyni.utils.segment import set_segment_labels, labels
 from libdyni.utils.segment_container import create_segment_containers_from_audio_files
 
-
 logger = logging.getLogger(__name__)
 
 
 def run(audio_root, ref_seg_root, seg_duration, ref_seg_overlap,
         energy_threshold, spectral_flatness_threshold, feature_container_root=None):
-
     # create needed generators and feature extractors
     af_gen = audio_frame_gen.AudioFrameGen(win_size=512, hop_size=256)
     en_ext = energy_extractor.EnergyExtractor()
@@ -21,12 +19,11 @@ def run(audio_root, ref_seg_root, seg_duration, ref_seg_overlap,
     ff_gen = frame_feature_gen.FrameFeatureGen(af_gen, [en_ext, sf_ext], feature_container_root)
 
     a_det = activity_detection.ActivityDetection(
-            energy_threshold=energy_threshold,
-            spectral_flatness_threshold=spectral_flatness_threshold)
+        energy_threshold=energy_threshold,
+        spectral_flatness_threshold=spectral_flatness_threshold)
     sf_gen = segment_feature_gen.SegmentFeatureGen([a_det],
-            ff_gen=ff_gen,
-            audio_root=audio_root)
-    
+                                                   ff_gen=ff_gen,
+                                                   audio_root=audio_root)
 
     # stats
     ground_truth_activity = 0
@@ -44,9 +41,9 @@ def run(audio_root, ref_seg_root, seg_duration, ref_seg_overlap,
     for auto_sc in auto_sc_gen:
 
         ref_sc_path = os.path.join(
-                ref_seg_root,
-                os.path.splitext(os.path.basename(auto_sc.audio_path))[0] +
-                SC_EXTENSION)
+            ref_seg_root,
+            os.path.splitext(os.path.basename(auto_sc.audio_path))[0] +
+            SC_EXTENSION)
 
         try:
             ref_sc = SegmentContainer.load(ref_sc_path)
@@ -59,7 +56,6 @@ def run(audio_root, ref_seg_root, seg_duration, ref_seg_overlap,
 
         # detect activity
         sf_gen.execute(auto_sc)
-
 
         for s in auto_sc.segments:
             if s.label == labels.unknown:
@@ -84,10 +80,9 @@ def run(audio_root, ref_seg_root, seg_duration, ref_seg_overlap,
     return (ground_truth_activity, ground_truth_no_activity,
             detection_activity, detection_no_activity,
             precision, recall)
-            
+
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description="Evaluate the activity detection on Sermicro DB.")
     parser.add_argument(
         '-v', "--verbose",
@@ -95,17 +90,20 @@ if __name__ == "__main__":
         dest="loglevel", default=logging.INFO)
     parser.add_argument("audio_root", help="Audio files root path.")
     parser.add_argument("ref_seg_root", help="Reference segments root path.")
-    parser.add_argument("seg_duration", type=float, help="Duration of the automatically splitted fixed-length segments.")
-    parser.add_argument("ref_seg_overlap", type=float, help="Overlap ratio (in ]0,1[) to map labels of reference segments to automatic segments.")
+    parser.add_argument("seg_duration", type=float,
+                        help="Duration of the automatically splitted fixed-length segments.")
+    parser.add_argument("ref_seg_overlap", type=float,
+                        help="Overlap ratio (in ]0,1[) to map labels of reference segments to automatic segments.")
     parser.add_argument("energy_threshold", type=float, help="Energy ratio threshold for activity detection.")
-    parser.add_argument("spectral_flatness_threshold", type=float, help="Spectral flatness threshold for activity detection.")
+    parser.add_argument("spectral_flatness_threshold", type=float,
+                        help="Spectral flatness threshold for activity detection.")
     parser.add_argument("--fc_root", help="Feature containers path.", default=None)
     args = parser.parse_args()
 
     logging.getLogger().setLevel(args.loglevel)
 
     results = run(args.audio_root, args.ref_seg_root, args.seg_duration, args.ref_seg_overlap,
-            args.energy_threshold, args.spectral_flatness_threshold, args.fc_root)
+                  args.energy_threshold, args.spectral_flatness_threshold, args.fc_root)
 
     print("Ground truth: {0} with activity, {1} with no activity".format(
         results[0], results[1]))
@@ -113,5 +111,3 @@ if __name__ == "__main__":
         results[2], results[3]))
     print("Precision: {}".format(results[4]))
     print("Recall: {}".format(results[5]))
-
-

@@ -2,12 +2,10 @@ import argparse
 import logging
 from libdyni.utils.segment_container import create_segment_containers_from_seg_files
 
-
 logger = logging.getLogger(__name__)
 
 
 def run(input_root, output_root):
-
     sc_gen = create_segment_containers_from_seg_files(input_root)
 
     for sc in sc_gen:
@@ -15,7 +13,6 @@ def run(input_root, output_root):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description="Create segment container from seg files.")
     parser.add_argument(
         '-v', "--verbose",

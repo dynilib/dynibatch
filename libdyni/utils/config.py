@@ -1,5 +1,6 @@
 # configuration keys
 
+#TODO correct this
 config_keys = {
     WIN_SIZE = "win_size"
     HOP_SIZE = "hop_size"

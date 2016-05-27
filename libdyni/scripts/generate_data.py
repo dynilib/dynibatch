@@ -10,9 +10,7 @@ from libdyni.features.spectral_flatness import SpectralFlatnessExtractor
 from libdyni.features.mel_spectrum_extractor import MelSpectrumExtractor
 from libdyni.features.mfcc_extractor import MFCCExtractor
 
-
 logger = logging.getLogger(__name__)
-
 
 WIN_SIZE = 256
 HOP_SIZE = 128
@@ -21,16 +19,15 @@ HOP_SIZE = 128
 def run(audio_root,
         feature_container_root,
         sample_rate):
-
     # create needed generators and feature extractors
     af_gen = AudioFrameGen(win_size=WIN_SIZE, hop_size=HOP_SIZE)
 
     en_ext = EnergyExtractor()
     sf_ext = SpectralFlatnessExtractor()
     mel_ext = MelSpectrumExtractor(sample_rate=sample_rate, fft_size=WIN_SIZE,
-            n_mels=64, min_freq=0, max_freq=sample_rate/2)
+                                   n_mels=64, min_freq=0, max_freq=sample_rate / 2)
     mfcc_ext = MFCCExtractor(sample_rate=sample_rate, fft_size=WIN_SIZE,
-            n_mels=64, n_mfcc=16, min_freq=0, max_freq=sample_rate/2)
+                             n_mels=64, n_mfcc=16, min_freq=0, max_freq=sample_rate / 2)
     ff_pro = FrameFeatureProcessor(af_gen, [en_ext, sf_ext, mel_ext, mfcc_ext], feature_container_root)
 
     for root, dirnames, filenames in os.walk(audio_root):
@@ -38,14 +35,13 @@ def run(audio_root,
         for filename in filenames:
 
             basename, extension = splitext(filename)
-            if not extension in ALLOWED_AUDIO_EXT: continue # only get audio files
+            if not extension in ALLOWED_AUDIO_EXT: continue  # only get audio files
 
             # compute features et write feature container
             ff_pro.execute((audio_root, relpath(join(root, filename), audio_root)))
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description="Compute and write features")
     parser.add_argument(
         '-v', "--verbose",
@@ -59,5 +55,5 @@ if __name__ == "__main__":
     logging.getLogger().setLevel(args.loglevel)
 
     run(args.audio_root,
-            args.feature_container_root,
-            args.sample_rate)
+        args.feature_container_root,
+        args.sample_rate)

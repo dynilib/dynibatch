@@ -18,11 +18,10 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
         spectrum.    
     """
 
-    #TODO (jul) add top_db for logamplitude
+    # TODO (jul) add top_db for logamplitude
 
     def __init__(self, sample_rate=44100, fft_size=512,
-            n_mels=128, n_mfcc=32, min_freq=0, max_freq=22050):
-
+                 n_mels=128, n_mfcc=32, min_freq=0, max_freq=22050):
         super().__init__()
 
         self.sample_rate = sample_rate
@@ -33,11 +32,11 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
         self.max_freq = max_freq
 
         self._mel_basis = librosa.filters.mel(
-                sr=sample_rate,
-                n_fft=fft_size,
-                n_mels=n_mels,
-                fmin=min_freq,
-                fmax=max_freq)
+            sr=sample_rate,
+            n_fft=fft_size,
+            n_mels=n_mels,
+            fmin=min_freq,
+            fmax=max_freq)
         self._dct_basis = librosa.filters.dct(n_mfcc, n_mels)
 
     @property
@@ -47,7 +46,7 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
     @property
     def size(self):
         return self.n_mfcc
-    
+
     @property
     def config(self):
         return {'sample_rate': self.sample_rate,
@@ -56,7 +55,6 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
                 'n_mfcc': self.n_mfcc,
                 'min_freq': self.min_freq,
                 'max_freq': self.max_freq}
-
 
     def execute(self, data):
         """Computes the MFCC.

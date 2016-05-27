@@ -1,9 +1,6 @@
 import argparse
 import logging
 import joblib
-import numpy as np
-
-import theano.tensor as T
 
 from libdyni.generators.segment_container_gen import SegmentContainerGenerator
 from libdyni.generators.audio_frame_gen import AudioFrameGen
@@ -15,9 +12,7 @@ from libdyni.features.segment_feature_processor import SegmentFeatureProcessor
 from libdyni.features.frame_feature_chunk_extractor import FrameFeatureChunkExtractor
 from libdyni.features.activity_detection import ActivityDetection
 from libdyni.utils.neuralnet import build_cnn_mel, train_cnn
-from libdyni.utils import datasplit_utils
 from libdyni.parsers import label_parsers
-
 
 logger = logging.getLogger(__name__)
 
@@ -40,90 +35,88 @@ def run(audio_root,
         learning_rate=0.1,
         reg_coef=0,
         num_epochs=1000):
-
-
     # create needed generators and feature extractors
     af_gen = AudioFrameGen(win_size=win_size, hop_size=hop_size)
 
     en_ext = EnergyExtractor()
     sf_ext = SpectralFlatnessExtractor()
     mel_ext = MelSpectrumExtractor(
-            sample_rate=sample_rate,
-            fft_size=win_size,
-            n_mels=64,
-            min_freq=0,
-            max_freq=sample_rate/2)
+        sample_rate=sample_rate,
+        fft_size=win_size,
+        n_mels=64,
+        min_freq=0,
+        max_freq=sample_rate / 2)
     ff_pro = FrameFeatureProcessor(
-            af_gen,
-            [en_ext, sf_ext, mel_ext],
-            feature_container_root)
+        af_gen,
+        [en_ext, sf_ext, mel_ext],
+        feature_container_root)
 
-    scaler = joblib.load("/home/ricard/data/Bird10/run_160516_1/mel_scaler/mel_scaler.jl") # TODO remove this ugly hardcoded **it
+    scaler = joblib.load(
+        "/home/ricard/data/Bird10/run_160516_1/mel_scaler/mel_scaler.jl")  # TODO remove this ugly hardcoded **it
     ffc_ext = FrameFeatureChunkExtractor("mel_spectrum", scaler)
     act_det = ActivityDetection(
-            energy_threshold=energy_threshold,
-            spectral_flatness_threshold=spectral_flatness_threshold)
+        energy_threshold=energy_threshold,
+        spectral_flatness_threshold=spectral_flatness_threshold)
     sf_pro = SegmentFeatureProcessor(
-            [act_det, ffc_ext],
-            ff_pro=ff_pro,
-            audio_root=audio_root)
- 
+        [act_det, ffc_ext],
+        ff_pro=ff_pro,
+        audio_root=audio_root)
+
     # create segment container generator
     # TODO shuffle inputs (not trivial because data are generated
     #      from os.walk which always returns the data in the same order
     sc_gen_train = SegmentContainerGenerator(
-           audio_root,
-           label_parser,
-           sf_pro,
-           dataset=datasplit["sets"]["train"],
-           seg_duration=seg_duration,
-           seg_overlap=seg_overlap)
+        audio_root,
+        label_parser,
+        sf_pro,
+        dataset=datasplit["sets"]["train"],
+        seg_duration=seg_duration,
+        seg_overlap=seg_overlap)
 
     sc_gen_valid = SegmentContainerGenerator(
-           audio_root,
-           label_parser,
-           sf_pro,
-           dataset=datasplit["sets"]["validation"],
-           seg_duration=seg_duration,
-           seg_overlap=seg_overlap)
+        audio_root,
+        label_parser,
+        sf_pro,
+        dataset=datasplit["sets"]["validation"],
+        seg_duration=seg_duration,
+        seg_overlap=seg_overlap)
 
     sc_gen_test = SegmentContainerGenerator(
-           audio_root,
-           label_parser,
-           sf_pro,
-           dataset=datasplit["sets"]["test"],
-           seg_duration=seg_duration,
-           seg_overlap=seg_overlap)
+        audio_root,
+        label_parser,
+        sf_pro,
+        dataset=datasplit["sets"]["test"],
+        seg_duration=seg_duration,
+        seg_overlap=seg_overlap)
 
     logger.debug("Building network...")
 
     # build network
     input_var, target_var, network = build_cnn_mel(batch_size,
-            num_features,
-            num_time_bins,
-            len(classes))
+                                                   num_features,
+                                                   num_time_bins,
+                                                   len(classes))
 
     logger.debug("Training network...")
 
     # train network
     train_cnn(sc_gen_train,
-            sc_gen_valid,
-            sc_gen_test,
-            classes,
-            "mel_spectrum",
-            network,
-            input_var,
-            target_var,
-            num_epochs,
-            batch_size,
-            num_features,
-            num_time_bins,
-            learning_rate,
-            reg_coef)
+              sc_gen_valid,
+              sc_gen_test,
+              classes,
+              "mel_spectrum",
+              network,
+              input_var,
+              target_var,
+              num_epochs,
+              batch_size,
+              num_features,
+              num_time_bins,
+              learning_rate,
+              reg_coef)
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description="Run CNN with raw audio.")
     parser.add_argument(
         '-v', "--verbose",
@@ -146,7 +139,7 @@ if __name__ == "__main__":
 
     # ugly hardcoded stuff to sort out
     parser = label_parsers.Bird10Parser("/home/ricard/data/Bird10/labels/labels.csv")
-    #classes = sorted(["45", "09", "26"])
+    # classes = sorted(["45", "09", "26"])
     classes = sorted(['45', '09', '26', '10', '31', '35', '05', '40', '36', '27'])
 
     run(audio_root,

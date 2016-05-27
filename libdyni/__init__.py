@@ -7,6 +7,5 @@ try:
         logging.config.dictConfig(json.load(f))
 except:
     logging.basicConfig(
-            format="%(asctime)s - %(levelname)s - %(message)s",
-            datefmt="%Y-%m-%d %H:%M")
-
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M")

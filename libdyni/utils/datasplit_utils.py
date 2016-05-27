@@ -6,7 +6,6 @@ import joblib
 from libdyni.utils.segment import common_labels
 from libdyni.utils.stats import get_stats
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -15,9 +14,9 @@ def create_datasplit(train_set, validation_set, test_set, name=None):
         name = int(time.time())
     return {"id": "{}".format(name),
             "sets": {
-            "train": train_set,
-            "validation": validation_set,
-            "test": test_set}
+                "train": train_set,
+                "validation": validation_set,
+                "test": test_set}
             }
 
 
@@ -50,7 +49,7 @@ def create_random_datasplit(segment_containers, train_ratio=0.65, validation_rat
     classes.discard(common_labels.garbage)
     classes.discard(common_labels.no_activity)
     classes.discard(common_labels.unknown)
-    
+
     # for every label, get audio_path set and split
     for c in classes:
 
@@ -60,16 +59,16 @@ def create_random_datasplit(segment_containers, train_ratio=0.65, validation_rat
 
         train_file_subset_size = int(round(num_files * train_ratio))
         validation_file_subset_size = int(round(num_files * validation_ratio))
-        
+
         # create train_set from random subset of size train_subset_size
         train_file_subset = set(random.sample(file_set, train_file_subset_size))
 
         # then create validation_set from remaining files
         validation_file_subset = set(random.sample(file_set - train_file_subset, validation_file_subset_size))
-        
+
         # then create test_set from remaining files
-        test_file_subset = file_set - train_file_subset - validation_file_subset     
-        
+        test_file_subset = file_set - train_file_subset - validation_file_subset
+
         if len(train_file_subset) < 2:
             logger.warning("The number of files in the train set for label {0} is smaller than 2".format(c))
         if validation_ratio > 0 and len(validation_file_subset) < 2:
@@ -80,9 +79,9 @@ def create_random_datasplit(segment_containers, train_ratio=0.65, validation_rat
         train_set |= train_file_subset
         test_set |= test_file_subset
         validation_set |= validation_file_subset
-        
+
     # make sure no file is in two sets
-    if len({sc.audio_path for sc in segment_containers}) < len(train_set | validation_set | test_set): 
+    if len({sc.audio_path for sc in segment_containers}) < len(train_set | validation_set | test_set):
         logger.warning("Some files are in several sets")
 
     return create_datasplit(train_set, validation_set, test_set)
@@ -96,16 +95,16 @@ def write_datasplit(datasplit, path, compress=0):
         path: path in which to write the file
         compress: compression coefficient
     """
- 
+
     joblib.dump(datasplit,
-            os.path.join(path, "datasplit_{}.jl".format(datasplit["id"])))
+                os.path.join(path, "datasplit_{}.jl".format(datasplit["id"])))
 
 
 def get_datasplit_stats(segment_containers, datasplit):
     """
     Get string describing basic statistics on dataset
     """
-    
+
     train_set = [sc for sc in segment_containers if sc.audio_path in datasplit["sets"]['train']]
     validation_set = [sc for sc in segment_containers if sc.audio_path in datasplit["sets"]['validation']]
     test_set = [sc for sc in segment_containers if sc.audio_path in datasplit["sets"]['test']]
@@ -124,23 +123,33 @@ def get_datasplit_stats(segment_containers, datasplit):
 
     s = "Sets statistics (training/validation/test)\n"
     s += "{0}{1}{2}{3}{4}\n".format("Class".center(column_width[0]),
-            "Num files".center(column_width[1]),
-            "Num active files".center(column_width[2]),
-            "Num segments".center(column_width[3]),
-            "Num active segments".center(column_width[4]))
+                                    "Num files".center(column_width[1]),
+                                    "Num active files".center(column_width[2]),
+                                    "Num segments".center(column_width[3]),
+                                    "Num active segments".center(column_width[4]))
     for c in classes:
         s += "{0}{1}{2}{3}{4}\n".format(c.center(column_width[0]),
-            "{0}/{1}/{2}".format(train_stats['per_class'][c]['num_files'] if train_set else 0,
-                validation_stats['per_class'][c]['num_files'] if validation_set else 0,
-                test_stats['per_class'][c]['num_files'] if test_set else 0).center(column_width[1]),
-            "{0}/{1}/{2}".format(train_stats['per_class'][c]['num_active_files'] if train_set else 0,
-                validation_stats['per_class'][c]['num_active_files'] if validation_set else 0,
-                test_stats['per_class'][c]['num_active_files'] if test_set else 0).center(column_width[2]),
-            "{0}/{1}/{2}".format(train_stats['per_class'][c]['num_segments'] if train_set else 0,
-                validation_stats['per_class'][c]['num_segments'] if validation_set else 0,
-                test_stats['per_class'][c]['num_segments'] if test_set else 0).center(column_width[3]),
-            "{0}/{1}/{2}".format(train_stats['per_class'][c]['num_active_segments'] if train_set else 0,
-                validation_stats['per_class'][c]['num_active_segments'] if validation_set else 0,
-                test_stats['per_class'][c]['num_active_segments'] if test_set else 0).center(column_width[4]))
-    
+                                        "{0}/{1}/{2}".format(
+                                            train_stats['per_class'][c]['num_files'] if train_set else 0,
+                                            validation_stats['per_class'][c]['num_files'] if validation_set else 0,
+                                            test_stats['per_class'][c]['num_files'] if test_set else 0).center(
+                                            column_width[1]),
+                                        "{0}/{1}/{2}".format(
+                                            train_stats['per_class'][c]['num_active_files'] if train_set else 0,
+                                            validation_stats['per_class'][c][
+                                                'num_active_files'] if validation_set else 0,
+                                            test_stats['per_class'][c]['num_active_files'] if test_set else 0).center(
+                                            column_width[2]),
+                                        "{0}/{1}/{2}".format(
+                                            train_stats['per_class'][c]['num_segments'] if train_set else 0,
+                                            validation_stats['per_class'][c]['num_segments'] if validation_set else 0,
+                                            test_stats['per_class'][c]['num_segments'] if test_set else 0).center(
+                                            column_width[3]),
+                                        "{0}/{1}/{2}".format(
+                                            train_stats['per_class'][c]['num_active_segments'] if train_set else 0,
+                                            validation_stats['per_class'][c][
+                                                'num_active_segments'] if validation_set else 0,
+                                            test_stats['per_class'][c][
+                                                'num_active_segments'] if test_set else 0).center(column_width[4]))
+
     return s

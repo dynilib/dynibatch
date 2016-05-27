@@ -2,12 +2,10 @@ import argparse
 import logging
 from libdyni.utils.segment_container import create_segment_containers_from_audio_files
 
-
 logger = logging.getLogger(__name__)
 
 
 def run(input_root, output_root, **kwargs):
-
     sc_gen = create_segment_containers_from_audio_files(input_root, **kwargs)
 
     for sc in sc_gen:
@@ -37,4 +35,3 @@ if __name__ == "__main__":
             opt_args["seg_overlap"] = args.seg_overlap
 
     run(args.input_root, args.output_root, **opt_args)
-

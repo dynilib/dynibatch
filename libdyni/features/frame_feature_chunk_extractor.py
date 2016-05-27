@@ -1,5 +1,6 @@
 from libdyni.features.segment_feature_extractor import SegmentFrameBasedFeatureExtractor
 
+
 class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
     """Extracts chunks of frame-based features.
 
@@ -9,6 +10,7 @@ class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
         features by removing the mean and scaling to unit variance.
 
     """
+
     def __init__(self, name, scaler=None):
         super().__init__()
         self.name = name
@@ -28,13 +30,12 @@ class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
         """
 
         for s in segment_container.segments:
-            
             start_ind = feature_container.time_to_frame_ind(s.start_time)
-            end_ind =  start_ind +
-                    feature_container.time_to_frame_ind(s.duration)
+            end_ind = start_ind + feature_container.time_to_frame_ind(s.duration)
 
-            if self._scaler:
-                # TODO (jul) use scaler.transform
-                s.features[self._name] = (feature_container.features[self._name]["data"][start_ind:end_ind] - self._scaler.mean_[0]) / self._scaler.scale_[0]
-            else:
-                s.features[self._name] = feature_container.features[self._name]["data"][start_ind:end_ind]
+        if self._scaler:
+            # TODO (jul) use scaler.transform
+            s.features[self._name] = (feature_container.features[self._name]["data"][start_ind:end_ind] -
+                                      self._scaler.mean_[0]) / self._scaler.scale_[0]
+        else:
+            s.features[self._name] = feature_container.features[self._name]["data"][start_ind:end_ind]
