@@ -11,8 +11,8 @@ class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
     """
     def __init__(self, name, scaler=None):
         super().__init__()
-        self.name = name
-        self.scaler = scaler
+        self._name = name
+        self._scaler = scaler
 
     def execute(self, segment_container, feature_container):
         """Gets chunk of features from a feature container and sets it to every
@@ -28,12 +28,13 @@ class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
         """
 
         for s in segment_container.segments:
-            
             start_ind = feature_container.time_to_frame_ind(s.start_time)
-            end_ind =  start_ind + feature_container.time_to_frame_ind(s.duration)
+            end_ind = start_ind + feature_container.time_to_frame_ind(s.duration)
 
             if self._scaler:
                 # TODO (jul) use scaler.transform
-                s.features[self._name] = (feature_container.features[self._name]["data"][start_ind:end_ind] - self._scaler.mean_[0]) / self._scaler.scale_[0]
+                s.features[self._name] = (feature_container.features[self._name][
+                    "data"][start_ind:end_ind] - self._scaler.mean_[0]) / self._scaler.scale_[0]
             else:
-                s.features[self._name] = feature_container.features[self._name]["data"][start_ind:end_ind]
+                s.features[self._name] = feature_container.features[self._name][
+                    "data"][start_ind:end_ind]
