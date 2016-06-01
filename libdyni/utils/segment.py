@@ -9,7 +9,6 @@ class common_labels:
 
 
 class Segment:
-    
     def __init__(self, start_time, end_time, label=common_labels.unknown):
         self._start_time = start_time
         self._end_time = end_time
@@ -23,11 +22,11 @@ class Segment:
     @property
     def end_time(self):
         return self._end_time
-    
+
     @property
     def duration(self):
         return self._end_time - self._start_time
-    
+
     @property
     def label(self):
         return self._label
@@ -35,16 +34,17 @@ class Segment:
     @label.setter
     def label(self, label):
         self._label = label
-    
+
     @property
     def features(self):
         return self._features
-    
+
     @staticmethod
     def load(path):
         s = joblib.load(path)
         if not isinstance(s, Segment):
-            raise Exception("Object in {} is not an instance of Segment".format(path))
+            raise Exception(
+                "Object in {} is not an instance of Segment".format(path))
         return s
 
 
@@ -58,13 +58,17 @@ def set_segment_labels(segments_from, segments_to, overlap_ratio=0.5):
     for s_to in segments_to:
         _labels = defaultdict(float)
         for s_from in segments_from:
-            overlap = _get_overlap(s_from.start_time, s_from.end_time, s_to.start_time, s_to.end_time)
+            overlap = _get_overlap(s_from.start_time,
+                                   s_from.end_time,
+                                   s_to.start_time,
+                                   s_to.end_time)
             _labels[s_from.label] += overlap
 
         if _labels:
 
             # get key and value for max value
-            k = max(_labels, key=_labels.get) # TODO manage several labels with max values
+            # TODO manage several labels with max values
+            k = max(_labels, key=_labels.get)
             v = _labels[k]
 
             # check overlap ratio
@@ -72,7 +76,7 @@ def set_segment_labels(segments_from, segments_to, overlap_ratio=0.5):
                 s_to.label = k
                 continue
 
-        s_to.label = labels.unknown
+        s_to.label = _labels.unknown
 
 
 def _get_overlap(start1, end1, start2, end2):
@@ -80,4 +84,3 @@ def _get_overlap(start1, end1, start2, end2):
     Get overlap between the intervals [start1, end1] and [start2, end2]
     """
     return max(0, min(end1, end2) - max(start1, start2))
-

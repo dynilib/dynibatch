@@ -8,7 +8,7 @@ class EnergyExtractor(AudioFrameFeatureExtractor):
 
     def __init__(self):
         super().__init__()
-    
+
     @property
     def name(self):
         return "energy"
@@ -23,4 +23,3 @@ class EnergyExtractor(AudioFrameFeatureExtractor):
 
     def execute(self, data):
         return np.sum(data**2)
-

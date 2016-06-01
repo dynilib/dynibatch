@@ -10,7 +10,7 @@ class Bird10Parser:
         <file_id>,<class>
         ...
     """
-    
+
     def __init__(self, *label_files):
         self._labels = {}
         for label_file in label_files:
@@ -33,13 +33,10 @@ class Bird2016Parser:
         self._label_root = label_root
 
     def get_label(self, audio_path):
-        label_path = join(
-                self._label_root,
-                splitext(basename(audio_path))[0] + ".xml")
+        label_path = join(self._label_root,
+                          splitext(basename(audio_path))[0] + ".xml")
         with open(label_path, "rb") as f:
             return xmltodict.parse(f)["Audio"]["ClassId"]
-
-
 
 # TODO: sermicro
 #def get_label(audio_path):

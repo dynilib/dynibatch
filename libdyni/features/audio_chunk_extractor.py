@@ -18,10 +18,11 @@ class AudioChunkExtractor(SegmentFeatureExtractor):
     @property
     def name(self):
         return "audio_chunk"
-    
+
     def execute(self, segment_container):
 
-        with SoundFile(join(self._audio_root, segment_container.audio_path)) as f:
+        with SoundFile(join(self._audio_root,
+                            segment_container.audio_path)) as f:
 
             if not f.seekable():
                 raise ValueError("file must be seekable")
@@ -31,13 +32,15 @@ class AudioChunkExtractor(SegmentFeatureExtractor):
                 start_time = s.start_time
                 end_time = s.end_time
 
-                n_samples = int(np.rint((end_time - start_time) * self._sample_rate))
+                n_samples = int(np.rint(
+                    (end_time - start_time) * self._sample_rate))
 
                 start_ind = int(start_time * self._sample_rate)
-                
+
                 if start_ind + n_samples > len(f):
-                    raise Exception("Segments {0}-{1} exceeds file {2} duration".format(
-                        start_time, end_time, segment_container.audio_path))
+                    raise Exception(
+                        "Segments {0}-{1} exceeds file {2} duration".format(
+                            start_time, end_time, segment_container.audio_path))
 
                 f.seek(start_ind)
                 s.features[self.name] = f.read(n_samples, dtype="float32")
