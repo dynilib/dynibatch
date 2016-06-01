@@ -156,6 +156,7 @@ def split_data(file_duration, seg_duration, seg_overlap=0.5):
 
 def _parse_segment_file_line(line, field_separator):
 
+    # TODO (jul) raise exception when format is not right
     tmp = line.strip().replace(",", ".").split(field_separator) # replace "," by "." just in case time is set as xx,xx
     start_time = float(tmp[0])
     end_time = float(tmp[1])
