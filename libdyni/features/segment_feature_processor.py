@@ -1,14 +1,9 @@
-import os
 import logging
 from itertools import compress
 
-import numpy as np
-import joblib
-
-from libdyni.utils.feature_container import FeatureContainer
-from libdyni.utils.segment_container import SegmentContainer
 from libdyni.features.segment_feature_extractor import SegmentFeatureExtractor
-from libdyni.features.segment_feature_extractor import SegmentFrameBasedFeatureExtractor
+from libdyni.features.segment_feature_extractor \
+    import SegmentFrameBasedFeatureExtractor
 from libdyni.features.audio_chunk_extractor import AudioChunkExtractor
 from libdyni.features.chirplets_chunk_extractor import ChirpletsChunkExtractor
 
@@ -33,7 +28,8 @@ class SegmentFeatureProcessor:
 
         # TODO use Python abc (Abstract Base Classes)?
         if not all(isinstance(fe, SegmentFeatureExtractor) for fe in feature_extractors):
-            raise Exception("All feature extractors must be instances of SegmentFeatureExtractor.")
+            raise Exception(
+                "All feature extractors must be instances of SegmentFeatureExtractor.")
         self.__feature_extractors = feature_extractors
 
         if "ff_pro" in kwargs:
@@ -44,26 +40,31 @@ class SegmentFeatureProcessor:
     def execute(self, segment_container):
         """
         Args:
-            - segment_container            
+            segment_container
         Returns tuple (segment_container, segment_container_has_features)
         """
-            
-        logger.debug("Processing {} segment container".format(segment_container.audio_path))
+
+        logger.debug("Processing {} segment container".format(
+            segment_container.audio_path))
 
         # check if segment container already has all wanted features
-        has_features = segment_container.has_features([fe.name for fe in self.__feature_extractors])
+        has_features = segment_container.has_features(
+            [fe.name for fe in self.__feature_extractors])
         if all(has_features):
             logger.debug("Segment container has all requested features")
             return
 
         # get feature container if needed
-        if any(isinstance(fe, SegmentFrameBasedFeatureExtractor) for fe in compress(self.__feature_extractors, [not hf for hf in has_features])):
+        if any(isinstance(fe,
+                          SegmentFrameBasedFeatureExtractor) for fe in compress(
+                              self.__feature_extractors, [not hf for hf in has_features])):
             fc, created = self.__frame_feature_pro.execute(
-                    (self._audio_root, segment_container.audio_path))
+                (self._audio_root, segment_container.audio_path))
             if created:
                 logger.debug("Feature container created")
 
-        for fe in compress(self.__feature_extractors, [not hf for hf in has_features]):
+        for fe in compress(self.__feature_extractors,
+                           [not hf for hf in has_features]):
             if isinstance(fe, AudioChunkExtractor):
                 fe.execute(segment_container)
             elif isinstance(fe, SegmentFrameBasedFeatureExtractor):
@@ -71,5 +72,5 @@ class SegmentFeatureProcessor:
             elif isinstance(fe, ChirpletsChunkExtractor):
                 fe.execute(segment_container)
             else:
-                raise Exception("Segment feature extractor {} not implemented".format(fe.name))
-
+                raise Exception(
+                    "Segment feature extractor {} not implemented".format(fe.name))

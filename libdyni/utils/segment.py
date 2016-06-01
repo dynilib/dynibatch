@@ -11,7 +11,6 @@ class common_labels:
 
 
 class Segment:
-    
     def __init__(self, start_time, end_time, label=common_labels.unknown):
 
         if start_time < 0 or end_time <= start_time:
@@ -31,11 +30,11 @@ class Segment:
     @property
     def end_time(self):
         return self._end_time
-    
+
     @property
     def duration(self):
         return self._end_time - self._start_time
-    
+
     @property
     def label(self):
         return self._label
@@ -43,16 +42,17 @@ class Segment:
     @label.setter
     def label(self, label):
         self._label = label
-    
+
     @property
     def features(self):
         return self._features
-    
+
     @staticmethod
     def load(path):
         s = joblib.load(path)
         if not isinstance(s, Segment):
-            raise Exception("Object in {} is not an instance of Segment".format(path))
+            raise Exception(
+                "Object in {} is not an instance of Segment".format(path))
         return s
 
 
@@ -66,13 +66,17 @@ def set_segment_labels(segments_from, segments_to, overlap_ratio=0.5):
     for s_to in segments_to:
         labels = defaultdict(float)
         for s_from in segments_from:
-            overlap = _get_overlap(s_from.start_time, s_from.end_time, s_to.start_time, s_to.end_time)
+            overlap = _get_overlap(s_from.start_time,
+                                   s_from.end_time,
+                                   s_to.start_time,
+                                   s_to.end_time)
             labels[s_from.label] += overlap
 
         if labels:
 
             # get key and value for max value
-            k = max(labels, key=labels.get) # TODO manage several labels with max values
+            # TODO manage several labels with max values
+            k = max(labels, key=labels.get)
             v = labels[k]
 
             # check overlap ratio
@@ -88,4 +92,3 @@ def _get_overlap(start1, end1, start2, end2):
     Get overlap between the intervals [start1, end1] and [start2, end2]
     """
     return max(0, min(end1, end2) - max(start1, start2))
-

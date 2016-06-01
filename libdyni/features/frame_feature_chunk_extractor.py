@@ -28,12 +28,13 @@ class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
         """
 
         for s in segment_container.segments:
-            
             start_ind = feature_container.time_to_frame_ind(s.start_time)
-            end_ind =  start_ind + feature_container.time_to_frame_ind(s.duration)
+            end_ind = start_ind + feature_container.time_to_frame_ind(s.duration)
 
             if self.scaler:
                 # TODO (jul) use scaler.transform
-                s.features[self.name] = (feature_container.features[self.name]["data"][start_ind:end_ind] - self.scaler.mean_[0]) / self.scaler.scale_[0]
+                s.features[self.name] = (feature_container.features[self.name][
+                    "data"][start_ind:end_ind] - self.scaler.mean_[0]) / self.scaler.scale_[0]
             else:
-                s.features[self.name] = feature_container.features[self.name]["data"][start_ind:end_ind]
+                s.features[self.name] = feature_container.features[self.name][
+                    "data"][start_ind:end_ind]
