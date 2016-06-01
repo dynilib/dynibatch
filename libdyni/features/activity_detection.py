@@ -54,6 +54,7 @@ class ActivityDetection(sfe.SegmentFrameBasedFeatureExtractor):
         energy95p = np.percentile(feature_container.features["energy"]["data"],
                 95)
         if energy95p == 0:
+            # TODO (jul) just warn
             raise Exception("The file {} is silent".format( \
                     segment_container.audio_path))
 
