@@ -1,6 +1,8 @@
 from collections import defaultdict
 import joblib
 
+from libdyni.utils.exceptions import ParameterError
+
 
 class common_labels:
     no_activity = "na"
@@ -11,6 +13,12 @@ class common_labels:
 class Segment:
     
     def __init__(self, start_time, end_time, label=common_labels.unknown):
+
+        if start_time < 0 or end_time <= start_time:
+            raise ParameterError(
+                "Wrong time parameters: start_time must be" +
+                "greater than 0 and end_time must be greater than start_time")
+
         self._start_time = start_time
         self._end_time = end_time
         self._label = label
@@ -56,16 +64,16 @@ def set_segment_labels(segments_from, segments_to, overlap_ratio=0.5):
     """
 
     for s_to in segments_to:
-        _labels = defaultdict(float)
+        labels = defaultdict(float)
         for s_from in segments_from:
             overlap = _get_overlap(s_from.start_time, s_from.end_time, s_to.start_time, s_to.end_time)
-            _labels[s_from.label] += overlap
+            labels[s_from.label] += overlap
 
-        if _labels:
+        if labels:
 
             # get key and value for max value
-            k = max(_labels, key=_labels.get) # TODO manage several labels with max values
-            v = _labels[k]
+            k = max(labels, key=labels.get) # TODO manage several labels with max values
+            v = labels[k]
 
             # check overlap ratio
             if v >= (s_to.end_time-s_to.start_time) * overlap_ratio:
