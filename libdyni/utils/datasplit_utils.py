@@ -90,7 +90,7 @@ def create_random_datasplit(segment_containers, train_ratio=0.65, validation_rat
 
 def write_datasplit(datasplit, path, compress=0):
     """
-    Writes datasplit to pickle file.
+    Writes datasplit to joblib pickles.
     Args:
         datasplit: dictionary including the train, validation and test sets as list of file
         path: path in which to write the file
@@ -98,7 +98,8 @@ def write_datasplit(datasplit, path, compress=0):
     """
  
     joblib.dump(datasplit,
-            os.path.join(path, "datasplit_{}.jl".format(datasplit["id"])))
+            os.path.join(path, "datasplit_{}.jl".format(datasplit["id"])),
+            compress=compress)
 
 
 def get_datasplit_stats(segment_containers, datasplit):
