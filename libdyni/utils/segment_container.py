@@ -26,7 +26,7 @@ class SegmentContainer:
     def load(path):
         sc = joblib.load(path)
         if not isinstance(sc, SegmentContainer):
-            raise Exception(
+            raise TypeError(
                 "Object in {} is not an instance of SegmentContainer".format(
                     path))
         return sc
