@@ -22,8 +22,9 @@ class FeatureContainer:
         Args:
             features: list of tuple (name, config)
         Returns a list of booleans"""
-        return [name in self.features and config ==
-                self.features.get(name).get("config",
+        return [name in self.features and not
+                self.features.get(name).get("data") == None and
+                config == self.features.get(name).get("config",
                                              dict()) for name, config in features]
 
     @staticmethod
