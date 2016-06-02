@@ -65,10 +65,7 @@ class AudioFrameGen:
                                overlap=self._win_size-self._hop_size,
                                dtype="float32"):
             if len(frame) < self._win_size:
-                # 0 pad last frame if needed
-                frame = np.pad(frame,
-                               (0, self._win_size-len(frame)),
-                               mode="constant")
+                break # last frame
             if self._win_type != Window.rect:
                 yield self._window * frame
             else:
