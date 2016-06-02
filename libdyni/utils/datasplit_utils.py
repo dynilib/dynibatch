@@ -29,7 +29,7 @@ def create_random_datasplit(segment_containers,
     Splits the dataset in training, validation and testing data sets.
     The split is done for every classes except those in segment.
     Args:
-        segment_containers: list of Segment instances, 
+        segment_containers: list of Segment instances,
         train_ratio: ratio of files in training set
         validation_ratio: ratio of files in validation set
         test_ratio: ratio of files in test set
@@ -90,7 +90,8 @@ def create_random_datasplit(segment_containers,
         validation_set |= validation_file_subset
 
     # make sure no file is in two sets
-    if len({sc.audio_path for sc in segment_containers}) < len(train_set | validation_set | test_set):
+    if len({sc.audio_path for sc in segment_containers}) < \
+    len(train_set | validation_set | test_set):
         logger.warning("Some files are in several sets")
 
     return create_datasplit(train_set, validation_set, test_set)

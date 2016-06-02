@@ -11,7 +11,7 @@ from libdyni.utils import audio
 
 __all__ = ['FrameFeatureProcessor']
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class FrameFeatureProcessor(object):
@@ -62,7 +62,7 @@ class FrameFeatureProcessor(object):
             feature container and whether it has been created or not.
         """
 
-        if not type(audio_path) == tuple:
+        if not isinstance(audio_path, tuple):
             raise Exception('The first argument must be a tuple' +
                             '<audio path root>, <audio relative path>)')
 
@@ -83,7 +83,7 @@ class FrameFeatureProcessor(object):
                 has_features = fc.has_features([(fe.name, fe.config) \
                         for fe in self.feature_extractors])
                 if all(has_features):
-                    logger.debug(
+                    LOGGER.debug(
                         'Feature container {} with all required features found!'.format(feature_container_path))
                     return fc, False
 

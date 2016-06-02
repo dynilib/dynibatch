@@ -4,7 +4,7 @@ from sklearn.externals import joblib
 from libdyni.features.segment_feature_extractor import SegmentFeatureExtractor
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class ChirpletsChunkExtractor(SegmentFeatureExtractor):
@@ -20,6 +20,10 @@ class ChirpletsChunkExtractor(SegmentFeatureExtractor):
 
     @property
     def name(self):
+        """
+        Returns:
+            The name of SegmentFrameBasedFeatureExtractor, it is also its type
+        """
         return "chirplets"
 
     def time_to_frame_ind(self, time):
@@ -32,7 +36,7 @@ class ChirpletsChunkExtractor(SegmentFeatureExtractor):
             segment_container.audio_path)[0] + ".0.jl"))
 
         for s in segment_container.segments:
-            
+
             start_ind = self.time_to_frame_ind(s.start_time)
             end_ind = start_ind + self.time_to_frame_ind(s.duration)
 
@@ -42,6 +46,7 @@ class ChirpletsChunkExtractor(SegmentFeatureExtractor):
                 break
 
             if self._scaler:
-                s.features[self.name] = (chirplets[:, start_ind:end_ind].T - self._scaler.mean_[0]) / self._scaler.scale_[0]
+                s.features[self.name] = (chirplets[:, start_ind:end_ind].T - self._scaler.mean_[0])\
+                                        / self._scaler.scale_[0]
             else:
                 s.features[self.name] = chirplets[:, start_ind:end_ind].T

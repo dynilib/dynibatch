@@ -16,7 +16,7 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
         min_freq (int)
         max_freq (int)
         log_amp (boolean): whether or not to compute the log of the mel
-        spectrum.    
+        spectrum.
     """
 
     #TODO (jul) add top_db for logamplitude
@@ -47,6 +47,10 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
 
     @property
     def name(self):
+        """
+        Returns:
+            The name of SegmentFrameBasedFeatureExtractor, it is also its type
+        """
         return 'mfcc'
 
     @property

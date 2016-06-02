@@ -6,7 +6,7 @@ from libdyni.features.frame_feature_extractor import PowerSpectrumFrameFeatureEx
 
 class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
     """Computes the mel spectrum.
-    
+
     Attribute:
         sample_rate (int)
         fft_size (int)
@@ -14,7 +14,7 @@ class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
         min_freq (int)
         max_freq (int)
         log_amp (boolean): whether or not to compute the log of the mel
-        spectrum.    
+        spectrum.
     """
 
     #TODO (jul) add top_db for logamplitude
@@ -44,12 +44,16 @@ class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
 
     @property
     def name(self):
+        """
+        Returns:
+            The name of SegmentFrameBasedFeatureExtractor, it is also its type
+        """
         return 'mel_spectrum'
 
     @property
     def size(self):
         return self.n_mels
-    
+
     @property
     def config(self):
         return {'sample_rate': self.sample_rate,

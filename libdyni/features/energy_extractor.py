@@ -11,10 +11,17 @@ class EnergyExtractor(AudioFrameFeatureExtractor):
 
     @property
     def name(self):
+        """
+        Returns:
+            The name of SegmentFrameBasedFeatureExtractor, it is also its type
+        """
         return "energy"
 
     @property
     def size(self):
+        """
+            :return: size of the feature
+        """
         return 1
 
     @property

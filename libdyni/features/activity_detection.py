@@ -6,7 +6,7 @@ from libdyni.features import segment_feature_extractor as sfe
 
 __all__ = ['ActivityDetection']
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class ActivityDetection(sfe.SegmentFrameBasedFeatureExtractor):
@@ -35,6 +35,10 @@ class ActivityDetection(sfe.SegmentFrameBasedFeatureExtractor):
 
     @property
     def name(self):
+        """
+        Returns:
+            The name of SegmentFrameBasedFeatureExtractor, it is also its type
+        """
         return 'activity_detection'
 
     def execute(self, segment_container, feature_container):
@@ -73,8 +77,5 @@ class ActivityDetection(sfe.SegmentFrameBasedFeatureExtractor):
             spectral_flatness_w_mean = np.average(sf,
                                                   weights=en) if mean_en > 0 else 0.0
 
-            if (energy_ratio > self.energy_threshold and
-                    spectral_flatness_w_mean < self.spectral_flatness_threshold):
-                s.activity = True
-            else:
-                s.activity = False
+            s.activity = energy_ratio > self.energy_threshold and \
+                         spectral_flatness_w_mean < self.spectral_flatness_threshold

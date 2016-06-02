@@ -4,7 +4,7 @@ import soundfile as sf
 
 
 def get_file_durations(path):
-    for dirpath, dirnames, filenames in os.walk(path):
+    for dirpath, _, filenames in os.walk(path):
         for filename in filenames:
             try:
                 filepath = os.path.join(dirpath, filename)
@@ -49,7 +49,7 @@ def get_stats(segment_containers):
 
         stats['per_class'][c] = stats_per_class
 
-    # global stats    
+    # global stats
 
     stats['classes'] = classes
 

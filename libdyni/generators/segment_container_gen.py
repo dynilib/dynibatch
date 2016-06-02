@@ -3,7 +3,7 @@ from libdyni.utils.segment_container import \
     create_segment_containers_from_audio_files
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class SegmentContainerGenerator:
@@ -46,7 +46,7 @@ class SegmentContainerGenerator:
 
             # get label
             label = self._label_parser.get_label(sc.audio_path)
-            
+
             # set label
             sc.labels = label
 

@@ -86,11 +86,11 @@ def create_segment_containers_from_audio_files(audio_root, **kwargs):
     Yields: segment container
     """
 
-    for root, dirnames, filenames in os.walk(audio_root):
+    for root, _, filenames in os.walk(audio_root):
 
         for filename in filenames:
 
-            basename, extension = os.path.splitext(filename)
+            _, extension = os.path.splitext(filename)
             if not extension in ALLOWED_AUDIO_EXT:
                 continue  # only get audio files
 
@@ -121,11 +121,11 @@ def create_segment_containers_from_seg_files(seg_file_root,
     Yields: segment container
     """
 
-    for root, dirnames, filenames in os.walk(seg_file_root):
+    for root, _, filenames in os.walk(seg_file_root):
 
         for filename in filenames:
 
-            basename, ext = os.path.splitext(filename)
+            _, ext = os.path.splitext(filename)
             if not ext == seg_file_ext:
                 continue  # only get seg files
 
@@ -147,11 +147,11 @@ def create_segment_containers_from_seg_files(seg_file_root,
 
 def load_segment_containers_from_dir(path):
 
-    for root, dirnames, filenames in os.walk(path):
+    for root, _, filenames in os.walk(path):
 
         for filename in filenames:
 
-            basename, ext = os.path.splitext(filename)
+            _, ext = os.path.splitext(filename)
             if not ext == SC_EXTENSION:
                 continue  # only get segment containers
 

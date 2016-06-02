@@ -7,7 +7,7 @@ import numpy as np
 import soundfile as sf
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class Window(Enum):
@@ -69,7 +69,7 @@ class AudioFrameGen:
                 frame = np.pad(frame,
                                (0, self._win_size-len(frame)),
                                mode="constant")
-            if not self._win_type == Window.rect:
+            if self._win_type != Window.rect:
                 yield self._window * frame
             else:
                 yield frame
