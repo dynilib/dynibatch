@@ -1,7 +1,11 @@
 import os
 import joblib
+import re
+
 import soundfile as sf
+
 from libdyni.utils.segment import Segment
+from libdyni.utils import exceptions
 
 
 SC_EXTENSION = ".sc.jl"
@@ -26,7 +30,7 @@ class SegmentContainer:
     def load(path):
         sc = joblib.load(path)
         if not isinstance(sc, SegmentContainer):
-            raise Exception(
+            raise TypeError(
                 "Object in {} is not an instance of SegmentContainer".format(
                     path))
         return sc
@@ -94,19 +98,43 @@ def create_segment_containers_from_audio_files(audio_root, **kwargs):
             if not extension in ALLOWED_AUDIO_EXT:
                 continue  # only get audio files
 
-            with sf.SoundFile(os.path.join(root, filename)) as f:
-                sc = SegmentContainer(os.path.relpath(os.path.join(
-                    root, filename), audio_root))
-                n_samples = len(f)
-                sample_rate = f._info.samplerate
-                duration = float(n_samples) / sample_rate
+            audio_path_tuple = (
+                    audio_root,
+                    os.path.relpath(os.path.join(
+                        root, filename), audio_root))
 
-                if "seg_duration" in kwargs and kwargs["seg_duration"]:
-                    sc._segments = split_data(duration, **kwargs)
-                else:
-                    sc._segments.append(Segment(0, duration))
+            yield create_segment_containers_from_audio_file(
+                    audio_path_tuple,
+                    **kwargs)
 
-                yield sc
+
+def create_segment_containers_from_audio_file(audio_path_tuple, **kwargs):
+    """
+    Args:
+        audio_path_tuple: audio file path as a tuple (<audio root>, <audio file
+            relative path>)
+        (seg_duration
+        (seg_overlap)
+    Yields: segment container
+    """
+
+    # if a str is passed as audio_path_tuple, sc.audio_path will be wrong,
+    # so we must make sure it is a tuple
+    if not isinstance(audio_path_tuple, tuple):
+        raise TypeError("audio_path_tuple must be a tuple")
+
+    with sf.SoundFile(os.path.join(*audio_path_tuple)) as f:
+        sc = SegmentContainer(audio_path_tuple[1])
+        n_samples = len(f)
+        sample_rate = f._info.samplerate
+        duration = float(n_samples) / sample_rate
+
+        if "seg_duration" in kwargs and kwargs["seg_duration"]:
+            sc.segments = split_data(duration, **kwargs)
+        else:
+            sc.segments.append(Segment(0, duration))
+
+        return sc
 
 
 def create_segment_containers_from_seg_files(seg_file_root,
@@ -116,8 +144,9 @@ def create_segment_containers_from_seg_files(seg_file_root,
     """
     Args:
         - seg_file_root
+        - (audio_file_ext)
         - (seg_file_ext)
-        - audio_file_ext
+        - (seg_file_separator)
     Yields: segment container
     """
 
@@ -129,20 +158,54 @@ def create_segment_containers_from_seg_files(seg_file_root,
             if not ext == seg_file_ext:
                 continue  # only get seg files
 
-            with open(os.path.join(root, filename), "r") as f:
-
-                sc = SegmentContainer(
+            seg_file_path_tuple = (seg_file_root,
                     os.path.relpath(
-                        os.path.join(root,
-                                     filename.replace(seg_file_ext,
-                                                      audio_file_ext)),
+                        os.path.join(
+                            root,
+                            filename.replace(seg_file_ext, audio_file_ext)),
                         seg_file_root))
-                for line in f:
-                    start_time, end_time, label = _parse_segment_file_line(
-                        line, seg_file_separator)
-                    sc._segments.append(Segment(start_time, end_time, label))
 
-                yield sc
+            yield create_segment_containers_from_seg_file(
+                    seg_file_path_tuple,
+                    audio_file_ext,
+                    seg_file_ext,
+                    seg_file_separator)
+        
+
+def create_segment_containers_from_seg_file(seg_file_path_tuple,
+                                             audio_file_ext=".wav",
+                                             seg_file_ext=".seg",
+                                             seg_file_separator="\t"):
+    """
+    Args:
+        - seg_file_path_tuple: seg file path as a tuple (<audio root>,
+            <audio file relative path>)
+        - (audio_file_ext)
+        - (seg_file_ext)
+        - (seg_file_separator)
+    Yields: segment container
+    """
+
+    # if a str is passed as seg_file_path_tuple, sc.audio_path will be wrong,
+    # so we must make sure it is a tuple
+    if not isinstance(seg_file_path_tuple, tuple):
+        raise TypeError("seg_file_path_tuple must be a tuple")
+
+    if not audio_file_ext in ALLOWED_AUDIO_EXT:
+        raise exceptions.ParameterError("{} is not an allowed audio file " +
+                "extension")
+
+    with open(os.path.join(*seg_file_path_tuple), "r") as f:
+
+        sc = SegmentContainer(
+                seg_file_path_tuple[1].replace(seg_file_ext,
+                                              audio_file_ext))
+        for line in f:
+            start_time, end_time, label = _parse_segment_file_line(
+                line, seg_file_separator)
+            sc.segments.append(Segment(start_time, end_time, label))
+
+        return sc
 
 
 def load_segment_containers_from_dir(path):
@@ -171,10 +234,14 @@ def split_data(file_duration, seg_duration, seg_overlap=0.5):
 
 def _parse_segment_file_line(line, field_separator):
 
-    # TODO (jul) raise exception when format is not right
-    # replace "," by "." just in case time is set as xx,xx
-    tmp = line.strip().replace(",", ".").split(field_separator)
-    start_time = float(tmp[0])
-    end_time = float(tmp[1])
-    label = tmp[2]
+    pattern = re.compile("^\s*[0-9]+\.[0-9]+\s*" + re.escape(field_separator) +
+            "\s*[0-9]+\.[0-9]+\s*" + re.escape(field_separator) + "\s*.+\s*$")
+    if not line.count(field_separator) == 2 and re.match(pattern, line):
+        raise exceptions.ParsingError("Cannot parse line '{}'".
+                format(line))
+
+    tmp = line.split(field_separator)
+    start_time = float(tmp[0].strip())
+    end_time = float(tmp[1].strip())
+    label = tmp[2].strip()
     return start_time, end_time, label

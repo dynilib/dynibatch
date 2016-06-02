@@ -5,3 +5,7 @@ class LibdyniError(Exception):
 
 class ParameterError(LibdyniError):
     pass
+
+
+class ParsingError(LibdyniError):
+    pass
