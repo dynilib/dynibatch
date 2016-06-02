@@ -1,5 +1,6 @@
 import os
 import joblib
+import re
 
 import soundfile as sf
 
@@ -233,10 +234,14 @@ def split_data(file_duration, seg_duration, seg_overlap=0.5):
 
 def _parse_segment_file_line(line, field_separator):
 
-    # TODO (jul) raise exception when format is not right
-    # replace "," by "." just in case time is set as xx,xx
-    tmp = line.strip().replace(",", ".").split(field_separator)
-    start_time = float(tmp[0])
-    end_time = float(tmp[1])
-    label = tmp[2]
+    pattern = re.compile("^\s*[0-9]+\.[0-9]+\s*" + re.escape(field_separator) +
+            "\s*[0-9]+\.[0-9]+\s*" + re.escape(field_separator) + "\s*.+\s*$")
+    if not line.count(field_separator) == 2 and re.match(pattern, line):
+        raise exceptions.ParsingError("Cannot parse line '{}'".
+                format(line))
+
+    tmp = line.split(field_separator)
+    start_time = float(tmp[0].strip())
+    end_time = float(tmp[1].strip())
+    label = tmp[2].strip()
     return start_time, end_time, label
