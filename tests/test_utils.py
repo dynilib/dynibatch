@@ -8,9 +8,10 @@ from libdyni.utils import segment
 from libdyni.utils import segment_container
 from libdyni.utils import utils
 
+DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
 
-TEST_AUDIO_PATH_TUPLE = ("data", "ID0132.wav")
-TEST_SEG_PATH_TUPLE = ("data", "ID0132.seg")
+TEST_AUDIO_PATH_TUPLE = (data_path, "ID0132.wav")
+TEST_SEG_PATH_TUPLE = (data_path, "ID0132.seg")
 TEST_DURATION = 15.45
 TEST_N_SEGMENTS = 4
 TEST_FIRST_SEGMENT_DURATION = 0.79
