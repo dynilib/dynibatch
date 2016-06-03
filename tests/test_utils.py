@@ -22,7 +22,7 @@ TEST_FIRST_SEGMENT_DURATION = 0.79
 
 class TestSegment:
 
-    def test_ok(self):
+    def test_init(self):
         try:
             start_time = 1
             end_time = 10
@@ -265,25 +265,89 @@ class TestUtils:
 
 class TestDatasplit:
 
-    fileset = set("f{}".format(i) for i in range(1000))
+    @pytest.fixture(scope="module")
+    def n_files(self):
+        return 1000
+    
+    @pytest.fixture(scope="module")
+    def n_classes(self):
+        return 10
 
-    def test_create_datasplit_ok(self):
+    @pytest.fixture(scope="module")
+    def n_files_per_class(self, n_files, n_classes):
+        return int(n_files / n_classes)
+    
+    @pytest.fixture(scope="module")
+    def n_files_per_class(self, n_files, n_classes):
+        return int(n_files / n_classes)
+    
+    @pytest.fixture(scope="module")
+    def file_list(self, n_files):
+        return ["f{}".format(i) for i in range(n_files)]
+    
+    @pytest.fixture(scope="module")
+    def label_list(self, n_files, n_files_per_class):
+        return [int(i / n_files_per_class) for i in range(n_files)]
+    
+    @pytest.fixture(scope="module")
+    def sc_list(self, n_files, file_list, label_list):
+        sc_list = []
+        for i in range(n_files):
+            sc = segment_container.SegmentContainer(file_list[i])
+            sc.segments.append(segment.Segment(0, 1, label_list[i]))
+            sc_list.append(sc)
+        return sc_list
+    
+    def test_create_datasplit_init(self, file_list):
         try:
-            train_set = set(random.sample(self.fileset, 700))
-            validation_set = set(random.sample(self.fileset-train_set, 100))
-            test_set = set(random.sample(self.fileset-train_set-validation_set, 200))
+            file_set = set(file_list)
+            train_set = set(random.sample(file_set, 700))
+            validation_set = set(random.sample(file_set-train_set, 100))
+            test_set = set(random.sample(file_set-train_set-validation_set, 200))
             datasplit_utils.create_datasplit(train_set, validation_set, test_set,
                     name="fake_datasplit")
         except Exception as e:
             pytest.fail("Unexpected Error: {}".format(e))
 
-    def test_create_datasplit_count(self):
-        train_set = set(random.sample(self.fileset, 700))
-        validation_set = set(random.sample(self.fileset-train_set, 100))
-        test_set = set(random.sample(self.fileset-train_set-validation_set, 200))
+    def test_create_datasplit_count(self, file_list):
+        file_set = set(file_list)
+        train_set = set(random.sample(file_set, 700))
+        validation_set = set(random.sample(file_set-train_set, 100))
+        test_set = set(random.sample(file_set-train_set-validation_set, 200))
         ds = datasplit_utils.create_datasplit(train_set, validation_set, test_set,
                 name="fake_datasplit")
         assert (len(ds["sets"]["train"]) == 700 and
                 len(ds["sets"]["validation"]) == 100 and
                 len(ds["sets"]["test"]) == 200)
 
+    def test_create_random_datasplit_init(self, sc_list):
+        try:
+            datasplit_utils.create_random_datasplit(
+                    sc_list,
+                    train_ratio=0.7,
+                    validation_ratio=0.1,
+                    test_ratio=0.2)
+        except Exception as e:
+            pytest.fail("Unexpected Error: {}".format(e))
+    
+    def test_create_random_datasplit_set_dont_sumup_to_one(self, sc_list):
+        with pytest.raises(ParameterError):
+            datasplit_utils.create_random_datasplit(
+                    sc_list,
+                    train_ratio=0.8,
+                    validation_ratio=0.1,
+                    test_ratio=0.2)
+    
+    def test_create_random_datasplit_count(self, sc_list):
+        ds = datasplit_utils.create_random_datasplit(
+                    sc_list,
+                    train_ratio=0.7,
+                    validation_ratio=0.1,
+                    test_ratio=0.2)
+        assert (len(ds["sets"]["train"]) == 700 and
+                len(ds["sets"]["validation"]) == 100 and
+                len(ds["sets"]["test"]) == 200)
+
+    def test_datasplit_stats(self):
+        # TODO (jul)
+        pass
