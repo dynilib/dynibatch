@@ -3,8 +3,10 @@ import os
 import random
 import time
 import joblib
+
 from libdyni.utils.segment import common_labels
 from libdyni.utils.stats import get_stats
+from libdyni.utils.exceptions import ParameterError
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +39,7 @@ def create_random_datasplit(segment_containers,
     """
 
     if train_ratio + validation_ratio + test_ratio != 1:
-        raise Exception(
+        raise ParameterError(
             "train_ratio + validation_ratio + test_ratio must be equal to 1")
 
     train_set = set()
