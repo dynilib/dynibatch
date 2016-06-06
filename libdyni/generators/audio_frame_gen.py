@@ -32,7 +32,6 @@ class AudioFrameGen:
             self._window = hann(self.win_size, sym=False)
         elif self._win_type == Window.rect:
             pass  # no windowing
-        # TODO check undefined window
 
     @property
     def win_size(self):

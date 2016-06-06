@@ -25,6 +25,10 @@ class SegmentContainer:
     @property
     def segments(self):
         return self._segments
+    
+    @segments.setter
+    def segments(self, segments):
+        self._segments = segments
 
     @staticmethod
     def load(path):

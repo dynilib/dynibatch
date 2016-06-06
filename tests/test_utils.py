@@ -138,7 +138,7 @@ class TestSegmentContainer:
 
     def test_create_segment_containers_from_audio_file_tuple(self):
         with pytest.raises(TypeError):
-            sc = segment_container.create_segment_containers_from_audio_file(
+            segment_container.create_segment_containers_from_audio_file(
                 os.path.join(*TEST_AUDIO_PATH_TUPLE))
 
     def test_create_segment_containers_from_audio_file_n_segment(self):
@@ -153,7 +153,7 @@ class TestSegmentContainer:
 
     def test_create_segment_containers_from_seg_file_tuple(self):
         with pytest.raises(TypeError):
-            sc = segment_container.create_segment_containers_from_seg_file(
+            segment_container.create_segment_containers_from_seg_file(
                 os.path.join(*TEST_SEG_PATH_TUPLE))
 
     def test_create_segment_containers_from_seg_file_n_segment(self):
@@ -193,7 +193,7 @@ class TestSegmentContainer:
         assert (np.isclose(start_time, 0.12) and np.isclose(end_time, 0.15) and
                 label == "bird_a")
 
-        
+
 class TestFeatureContainer:
 
     def test_init(self):
@@ -298,7 +298,7 @@ class TestDatasplit:
     @pytest.fixture(scope="module")
     def n_files(self):
         return 1000
-    
+
     @pytest.fixture(scope="module")
     def n_classes(self):
         return 10
@@ -306,19 +306,15 @@ class TestDatasplit:
     @pytest.fixture(scope="module")
     def n_files_per_class(self, n_files, n_classes):
         return int(n_files / n_classes)
-    
-    @pytest.fixture(scope="module")
-    def n_files_per_class(self, n_files, n_classes):
-        return int(n_files / n_classes)
-    
+
     @pytest.fixture(scope="module")
     def file_list(self, n_files):
         return ["f{}".format(i) for i in range(n_files)]
-    
+
     @pytest.fixture(scope="module")
     def label_list(self, n_files, n_files_per_class):
         return [int(i / n_files_per_class) for i in range(n_files)]
-    
+
     @pytest.fixture(scope="module")
     def sc_list(self, n_files, file_list, label_list):
         sc_list = []
@@ -327,7 +323,7 @@ class TestDatasplit:
             sc.segments.append(segment.Segment(0, 1, label_list[i]))
             sc_list.append(sc)
         return sc_list
-    
+
     def test_create_datasplit_init(self, file_list):
         try:
             file_set = set(file_list)
@@ -359,7 +355,7 @@ class TestDatasplit:
                     test_ratio=0.2)
         except Exception as e:
             pytest.fail("Unexpected Error: {}".format(e))
-    
+
     def test_create_random_datasplit_set_dont_sumup_to_one(self, sc_list):
         with pytest.raises(ParameterError):
             datasplit_utils.create_random_datasplit(
@@ -367,7 +363,7 @@ class TestDatasplit:
                     train_ratio=0.8,
                     validation_ratio=0.1,
                     test_ratio=0.2)
-    
+
     def test_create_random_datasplit_count(self, sc_list):
         ds = datasplit_utils.create_random_datasplit(
                     sc_list,

@@ -1,6 +1,7 @@
 import logging
 from libdyni.utils.segment_container import \
     create_segment_containers_from_audio_files
+from libdyni.utils.exceptions import GeneratorError
 
 
 LOGGER = logging.getLogger(__name__)
@@ -25,6 +26,7 @@ class SegmentContainerGenerator:
         self._dataset = dataset
         self._seg_duration = seg_duration
         self._seg_overlap = seg_overlap
+        self._sc_gen = None
 
     def start(self):
         # create segment container with fixed-length segments
@@ -37,6 +39,8 @@ class SegmentContainerGenerator:
         self.start()
 
     def execute(self):
+        if self._sc_gen is None:
+            raise GeneratorError("Generator is not started")
 
         # process
         for sc in self._sc_gen:
@@ -54,3 +58,5 @@ class SegmentContainerGenerator:
             self._sf_pro.execute(sc)
 
             yield sc
+
+        self._sc_gen = None
