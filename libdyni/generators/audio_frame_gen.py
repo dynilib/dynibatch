@@ -3,7 +3,6 @@
 import logging
 from enum import Enum
 from scipy.signal import hann
-import numpy as np
 import soundfile as sf
 
 
