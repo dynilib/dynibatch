@@ -9,3 +9,6 @@ class ParameterError(LibdyniError):
 
 class ParsingError(LibdyniError):
     pass
+
+class GeneratorError(LibdyniError):
+    pass
