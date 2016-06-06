@@ -1,7 +1,6 @@
 import os
 from collections import defaultdict
 import joblib
-from libdyni.utils.exceptions import FileError
 
 
 FC_EXTENSION = ".fc.jl"
@@ -37,7 +36,8 @@ class FeatureContainer:
                         path))
             return fc
         except FileNotFoundError:
-            raise FileError(path + " is not found.")
+            # TODO: better manage the exception where the method is called?
+            return None
 
     def save(self, path, compress=0):
         joblib.dump(self,

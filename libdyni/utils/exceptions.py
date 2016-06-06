@@ -9,6 +9,3 @@ class ParameterError(LibdyniError):
 
 class ParsingError(LibdyniError):
     pass
-
-class FileError(LibdyniError):
-    pass
