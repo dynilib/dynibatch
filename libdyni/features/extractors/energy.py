@@ -1,6 +1,6 @@
 import numpy as np
 
-from libdyni.features.frame_feature_extractor import AudioFrameFeatureExtractor
+from libdyni.features.extractors.frame_feature import AudioFrameFeatureExtractor
 
 
 class EnergyExtractor(AudioFrameFeatureExtractor):

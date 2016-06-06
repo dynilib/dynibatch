@@ -4,10 +4,10 @@ from itertools import compress
 
 import numpy as np
 
-from libdyni.utils import feature_container
-from libdyni.features import frame_feature_extractor as ffe
-
+from libdyni.features.extractors import frame_feature as ffe
 from libdyni.utils import audio
+from libdyni.utils import feature_container
+from libdyni.utils import utils
 
 __all__ = ['FrameFeatureProcessor']
 

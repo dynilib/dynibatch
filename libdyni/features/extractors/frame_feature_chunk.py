@@ -1,4 +1,4 @@
-from libdyni.features.segment_feature_extractor import SegmentFrameBasedFeatureExtractor
+from libdyni.features.extractors.segment_feature import SegmentFrameBasedFeatureExtractor
 
 class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
     """Extracts chunks of frame-based features.

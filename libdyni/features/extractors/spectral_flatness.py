@@ -1,6 +1,6 @@
 from sys import float_info
 import numpy as np
-from libdyni.features.frame_feature_extractor import SpectrumFrameFeatureExtractor
+from libdyni.features.extractors.frame_feature import SpectrumFrameFeatureExtractor
 
 
 class SpectralFlatnessExtractor(SpectrumFrameFeatureExtractor):
