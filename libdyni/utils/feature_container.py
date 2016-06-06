@@ -36,7 +36,6 @@ class FeatureContainer:
                         path))
             return fc
         except FileNotFoundError:
-            # TODO: better manage the exception where the method is called?
             return None
 
     def save(self, path, compress=0):
