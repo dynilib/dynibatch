@@ -1,7 +1,7 @@
 import logging
 from os.path import join, splitext
 from sklearn.externals import joblib
-from libdyni.features.segment_feature_extractor import SegmentFeatureExtractor
+from libdyni.features.extractors.segment_feature import SegmentFeatureExtractor
 
 
 LOGGER = logging.getLogger(__name__)
