@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 
-from libdyni.extractors.features import segment_feature as sfe
+from libdyni.features.extractors import segment_feature as sfe
 
 __all__ = ['ActivityDetection']
 
