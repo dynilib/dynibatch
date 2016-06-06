@@ -278,10 +278,6 @@ class TestDatasplit:
         return int(n_files / n_classes)
 
     @pytest.fixture(scope="module")
-    def n_files_per_class(self, n_files, n_classes):
-        return int(n_files / n_classes)
-
-    @pytest.fixture(scope="module")
     def file_list(self, n_files):
         return ["f{}".format(i) for i in range(n_files)]
 
