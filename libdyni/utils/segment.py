@@ -58,7 +58,9 @@ class Segment:
 
 def set_segment_labels(segments_from, segments_to, overlap_ratio=0.5):
     """
-    Set label of segments in segments_to to the label with more overlap.
+    Map label from segments_from to segments_to such as a given segment s
+    in segments_to has the label with more overlap in segment_from, only if this
+    overlap is >= (s duration) * overlap_ratio.
     Args::
         - overlap_ratio: min overlap ratio, in [0, 1]
     """
