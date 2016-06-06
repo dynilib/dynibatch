@@ -98,7 +98,6 @@ def create_random_datasplit(segment_containers,
 
     return create_datasplit(train_set, validation_set, test_set)
 
-# TODO compress is not used
 def write_datasplit(datasplit, path, compress=0):
     """
     Writes datasplit to joblib pickles.
