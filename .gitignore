@@ -4,4 +4,3 @@ neuralnet
 .cache
 __pycache__/
 *.py[cod]
-*chirp*
