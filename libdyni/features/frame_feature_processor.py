@@ -7,7 +7,6 @@ import numpy as np
 from libdyni.features.extractors import frame_feature as ffe
 from libdyni.utils import audio
 from libdyni.utils import feature_container
-from libdyni.utils import utils
 
 __all__ = ['FrameFeatureProcessor']
 

@@ -84,7 +84,7 @@ def set_segment_labels(segments_from, segments_to, overlap_ratio=0.5):
                 s_to.label = k
                 continue
 
-        s_to.label = labels.unknown
+        s_to.label = common_labels.unknown
 
 
 def _get_overlap(start1, end1, start2, end2):

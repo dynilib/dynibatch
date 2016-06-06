@@ -2,7 +2,6 @@ import os
 from collections import defaultdict
 import joblib
 
-from libdyni.utils.exceptions import ParameterError
 
 FC_EXTENSION = ".fc.jl"
 
