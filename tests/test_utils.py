@@ -42,6 +42,36 @@ class TestSegment:
             end_time = 1
             segment.Segment(start_time, end_time)
 
+    def test_set_segment_labels(self):
+        segment_from_list = []
+        segment_from_list.append(segment.Segment(0, 1, "a"))
+        segment_from_list.append(segment.Segment(1.2, 2, "b"))
+        segment_to_list = []
+        segment_to_list.append(segment.Segment(0.2, 0.3))
+        segment_to_list.append(segment.Segment(0.6, 1.1))
+        segment_to_list.append(segment.Segment(1.7, 1.8))
+        segment_to_list.append(segment.Segment(2.5, 2.7))
+        segment.set_segment_labels(
+                segment_from_list,
+                segment_to_list,
+                overlap_ratio=0.5)
+        assert (segment_to_list[0].label == "a" and
+            segment_to_list[1].label == "a" and
+            segment_to_list[2].label == "b" and
+            segment_to_list[3].label == segment.common_labels.unknown)
+
+    def test_set_segment_labels_overlap(self):
+        segment_from_list = []
+        segment_from_list.append(segment.Segment(0, 1, "a"))
+        segment_to_list = []
+        segment_to_list.append(segment.Segment(0.4, 1.5))
+        segment_to_list.append(segment.Segment(0.6, 1.5))
+        segment.set_segment_labels(
+                segment_from_list,
+                segment_to_list,
+                overlap_ratio=0.5)
+        assert (segment_to_list[0].label == "a" and
+            segment_to_list[1].label == segment.common_labels.unknown)
 
 class TestSegmentContainer:
 
