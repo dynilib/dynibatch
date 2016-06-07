@@ -6,19 +6,20 @@ from libdyni.features.extractors.activity_detection import ActivityDetection
 from libdyni.utils.feature_container import FeatureContainer
 from libdyni.utils.segment import Segment
 from libdyni.utils.segment_container import SegmentContainer
+from libdyni.features.extractors.audio_chunk import AudioChunkExtractor
 
 
-class TestExtractors:
+class TestActivityDetectorExtractors:
 
-    def test_activity_detection_init(self):
+    def test_init(self):
         try:
             ActivityDetection(
                     energy_threshold=0.3,
                     spectral_flatness_threshold=0.2)
         except Exception as e:
             pytest.fail("Unexpected Error: {}".format(e))
+    def test_execute(self):
 
-    def test_activity_detection(self):
 
         sample_rate = 22050
         win_size = 256
@@ -51,3 +52,13 @@ class TestExtractors:
         assert( sc.segments[0].activity and not sc.segments[1].activity and
                 not sc.segments[2].activity and not sc.segments[3].activity)
 
+
+class TestAudioChunkExtractor:
+
+    def test_init(self):
+        try:
+            audio_root="."
+            sample_rate=41100
+            AudioChunkExtractor(audio_root, sample_rate)
+        except Exception as e:
+            pytest.fail("Unexpected Error: {}".format(e))
