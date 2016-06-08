@@ -18,8 +18,8 @@ class TestActivityDetectorExtractors:
                     spectral_flatness_threshold=0.2)
         except Exception as e:
             pytest.fail("Unexpected Error: {}".format(e))
-    def test_execute(self):
 
+    def test_execute(self):
 
         sample_rate = 22050
         win_size = 256
@@ -57,8 +57,8 @@ class TestAudioChunkExtractor:
 
     def test_init(self):
         try:
-            audio_root="."
-            sample_rate=41100
+            audio_root = "fake_audio_root"
+            sample_rate = 44100
             AudioChunkExtractor(audio_root, sample_rate)
         except Exception as e:
             pytest.fail("Unexpected Error: {}".format(e))
