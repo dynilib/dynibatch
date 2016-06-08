@@ -73,6 +73,7 @@ class TestSegment:
         assert (segment_to_list[0].label == "a" and
             segment_to_list[1].label == segment.common_labels.unknown)
 
+
 class TestSegmentContainer:
 
     def test_no_segments_n_segments(self):
