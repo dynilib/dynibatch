@@ -9,7 +9,7 @@ from libdyni.utils.segment_container import SegmentContainer
 from libdyni.features.extractors.audio_chunk import AudioChunkExtractor
 
 
-class TestActivityDetectorExtractors:
+class TestActivityDetection:
 
     def test_init(self):
         try:
