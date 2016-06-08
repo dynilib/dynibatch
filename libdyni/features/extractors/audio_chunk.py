@@ -44,7 +44,7 @@ class AudioChunkExtractor(SegmentFeatureExtractor):
                 if start_ind + n_samples > len(f):
                     # TODO (jul) use specific exception or, maybe better, just remove it
                     # because an exception might already be raised in f.read below
-                    raise Exception(
+                    raise ValueError(
                         "Segments {0}-{1} exceeds file {2} duration".format(
                             start_time, end_time, segment_container.audio_path))
 
