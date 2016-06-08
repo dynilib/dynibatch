@@ -1,12 +1,18 @@
 import pytest
+import os
 
 import numpy as np
+import soundfile as sf
 
 from libdyni.features.extractors.activity_detection import ActivityDetection
 from libdyni.utils.feature_container import FeatureContainer
 from libdyni.utils.segment import Segment
 from libdyni.utils.segment_container import SegmentContainer
 from libdyni.features.extractors.audio_chunk import AudioChunkExtractor
+
+DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
+
+TEST_AUDIO_PATH_TUPLE = (DATA_PATH, "ID0132.wav")
 
 
 class TestActivityDetection:
@@ -62,3 +68,16 @@ class TestAudioChunkExtractor:
             AudioChunkExtractor(audio_root, sample_rate)
         except Exception as e:
             pytest.fail("Unexpected Error: {}".format(e))
+    
+    def test_execute(self):
+        data, sample_rate = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE))
+        sc = SegmentContainer(TEST_AUDIO_PATH_TUPLE[1])
+        sc.segments.append(Segment(0, 0.5))
+        sc.segments.append(Segment(1, 1.2))
+        ac_ext = AudioChunkExtractor(TEST_AUDIO_PATH_TUPLE[0], sample_rate)
+        ac_ext.execute(sc)
+        assert (
+            np.all(sc.segments[0].features["audio_chunk"] == \
+                    data[int(0*sample_rate):int(0.5*sample_rate)]) and
+            np.all(sc.segments[1].features["audio_chunk"] == \
+                    data[int(1*sample_rate):int(1.2*sample_rate)]))
