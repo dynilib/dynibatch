@@ -14,6 +14,7 @@ from libdyni.utils.feature_container import FeatureContainer
 from libdyni.utils.segment import Segment
 from libdyni.utils.segment_container import SegmentContainer
 from libdyni.features.frame_feature_processor import FrameFeatureProcessor
+from libdyni.features.segment_feature_processor import SegmentFeatureProcessor
 from libdyni.features.extractors.audio_chunk import AudioChunkExtractor
 from libdyni.features.extractors.energy import EnergyExtractor
 from libdyni.features.extractors.frame_feature_chunk import FrameFeatureChunkExtractor
@@ -295,7 +296,7 @@ class TestFrameFeatureProcessor:
     def test_execute_typeerror(self, af_gen):
         with pytest.raises(TypeError):
             ac_ext = AudioChunkExtractor(22050)
-            ff_pro = FrameFeatureProcessor(af_gen, [ac_ext])
+            FrameFeatureProcessor(af_gen, [ac_ext])
     
     def test_execute_existing_fc(self, af_gen, en_ext):
         ff_pro = FrameFeatureProcessor(af_gen, [en_ext], DATA_PATH)
@@ -310,3 +311,35 @@ class TestFrameFeatureProcessor:
         fc, created_2 = ff_pro.execute(TEST_AUDIO_PATH_TUPLE)
         assert (created_1 and not created_2 and
                 np.isclose(0.074310362339, fc.features["energy"]["data"][10]))
+
+        
+class TestSegmentFeatureProcessor:
+
+    @pytest.fixture(scope="module")
+    def ac_ext(self):
+        sample_rate = 22050
+        return AudioChunkExtractor(TEST_AUDIO_PATH_TUPLE[0], sample_rate)
+
+    @pytest.fixture(scope="module")
+    def segment_container(self):
+        sc = SegmentContainer(TEST_AUDIO_PATH_TUPLE[1])
+        sc.segments.append(Segment(0.5, 0.6))
+        return sc
+
+    def test_init(self, ac_ext):
+        try:
+            SegmentFeatureProcessor([ac_ext])
+        except Exception as e:
+            pytest.fail("Unexpected Error: {}".format(e))
+    
+    def test_execute(self, ac_ext, segment_container):
+        data, sample_rate = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE))
+        sf_pro = SegmentFeatureProcessor([ac_ext])
+        sf_pro.execute(segment_container)
+        assert np.all(segment_container.segments[0].features["audio_chunk"] ==
+                data[int(0.5 * 22050):int(0.6 * 22050)])
+
+    def test_execute_typeerror(self):
+        with pytest.raises(TypeError):
+            en_ext = EnergyExtractor()
+            SegmentFeatureProcessor([en_ext])
