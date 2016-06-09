@@ -51,7 +51,7 @@ class Segment:
     def load(path):
         s = joblib.load(path)
         if not isinstance(s, Segment):
-            raise Exception(
+            raise ParameterError(
                 "Object in {} is not an instance of Segment".format(path))
         return s
 
