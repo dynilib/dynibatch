@@ -1,10 +1,13 @@
 import pytest
 import os
+import copy
 
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 import soundfile as sf
 from librosa.feature.spectral import melspectrogram
+from librosa.feature.spectral import mfcc as lr_mfcc
+from librosa import logamplitude
 
 from libdyni.features.extractors.activity_detection import ActivityDetection
 from libdyni.utils.feature_container import FeatureContainer
@@ -14,6 +17,8 @@ from libdyni.features.extractors.audio_chunk import AudioChunkExtractor
 from libdyni.features.extractors.energy import EnergyExtractor
 from libdyni.features.extractors.frame_feature_chunk import FrameFeatureChunkExtractor
 from libdyni.features.extractors.mel_spectrum import MelSpectrumExtractor
+from libdyni.features.extractors.mfcc import MFCCExtractor
+from libdyni.features.extractors.spectral_flatness import SpectralFlatnessExtractor
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
 
@@ -195,4 +200,63 @@ class TestMelSpectrumExtractor:
         assert np.allclose(mel, mel_librosa) # not exactly equals because
                                              # librosa uses float64
 
+
+class TestMFCCExtractor:
+
+    @pytest.fixture(scope="module")
+    def mel_config(self):
+        return {
+                "sample_rate": 22050,
+                "fft_size": 256,
+                "n_mels": 128,
+                "min_freq": 0,
+                "max_freq": 11025,
+                "log_amp": False}
+    
+    @pytest.fixture(scope="module")
+    def mfcc_config(self, mel_config):
+        mfcc_config = copy.deepcopy(mel_config)
+        mfcc_config.pop("log_amp")
+        mfcc_config["n_mfcc"] = 32
+        return mfcc_config
+    
+    def test_init(self, mfcc_config):
+        try:
+            MFCCExtractor(**mfcc_config)
+        except Exception as e:
+            pytest.fail("Unexpected Error: {}".format(e))
+    
+    def test_execute(self, mel_config, mfcc_config):
+        # trust librosa on MFCC calculation
+        # just make sure we get the same values
+        mel_ext = MelSpectrumExtractor(**mel_config)
+        data, sr = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE))
+        spec = np.abs(np.fft.rfft(data[:256])) ** 2
+        mfcc_ext = MFCCExtractor(**mfcc_config)
+        mfcc = mfcc_ext.execute(spec)
+        log_mel = logamplitude(mel_ext.execute(spec), top_db=None)
+        mfcc_librosa = lr_mfcc(sr=22050, S=log_mel, n_fft=256,
+                hop_length=128, n_mels=128, n_mfcc=32, fmin=0, fmax=11025,
+                top_db=None)
+
+        assert np.allclose(mfcc, mfcc_librosa) # not exactly equals because
+                                             # librosa uses float64
+
+
+class TestSpectralFlatnessExtractor:
+    
+    def test_init(self):
+        try:
+            SpectralFlatnessExtractor()
+        except Exception as e:
+            pytest.fail("Unexpected Error: {}".format(e))
+    
+    def test_execute(self):
+        white_noise = np.ones((256,))
+        tone = np.zeros((256,))
+        tone[50] = 0.5
+
+        sf_ext = SpectralFlatnessExtractor()
+        assert (np.isclose(sf_ext.execute(white_noise), 1) and
+            np.isclose(sf_ext.execute(tone), 0))
 
