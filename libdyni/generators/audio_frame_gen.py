@@ -24,7 +24,7 @@ class AudioFrameGen:
         self._win_type = win_type
 
         if not isinstance(win_type, Window):
-            raise Exception("win_type must be an instance of Window")
+            raise TypeError("win_type must be an instance of Window")
 
         # Create window
         if self._win_type == Window.hanning:
