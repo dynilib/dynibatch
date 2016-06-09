@@ -72,5 +72,5 @@ class SegmentFeatureProcessor:
             elif isinstance(fe, ChirpletsChunkExtractor):
                 fe.execute(segment_container)
             else:
-                raise Exception(
+                raise TypeError(
                     "Segment feature extractor {} not implemented".format(fe.name))
