@@ -28,7 +28,7 @@ class SegmentFeatureProcessor:
 
         # TODO use Python abc (Abstract Base Classes)?
         if not all(isinstance(fe, SegmentFeatureExtractor) for fe in feature_extractors):
-            raise Exception(
+            raise TypeError(
                 "All feature extractors must be instances of SegmentFeatureExtractor.")
         self.__feature_extractors = feature_extractors
 
