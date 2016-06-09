@@ -39,8 +39,8 @@ class FrameFeatureProcessor(object):
         # TODO (jul) use Python abc (Abstract Base Classes)?
         if not all(isinstance(fe, ffe.FrameFeatureExtractor)
                    for fe in feature_extractors):
-            raise Exception(
-                'All feature extractors must be instances of' + 'FrameFeatureExtractor.')
+            raise TypeError('All feature extractors must be instances of ' +
+                    'FrameFeatureExtractor.')
 
         # TODO (jul): convert some attributes to properties to make them
         # immutable?
