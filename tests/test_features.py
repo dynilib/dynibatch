@@ -13,12 +13,15 @@ from libdyni.features.extractors.activity_detection import ActivityDetection
 from libdyni.utils.feature_container import FeatureContainer
 from libdyni.utils.segment import Segment
 from libdyni.utils.segment_container import SegmentContainer
+from libdyni.features.frame_feature_processor import FrameFeatureProcessor
 from libdyni.features.extractors.audio_chunk import AudioChunkExtractor
 from libdyni.features.extractors.energy import EnergyExtractor
 from libdyni.features.extractors.frame_feature_chunk import FrameFeatureChunkExtractor
 from libdyni.features.extractors.mel_spectrum import MelSpectrumExtractor
 from libdyni.features.extractors.mfcc import MFCCExtractor
 from libdyni.features.extractors.spectral_flatness import SpectralFlatnessExtractor
+from libdyni.generators.audio_frame_gen import AudioFrameGen
+from libdyni.generators.audio_frame_gen import Window
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
 
@@ -260,3 +263,50 @@ class TestSpectralFlatnessExtractor:
         assert (np.isclose(sf_ext.execute(white_noise), 1) and
             np.isclose(sf_ext.execute(tone), 0))
 
+
+class TestFrameFeatureProcessor:
+
+    @pytest.fixture(scope="module")
+    def af_gen(self):
+        win_size = 256
+        hop_size = 128
+        return AudioFrameGen(win_size, hop_size, Window.rect)
+    
+    @pytest.fixture(scope="module")
+    def en_ext(self):
+        return EnergyExtractor()
+    
+    @pytest.fixture(scope="module")
+    def feature_container_root(self):
+        return None
+
+    def test_init(self, af_gen, en_ext, feature_container_root):
+        try:
+            FrameFeatureProcessor(af_gen, [en_ext], feature_container_root)
+        except Exception as e:
+            pytest.fail("Unexpected Error: {}".format(e))
+    
+    def test_execute(self, af_gen, en_ext):
+        ff_pro = FrameFeatureProcessor(af_gen, [en_ext])
+        fc, created = ff_pro.execute(TEST_AUDIO_PATH_TUPLE)
+        assert (created and
+                np.isclose(0.074310362339, fc.features["energy"]["data"][10]))
+
+    def test_execute_typeerror(self, af_gen):
+        with pytest.raises(TypeError):
+            ac_ext = AudioChunkExtractor(22050)
+            ff_pro = FrameFeatureProcessor(af_gen, [ac_ext])
+    
+    def test_execute_existing_fc(self, af_gen, en_ext):
+        ff_pro = FrameFeatureProcessor(af_gen, [en_ext], DATA_PATH)
+        fc, created = ff_pro.execute(TEST_AUDIO_PATH_TUPLE)
+        assert (not created and
+                np.isclose(0.074310362339, fc.features["energy"]["data"][10]))
+    
+    def test_execute_save_load_fc(self, tmpdir, af_gen, en_ext):
+        fc_path = str(tmpdir)
+        ff_pro = FrameFeatureProcessor(af_gen, [en_ext], fc_path)
+        fc, created_1 = ff_pro.execute(TEST_AUDIO_PATH_TUPLE)
+        fc, created_2 = ff_pro.execute(TEST_AUDIO_PATH_TUPLE)
+        assert (created_1 and not created_2 and
+                np.isclose(0.074310362339, fc.features["energy"]["data"][10]))
