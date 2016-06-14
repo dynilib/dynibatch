@@ -2,7 +2,7 @@ from os.path import join, basename, splitext
 import xmltodict
 
 
-class Bird10Parser:
+class CSVLabelParser:
     """csv label files parser
     Args: csv label file(s), written as
         <file_id>,<class>
@@ -21,10 +21,6 @@ class Bird10Parser:
 
     def get_label(self, audio_path):
         return self._labels[splitext(basename(audio_path))[0]]
-
-
-class Bird50Parser(Bird10Parser):
-    pass
 
 
 class Bird2016Parser:
