@@ -3,6 +3,7 @@ import pytest
 import random
 
 import numpy as np
+import soundfile as sf
 
 from libdyni.utils.exceptions import ParameterError
 from libdyni.utils import segment
@@ -10,11 +11,18 @@ from libdyni.utils import segment_container
 from libdyni.utils import feature_container
 from libdyni.utils import datasplit_utils
 from libdyni.utils import utils
+from libdyni.utils.batch import gen_minibatches
+from libdyni.generators.segment_container_gen import SegmentContainerGenerator
+from libdyni.parsers.label_parsers import CSVLabelParser
+from libdyni.features.extractors.audio_chunk import AudioChunkExtractor
+from libdyni.features.segment_feature_processor import SegmentFeatureProcessor
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
 
-TEST_AUDIO_PATH_TUPLE = (DATA_PATH, "ID0132.wav")
-TEST_SEG_PATH_TUPLE = (DATA_PATH, "ID0132.seg")
+TEST_AUDIO_PATH_TUPLE_1 = (DATA_PATH, "ID0132.wav")
+TEST_AUDIO_PATH_TUPLE_2 = (DATA_PATH, "ID1238.wav")
+TEST_SEG_PATH_TUPLE_1 = (DATA_PATH, "ID0132.seg")
+TEST_CSVLABEL_PATH = os.path.join(DATA_PATH, "labels.csv")
 TEST_DURATION = 15.45
 TEST_N_SEGMENTS = 4
 TEST_FIRST_SEGMENT_DURATION = 0.79
@@ -140,31 +148,31 @@ class TestSegmentContainer:
     def test_create_segment_containers_from_audio_file_tuple(self):
         with pytest.raises(TypeError):
             segment_container.create_segment_containers_from_audio_file(
-                os.path.join(*TEST_AUDIO_PATH_TUPLE))
+                os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
 
     def test_create_segment_containers_from_audio_file_n_segment(self):
         sc = segment_container.create_segment_containers_from_audio_file(
-            TEST_AUDIO_PATH_TUPLE)
+            TEST_AUDIO_PATH_TUPLE_1)
         assert sc.n_segments == 1
 
     def test_create_segment_containers_from_audio_file_segment_duration(self):
         sc = segment_container.create_segment_containers_from_audio_file(
-            TEST_AUDIO_PATH_TUPLE)
+            TEST_AUDIO_PATH_TUPLE_1)
         assert np.abs(sc.segments[0].duration - TEST_DURATION) < 1e-03
 
     def test_create_segment_containers_from_seg_file_tuple(self):
         with pytest.raises(TypeError):
             segment_container.create_segment_containers_from_seg_file(
-                os.path.join(*TEST_SEG_PATH_TUPLE))
+                os.path.join(*TEST_SEG_PATH_TUPLE_1))
 
     def test_create_segment_containers_from_seg_file_n_segment(self):
         sc = segment_container.create_segment_containers_from_seg_file(
-            TEST_SEG_PATH_TUPLE)
+            TEST_SEG_PATH_TUPLE_1)
         assert sc.n_segments == TEST_N_SEGMENTS
 
     def test_create_segment_containers_from_seg_file_segment_duration(self):
         sc = segment_container.create_segment_containers_from_seg_file(
-            TEST_SEG_PATH_TUPLE)
+            TEST_SEG_PATH_TUPLE_1)
         assert np.abs(sc.segments[0].duration - TEST_FIRST_SEGMENT_DURATION) < 1e-03
 
     def test_split_data_duration(self):
@@ -377,4 +385,63 @@ class TestDatasplit:
 
     def test_datasplit_stats(self):
         # TODO (jul)
+        pass
+
+
+class TestBatch:
+
+    @pytest.fixture(scope="module")
+    def ac_ext(self):
+        sample_rate = 22050
+        return AudioChunkExtractor(DATA_PATH, sample_rate)
+
+    def test_gen_minibatches_count(self, ac_ext):
+        sample_rate = 22050
+        seg_duration = 0.1
+        seg_overlap = 0.5
+
+        parser = CSVLabelParser(TEST_CSVLABEL_PATH)
+        sf_pro = SegmentFeatureProcessor([ac_ext])
+        sc_gen = SegmentContainerGenerator(
+                DATA_PATH,
+                parser,
+                sf_pro,
+                seg_duration=seg_duration,
+                seg_overlap=seg_overlap)
+        
+        id0132_data, sr = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
+        id1238_data, sr = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_2))
+
+        id0132_n_chunks = utils.get_n_overlapping_chunks(
+                len(id0132_data),
+                sample_rate * seg_duration,
+                seg_overlap)
+        id1238_n_chunks = utils.get_n_overlapping_chunks(
+                len(id1238_data),
+                sample_rate * seg_duration,
+                seg_overlap)
+
+        n_epochs = 3
+        classes = ["bird_c", "bird_d"]
+        batch_size = 10
+        n_time_bins = int(seg_duration * sample_rate)
+
+        for i in range(n_epochs):
+            sc_gen.reset()
+            mb_gen = gen_minibatches(
+                    sc_gen,
+                    classes,
+                    batch_size,
+                    1,
+                    n_time_bins,
+                    "audio_chunk")
+            count = 0
+            for data, target in mb_gen:
+                count += 1
+
+        assert count == int((id0132_n_chunks + id1238_n_chunks) / batch_size)
+
+        
+    def test_gen_minibatches_1d(self, ac_ext):
+        # TODO
         pass
