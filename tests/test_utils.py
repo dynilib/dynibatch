@@ -412,6 +412,11 @@ class TestBatch:
         id0132_data, sr = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
         id1238_data, sr = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_2))
 
+        n_epochs = 3
+        classes = ["bird_c", "bird_d"]
+        batch_size = 10
+        n_time_bins = int(seg_duration * sample_rate)
+
         id0132_n_chunks = utils.get_n_overlapping_chunks(
                 len(id0132_data),
                 sample_rate * seg_duration,
@@ -421,10 +426,8 @@ class TestBatch:
                 sample_rate * seg_duration,
                 seg_overlap)
 
-        n_epochs = 3
-        classes = ["bird_c", "bird_d"]
-        batch_size = 10
-        n_time_bins = int(seg_duration * sample_rate)
+        id0132_n_minibatches = int(id0132_n_chunks / batch_size)
+        n_minibatches = int((id0132_n_chunks + id1238_n_chunks) / batch_size)
 
         for i in range(n_epochs):
             sc_gen.reset()
@@ -437,11 +440,112 @@ class TestBatch:
                     "audio_chunk")
             count = 0
             for data, target in mb_gen:
+                if count < id0132_n_minibatches:
+                    assert np.all(target==classes.index("bird_c"))
+                elif count == id0132_n_minibatches:
+                    assert (len(np.where(target==classes.index("bird_c"))[0]) ==
+                            id0132_n_chunks % batch_size)
+                    assert (len(np.where(target==classes.index("bird_d"))[0]) ==
+                            batch_size - (id0132_n_chunks % batch_size))
+                else:
+                    assert np.all(target==classes.index("bird_d"))
                 count += 1
 
-        assert count == int((id0132_n_chunks + id1238_n_chunks) / batch_size)
+            assert count == n_minibatches
 
         
     def test_gen_minibatches_1d(self, ac_ext):
-        # TODO
-        pass
+        sample_rate = 22050
+        seg_duration = 0.1
+        seg_overlap = 0.5
+        seg_size = int(seg_duration * sample_rate)
+
+        parser = CSVLabelParser(TEST_CSVLABEL_PATH)
+        sf_pro = SegmentFeatureProcessor([ac_ext])
+        sc_gen = SegmentContainerGenerator(
+                DATA_PATH,
+                parser,
+                sf_pro,
+                seg_duration=seg_duration,
+                seg_overlap=seg_overlap)
+        
+        id0132_data, sr = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
+        id1238_data, sr = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_2))
+
+        n_epochs = 3
+        classes = ["bird_c", "bird_d"]
+        batch_size = 10
+
+        id0132_n_chunks = utils.get_n_overlapping_chunks(
+                len(id0132_data),
+                seg_size,
+                seg_overlap)
+        id1238_n_chunks = utils.get_n_overlapping_chunks(
+                len(id1238_data),
+                sample_rate * seg_duration,
+                seg_overlap)
+
+        id0132_n_minibatches = int(id0132_n_chunks / batch_size)
+        id0132_n_chunks_in_common_minibatch = id0132_n_chunks % batch_size
+        id1238_n_chunks_in_common_minibatch = \
+                batch_size - id0132_n_chunks_in_common_minibatch
+        id1238_n_minibatches = int((id1238_n_chunks -
+            id1238_n_chunks_in_common_minibatch) / batch_size)
+
+
+
+        id0132_minibatches = np.zeros((id0132_n_minibatches, batch_size,
+            seg_size))
+        start_time = 0
+        for i in range(id0132_n_minibatches):
+            for j in range(batch_size):
+                start_ind = int(start_time*sample_rate)
+                end_ind = start_ind + seg_size
+                id0132_minibatches[i, j, :] = id0132_data[start_ind:end_ind]
+                start_time += seg_duration * seg_overlap
+
+        common_minibatch = np.zeros((batch_size, seg_size))
+        for i in range(id0132_n_chunks_in_common_minibatch):
+            start_ind = int(start_time*sample_rate)
+            end_ind = start_ind + seg_size
+            common_minibatch[i] = id0132_data[start_ind:end_ind]
+            start_time += seg_duration * seg_overlap
+        start_time = 0
+        for i in range(batch_size - id0132_n_chunks_in_common_minibatch):
+            start_ind = int(start_time*sample_rate)
+            end_ind = start_ind + seg_size
+            common_minibatch[i+id0132_n_chunks_in_common_minibatch] = \
+                    id1238_data[start_ind:end_ind]
+            start_time += seg_duration * seg_overlap
+        
+        id1238_minibatches = np.zeros((id1238_n_minibatches, batch_size,
+            seg_size))
+        for i in range(id1238_n_minibatches):
+            for j in range(batch_size):
+                start_ind = int(start_time*sample_rate)
+                end_ind = start_ind + seg_size
+                id1238_minibatches[i, j, :] = id1238_data[start_ind:end_ind]
+                start_time += seg_duration * seg_overlap
+
+        for i in range(n_epochs):
+            sc_gen.reset()
+            mb_gen = gen_minibatches(
+                    sc_gen,
+                    classes,
+                    batch_size,
+                    1,
+                    seg_size,
+                    "audio_chunk")
+
+            count = 0
+            for data, target in mb_gen:
+                data = data.reshape((10, 2205))
+                if count < id0132_n_minibatches:
+                    assert np.all(data == id0132_minibatches[count])
+                elif count == id0132_n_minibatches:
+                    assert np.all(data == common_minibatch)
+                else:
+                    assert np.all(data ==
+                            id1238_minibatches[count-id0132_n_minibatches-1])
+                count += 1
+
