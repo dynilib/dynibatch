@@ -165,14 +165,6 @@ class TestFrameFeatureChunkExtractor:
                 np.all(s1.features["fake_feature"] == \
                 feature_container.features["fake_feature"]["data"][s1_start_ind:s1_end_ind]))
     
-    def test_execute_valueerror(self, feature_container):
-        with pytest.raises(ValueError):
-            sc = SegmentContainer("fake_audio_path")
-            sc.segments.append(Segment(0.5, 0.6))
-
-            ffc_ext = FrameFeatureChunkExtractor("fake_feature")
-            ffc_ext.execute(sc, feature_container)
-
 
 class TestMelSpectrumExtractor:
 

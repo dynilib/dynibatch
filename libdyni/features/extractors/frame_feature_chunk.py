@@ -1,4 +1,10 @@
+import logging
+
 from libdyni.features.extractors.segment_feature import SegmentFrameBasedFeatureExtractor
+
+
+logger = logging.getLogger(__name__)
+
 
 class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
     """Extracts chunks of frame-based features.
@@ -32,9 +38,12 @@ class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
             end_ind = start_ind + feature_container.time_to_frame_ind(s.duration)
 
             if end_ind > len(feature_container.features[self.name]["data"]):
-                raise ValueError("Segment {0:.3f}-{1:.3f} from {2} end time" +
-                        " exceed feature container size.".format(s.start_time,
-                                s.end_time, segment_container.audio_path))
+                # that can happen if the end time of the latest analysis frame
+                # is earlier than the end time of the segment
+                logger.info("Segment {0:.3f}-{1:.3f} from {2} end time".format(s.start_time,
+                                s.end_time, segment_container.audio_path) +
+                        " exceed feature container size for feature {}.".format(self.name))
+                break
 
             if self.scaler:
                 s.features[self.name] = self.scaler.transform(feature_container.features[self.name][
