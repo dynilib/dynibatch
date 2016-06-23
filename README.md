@@ -53,6 +53,7 @@ TODO
 
 The list of dependencies is provided as information only, since they should all be installed during the creation of the libdyni conda environment. 
 * [NumPy](http://www.numpy.org/)
+* [SciPy](https://www.scipy.org/)
 * [scikit-learn](http://scikit-learn.org)
 * [librosa](https://github.com/librosa/librosa)
 * [PySoundFile](https://github.com/bastibe/PySoundFile)
