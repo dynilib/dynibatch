@@ -41,7 +41,6 @@ $ export PYTHONPATH=$PYTHONPATH:<path to libdyni>
 Make sure all the tests pass.
 
 ```
-$ cd <path to libdyni>
 $ py.test tests
 ```
 
