@@ -52,8 +52,8 @@ class TestSegmentContainerGenerator:
             sf_pro = SegmentFeatureProcessor([])
             SegmentContainerGenerator(
                     "fake_audio_root",
-                    parser,
-                    sf_pro)
+                    sf_pro,
+                    label_parser=parser)
         except Exception as e:
             pytest.fail("Unexpected Error: {}".format(e))
 
@@ -63,8 +63,8 @@ class TestSegmentContainerGenerator:
             sf_pro = SegmentFeatureProcessor([])
             sc_gen = SegmentContainerGenerator(
                     "fake_audio_root",
-                    parser,
-                    sf_pro)
+                    sf_pro,
+                    label_parser=parser)
             sc_gen.start()
         except Exception as e:
             pytest.fail("Unexpected Error: {}".format(e))
@@ -79,8 +79,8 @@ class TestSegmentContainerGenerator:
         sf_pro = SegmentFeatureProcessor([ac_ext])
         sc_gen = SegmentContainerGenerator(
                 TEST_AUDIO_PATH_TUPLE_1[0],
-                parser,
                 sf_pro,
+                label_parser=parser,
                 seg_duration=seg_duration,
                 seg_overlap=seg_overlap)
         sc_gen.start()

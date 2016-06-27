@@ -409,8 +409,8 @@ class TestBatch:
         sf_pro = SegmentFeatureProcessor([ac_ext])
         sc_gen = SegmentContainerGenerator(
                 DATA_PATH,
-                parser,
                 sf_pro,
+                label_parser=parser,
                 seg_duration=seg_duration,
                 seg_overlap=seg_overlap)
         
@@ -469,8 +469,8 @@ class TestBatch:
         sf_pro = SegmentFeatureProcessor([ac_ext])
         sc_gen = SegmentContainerGenerator(
                 DATA_PATH,
-                parser,
                 sf_pro,
+                label_parser=parser,
                 seg_duration=seg_duration,
                 seg_overlap=seg_overlap)
         
@@ -587,8 +587,8 @@ class TestBatch:
 
         sc_gen = SegmentContainerGenerator(
                 DATA_PATH,
-                parser,
                 sf_pro,
+                label_parser=parser,
                 seg_duration=seg_duration,
                 seg_overlap=seg_overlap)
 
