@@ -11752,11 +11752,11 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Tutorial">Tutorial<a class="anchor-link" href="#Tutorial">&#182;</a></h1><p>The main purpose of libdyni is to ease the creation of mini-batches (data + targets) to be fed to some machine learning algorithm.</p>
-<h2 id="Data-structures">Data structures<a class="anchor-link" href="#Data-structures">&#182;</a></h2><h3 id="Segment">Segment<a class="anchor-link" href="#Segment">&#182;</a></h3><p>Segments are the base elements of the mini-batches. From a machine learning perspective, 1 segment = 1 example.</p>
+<h2 id="Data-structures">Data structures<a class="anchor-link" href="#Data-structures">&#182;</a></h2><h3 id="Segment">Segment<a class="anchor-link" href="#Segment">&#182;</a></h3><p>Segments are the base elements to be fed to the learning algorithm: 1 segment = 1 observation.</p>
 <p>Audio files are split into overlapping fixed-length segments, stored in <em>segment containers</em>.</p>
 <p>Every segment, along with its parent segment container, contains all the data needed to feed a mini-batch (label, features, whether it contains activity or not).</p>
 <h3 id="Segment-container">Segment container<a class="anchor-link" href="#Segment-container">&#182;</a></h3><p>A segment container is related to an audio file (1 segment container per audio file). It contains the path of the audio file as well as a list of segments.</p>
-<h3 id="Feature-container">Feature container<a class="anchor-link" href="#Feature-container">&#182;</a></h3><p>A feature container contains all the short-term features (e.g. spectral flatness, mel-spectra...), as well as their parameters, computed from a given audio file. When saved on disk, features are not directly stored in segments because that would imply a lot of duplicated data (since segments most often overlap). Instead, they are saved as feature container dumps.</p>
+<h3 id="Feature-container">Feature container<a class="anchor-link" href="#Feature-container">&#182;</a></h3><p>A feature container is also related to an audio file. It contains all the short-term features (e.g. spectral flatness, mel-spectra...), as well as their parameters, computed from this audio file. When saved on disk, features are not directly stored in segments because that would imply a lot of duplicated data (since segments most often overlap). Instead, they are saved as feature container dumps.</p>
 <h3 id="Dataset-split">Dataset split<a class="anchor-link" href="#Dataset-split">&#182;</a></h3><p>A dataset split describes how a dataset is split into train/validation/test sets. It is basically a dictionary with a key for each set and a list of files as its value.</p>
 <h2 id="Examples">Examples<a class="anchor-link" href="#Examples">&#182;</a></h2><p><a href="#Create-segment-containers-and-set-labels">Create segment containers and set labels</a></p>
 <p><a href="#Plot-a-frame-from-an-audio-file">Plot a frame from an audio file</a></p>
@@ -11865,7 +11865,7 @@ Label for file ID1238.wav: {&#39;bird_d&#39;}
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>[&lt;matplotlib.lines.Line2D at 0x7f3d7cebb208&gt;]</pre>
+<pre>[&lt;matplotlib.lines.Line2D at 0x7f6d38bcc208&gt;]</pre>
 </div>
 
 </div>
