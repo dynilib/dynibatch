@@ -11,7 +11,7 @@ from libdyni.utils import segment_container
 from libdyni.utils import feature_container
 from libdyni.utils import datasplit_utils
 from libdyni.utils import utils
-from libdyni.utils.batch import gen_minibatches
+from libdyni.utils.minibatch_gen import MiniBatchGen
 from libdyni.generators.segment_container_gen import SegmentContainerGenerator
 from libdyni.parsers.label_parsers import CSVLabelParser
 from libdyni.features.extractors.audio_chunk import AudioChunkExtractor
@@ -388,7 +388,7 @@ class TestDatasplit:
         pass
 
 
-class TestBatch:
+class TestMiniBatch:
 
     @pytest.fixture(scope="module")
     def ac_ext(self):
@@ -429,17 +429,18 @@ class TestBatch:
         id0132_n_minibatches = int(id0132_n_chunks / batch_size)
         n_minibatches = int((id0132_n_chunks + id1238_n_chunks) / batch_size)
 
+        mb_gen = MiniBatchGen(classes,
+                "audio_chunk",
+                batch_size,
+                1,
+                n_time_bins)
+
         for i in range(n_epochs):
             sc_gen.reset()
-            mb_gen = gen_minibatches(
-                    sc_gen,
-                    classes,
-                    batch_size,
-                    1,
-                    n_time_bins,
-                    "audio_chunk")
+            mb_gen_e = mb_gen.execute(sc_gen,
+                    with_targets=True)
             count = 0
-            for data, target in mb_gen:
+            for data, target in mb_gen_e:
                 if count < id0132_n_minibatches:
                     assert np.all(target==classes.index("bird_c"))
                 elif count == id0132_n_minibatches:
@@ -526,19 +527,19 @@ class TestBatch:
                 end_ind = start_ind + seg_size
                 id1238_minibatches[i, j, :] = id1238_data[start_ind:end_ind]
                 start_time += seg_duration * seg_overlap
+        
+        mb_gen = MiniBatchGen(classes,
+                "audio_chunk",
+                batch_size,
+                1,
+                seg_size)
 
         for i in range(n_epochs):
             sc_gen.reset()
-            mb_gen = gen_minibatches(
-                    sc_gen,
-                    classes,
-                    batch_size,
-                    1,
-                    seg_size,
-                    "audio_chunk")
-
+            mb_gen_e = mb_gen.execute(sc_gen,
+                    with_targets=True)
             count = 0
-            for data, target in mb_gen:
+            for data, target in mb_gen_e:
                 data = data.reshape((10, 2205))
                 if count < id0132_n_minibatches:
                     assert np.all(data == id0132_minibatches[count])
