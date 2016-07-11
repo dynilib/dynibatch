@@ -14,8 +14,8 @@ class SegmentContainerGenerator:
 
     def __init__(self,
                  audio_root,
-                 label_parser,
                  segment_feature_processor,
+                 label_parser=None,
                  dataset=None,
                  seg_duration=0.5,
                  seg_overlap=0.9):
@@ -48,11 +48,9 @@ class SegmentContainerGenerator:
             if self._dataset and not sc.audio_path in self._dataset:
                 continue
 
-            # get label
-            label = self._label_parser.get_label(sc.audio_path)
-
-            # set label
-            sc.labels = label
+            if self._label_parser:
+                label = self._label_parser.get_label(sc.audio_path)
+                sc.labels = label
 
             # extract features
             self._sf_pro.execute(sc)

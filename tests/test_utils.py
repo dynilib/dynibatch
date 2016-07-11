@@ -4,6 +4,7 @@ import random
 
 import numpy as np
 import soundfile as sf
+from librosa.feature.spectral import melspectrogram
 
 from libdyni.utils.exceptions import ParameterError
 from libdyni.utils import segment
@@ -14,8 +15,13 @@ from libdyni.utils import utils
 from libdyni.utils.minibatch_gen import MiniBatchGen
 from libdyni.generators.segment_container_gen import SegmentContainerGenerator
 from libdyni.parsers.label_parsers import CSVLabelParser
+from libdyni.generators.audio_frame_gen import AudioFrameGen
+from libdyni.generators.audio_frame_gen import Window
 from libdyni.features.extractors.audio_chunk import AudioChunkExtractor
+from libdyni.features.extractors.mel_spectrum import MelSpectrumExtractor
+from libdyni.features.frame_feature_processor import FrameFeatureProcessor
 from libdyni.features.segment_feature_processor import SegmentFeatureProcessor
+from libdyni.features.extractors.frame_feature_chunk import FrameFeatureChunkExtractor
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
 
@@ -25,7 +31,7 @@ TEST_SEG_PATH_TUPLE_1 = (DATA_PATH, "ID0132.seg")
 TEST_CSVLABEL_PATH = os.path.join(DATA_PATH, "labels.csv")
 TEST_DURATION = 15.45
 TEST_N_SEGMENTS = 4
-TEST_FIRST_SEGMENT_DURATION = 0.79
+TEST_SEGMENT_DURATIONS = [0.79, 0.655, 0.686, 0.655]
 
 
 class TestSegment:
@@ -173,7 +179,10 @@ class TestSegmentContainer:
     def test_create_segment_containers_from_seg_file_segment_duration(self):
         sc = segment_container.create_segment_containers_from_seg_file(
             TEST_SEG_PATH_TUPLE_1)
-        assert np.abs(sc.segments[0].duration - TEST_FIRST_SEGMENT_DURATION) < 1e-03
+        assert np.abs(sc.segments[0].duration - TEST_SEGMENT_DURATIONS[0]) < 1e-03
+        assert np.abs(sc.segments[1].duration - TEST_SEGMENT_DURATIONS[1]) < 1e-03
+        assert np.abs(sc.segments[2].duration - TEST_SEGMENT_DURATIONS[2]) < 1e-03
+        assert np.abs(sc.segments[3].duration - TEST_SEGMENT_DURATIONS[3]) < 1e-03
 
     def test_split_data_duration(self):
         file_duration = 12.5
@@ -390,22 +399,18 @@ class TestDatasplit:
 
 class TestMiniBatch:
 
-    @pytest.fixture(scope="module")
-    def ac_ext(self):
-        sample_rate = 22050
-        return AudioChunkExtractor(DATA_PATH, sample_rate)
-
-    def test_gen_minibatches_count(self, ac_ext):
+    def test_gen_minibatches_count(self):
         sample_rate = 22050
         seg_duration = 0.1
         seg_overlap = 0.5
 
         parser = CSVLabelParser(TEST_CSVLABEL_PATH)
+        ac_ext = AudioChunkExtractor(DATA_PATH, sample_rate)
         sf_pro = SegmentFeatureProcessor([ac_ext])
         sc_gen = SegmentContainerGenerator(
                 DATA_PATH,
-                parser,
                 sf_pro,
+                label_parser=parser,
                 seg_duration=seg_duration,
                 seg_overlap=seg_overlap)
         
@@ -454,19 +459,19 @@ class TestMiniBatch:
 
             assert count == n_minibatches
 
-        
-    def test_gen_minibatches_1d(self, ac_ext):
+    def test_gen_minibatches_1d(self):
         sample_rate = 22050
         seg_duration = 0.1
         seg_overlap = 0.5
         seg_size = int(seg_duration * sample_rate)
 
         parser = CSVLabelParser(TEST_CSVLABEL_PATH)
+        ac_ext = AudioChunkExtractor(DATA_PATH, sample_rate)
         sf_pro = SegmentFeatureProcessor([ac_ext])
         sc_gen = SegmentContainerGenerator(
                 DATA_PATH,
-                parser,
                 sf_pro,
+                label_parser=parser,
                 seg_duration=seg_duration,
                 seg_overlap=seg_overlap)
         
@@ -492,8 +497,6 @@ class TestMiniBatch:
                 batch_size - id0132_n_chunks_in_common_minibatch
         id1238_n_minibatches = int((id1238_n_chunks -
             id1238_n_chunks_in_common_minibatch) / batch_size)
-
-
 
         id0132_minibatches = np.zeros((id0132_n_minibatches, batch_size,
             seg_size))
@@ -547,6 +550,135 @@ class TestMiniBatch:
                     assert np.all(data == common_minibatch)
                 else:
                     assert np.all(data ==
+                            id1238_minibatches[count-id0132_n_minibatches-1])
+                count += 1
+
+    def test_gen_minibatches_2d(self):
+        sample_rate = 22050
+        win_size = 256
+        hop_size = 128
+        seg_duration = 0.1
+        seg_overlap = 0.5
+        seg_size = int(seg_duration * sample_rate)
+        n_epochs = 3
+        classes = ["bird_c", "bird_d"]
+        batch_size = 10
+        n_time_bins = int(seg_size / hop_size)
+
+        parser = CSVLabelParser(TEST_CSVLABEL_PATH)
+
+        # libdyni mel extractor
+        n_mels = 32
+        min_freq = 0
+        max_freq = 11025
+        af_gen = AudioFrameGen(win_size, hop_size, Window.rect)
+        mel_ext = MelSpectrumExtractor(
+                sample_rate=sample_rate,
+                fft_size=win_size,
+                n_mels=n_mels,
+                min_freq=min_freq,
+                max_freq=max_freq,
+                log_amp=False)
+        ff_pro = FrameFeatureProcessor(af_gen, [mel_ext])
+        ffc_ext = FrameFeatureChunkExtractor("mel_spectrum")
+        sf_pro = SegmentFeatureProcessor(
+                [ffc_ext],
+                ff_pro=ff_pro,
+                audio_root=DATA_PATH)
+
+        sc_gen = SegmentContainerGenerator(
+                DATA_PATH,
+                sf_pro,
+                label_parser=parser,
+                seg_duration=seg_duration,
+                seg_overlap=seg_overlap)
+
+        # librosa mel extractor
+        id0132_data, sr = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
+        id0132_mel_librosa = []
+        start_ind = 0
+        while start_ind + win_size < len(id0132_data):
+            spec = np.abs(np.fft.rfft(id0132_data[start_ind:start_ind+win_size])) ** 2
+            id0132_mel_librosa.append(
+                    melspectrogram(sr=sample_rate, S=spec, n_fft=win_size,
+                        hop_length=hop_size, n_mels=n_mels, fmin=min_freq, fmax=max_freq))
+            start_ind += hop_size
+        id1238_data, sr = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_2))
+        id1238_mel_librosa = []
+        start_ind = 0
+        while start_ind + win_size < len(id1238_data):
+            spec = np.abs(np.fft.rfft(id1238_data[start_ind:start_ind+win_size])) ** 2
+            id1238_mel_librosa.append(
+                    melspectrogram(sr=sample_rate, S=spec, n_fft=win_size,
+                        hop_length=hop_size, n_mels=n_mels, fmin=min_freq, fmax=max_freq))
+            start_ind += hop_size
+
+        # create segment data
+
+        id0132_chunks = []
+        start_time = 0
+        start_ind = 0
+        while start_ind + n_time_bins < len(id0132_mel_librosa):
+            id0132_chunks.append(id0132_mel_librosa[start_ind:start_ind+n_time_bins])
+            start_time += seg_duration * (1 - seg_overlap)
+            start_ind = int(start_time * sample_rate / hop_size)
+        id0132_n_chunks = len(id0132_chunks)
+        
+        id1238_chunks = []
+        start_time = 0
+        start_ind = 0
+        while start_ind + n_time_bins < len(id1238_mel_librosa):
+            id1238_chunks.append(id1238_mel_librosa[start_ind:start_ind+n_time_bins])
+            start_time += seg_duration * (1 - seg_overlap)
+            start_ind = int(start_time * sample_rate / hop_size)
+        id1238_n_chunks = len(id1238_chunks)
+
+        # create minibatches
+
+        id0132_n_minibatches = id0132_n_chunks // batch_size
+        id0132_minibatches = np.zeros((
+            id0132_n_minibatches, batch_size, n_time_bins, n_mels))
+        for i in range(id0132_n_minibatches):
+            for j in range(batch_size):
+                id0132_minibatches[i, j] = id0132_chunks[i*batch_size+j]
+
+        common_minibatch = np.zeros((batch_size, n_time_bins, n_mels))
+        id0132_n_chunks_in_common_minibatch = id0132_n_chunks - id0132_n_minibatches * batch_size
+        for i, chunks in enumerate(id0132_chunks[-id0132_n_chunks_in_common_minibatch:]):
+            common_minibatch[i] = chunks
+        id1238_n_chunks_in_common_minibatch = batch_size - id0132_n_chunks_in_common_minibatch
+        for i in range(id1238_n_chunks_in_common_minibatch):
+            common_minibatch[id0132_n_chunks_in_common_minibatch + i] = id1238_chunks[i]
+
+        id1238_n_minibatches = (id1238_n_chunks - id1238_n_chunks_in_common_minibatch) // batch_size
+        id1238_minibatches = np.zeros((
+            id1238_n_minibatches, batch_size, n_time_bins, n_mels))
+        for i in range(id1238_n_minibatches):
+            for j in range(batch_size):
+                id1238_minibatches[i, j] = id1238_chunks[id1238_n_chunks_in_common_minibatch + i*batch_size + j]
+
+        # and now compare
+
+        for i in range(n_epochs):
+            sc_gen.reset()
+            mb_gen = gen_minibatches(
+                    sc_gen,
+                    classes,
+                    batch_size,
+                    n_mels,
+                    n_time_bins,
+                    "mel_spectrum")
+
+            count = 0
+            for data, target in mb_gen:
+                data = np.swapaxes(data.reshape((10, n_mels, n_time_bins)), -2,
+                        -1)
+                if count < id0132_n_minibatches:
+                    assert np.allclose(data, id0132_minibatches[count])
+                elif count == id0132_n_minibatches:
+                    assert np.allclose(data, common_minibatch)
+                else:
+                    assert np.allclose(data,
                             id1238_minibatches[count-id0132_n_minibatches-1])
                 count += 1
 

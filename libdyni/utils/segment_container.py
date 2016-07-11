@@ -96,7 +96,9 @@ def create_segment_containers_from_audio_files(audio_root, **kwargs):
 
     for root, _, filenames in os.walk(audio_root):
 
-        for filename in filenames:
+        # TODO: randomize (we use sorted so that the list is the always the same
+        # for the unit tests)
+        for filename in sorted(filenames):
 
             _, extension = os.path.splitext(filename)
             if not extension in ALLOWED_AUDIO_EXT:
