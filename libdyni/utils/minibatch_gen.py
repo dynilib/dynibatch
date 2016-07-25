@@ -29,7 +29,7 @@ class MiniBatchGen:
 
     def execute(self,
             segment_container_gen,
-            active_segment_only=False,
+            active_segments_only=False,
             with_targets=False,
             with_filenames=False):
 
@@ -39,7 +39,7 @@ class MiniBatchGen:
             for s in sc.segments:
                 if not self.feature_name in s.features:
                     break
-                if not active_segment_only or s.activity:
+                if not active_segments_only or s.activity:
                     if self.n_features == 1:
                         self.minibatch[count, 0, :] = s.features[self.feature_name].T # TODO (jul) sort out shape
                     else:
