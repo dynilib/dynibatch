@@ -11,14 +11,18 @@ class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
 
     Attributes:
         name (str): name of the frame-based feature.
+        pca (sklearn.decomposition.PCA) (optional): Principal component analysis
+        (PCA)
         scaler (sklearn.preprocessing.StandardScaler) (optional): standardize
-        features by removing the mean and scaling to unit variance.
+            features by removing the mean and scaling to unit variance.
+    Note: if both scaler and pca are set, the pca is performed first
 
     """
-    def __init__(self, name, scaler=None):
+    def __init__(self, name, pca=None, scaler=None):
         super().__init__()
         self.name = name
         self.scaler = scaler
+        self.pca = pca
 
     def execute(self, segment_container, feature_container):
         """Gets chunk of features from a feature container and sets it to every
@@ -40,14 +44,14 @@ class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
             if end_ind > len(feature_container.features[self.name]["data"]):
                 # that can happen if the end time of the latest analysis frame
                 # is earlier than the end time of the segment
-                logger.info("Segment {0:.3f}-{1:.3f} from {2} end time".format(s.start_time,
+                logger.debug("Segment {0:.3f}-{1:.3f} from {2} end time".format(s.start_time,
                                 s.end_time, segment_container.audio_path) +
                         " exceed feature container size for feature {}.".format(self.name))
                 break
-
+            
+            data = feature_container.features[self.name]["data"][start_ind:end_ind]
+            if self.pca:
+                data = self.pca.transform(data)
             if self.scaler:
-                s.features[self.name] = self.scaler.transform(feature_container.features[self.name][
-                    "data"][start_ind:end_ind])
-            else:
-                s.features[self.name] = feature_container.features[self.name][
-                    "data"][start_ind:end_ind]
+                data = self.scaler.transform(data)
+            s.features[self.name] = data
