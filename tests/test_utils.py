@@ -25,13 +25,14 @@ from libdyni.features.extractors.activity_detection import ActivityDetection
 from libdyni.features.frame_feature_processor import FrameFeatureProcessor
 from libdyni.features.segment_feature_processor import SegmentFeatureProcessor
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), "data/reduced_set")
-FULL_DATA_PATH = os.path.join(os.path.dirname(__file__), "data/full_set")
+DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
+REDUCED_DATA_PATH = os.path.join(DATA_PATH, "reduced_set")
+FULL_DATA_PATH = os.path.join(DATA_PATH, "full_set")
 
-TEST_AUDIO_PATH_TUPLE_1 = (DATA_PATH, "ID0132.wav")
-TEST_AUDIO_PATH_TUPLE_2 = (DATA_PATH, "ID1238.wav")
-TEST_SEG_PATH_TUPLE_1 = (DATA_PATH, "ID0132.seg")
-TEST_CSVLABEL_PATH = os.path.join(DATA_PATH, "labels.csv")
+TEST_AUDIO_PATH_TUPLE_1 = (REDUCED_DATA_PATH, "ID0132.wav")
+TEST_AUDIO_PATH_TUPLE_2 = (REDUCED_DATA_PATH, "ID1238.wav")
+TEST_SEG_PATH_TUPLE_1 = (REDUCED_DATA_PATH, "ID0132.seg")
+TEST_CSVLABEL_PATH = os.path.join(REDUCED_DATA_PATH, "labels.csv")
 TEST_DURATION = 15.45
 TEST_N_SEGMENTS = 4
 TEST_FIRST_SEGMENT_DURATION = 0.79
@@ -402,7 +403,7 @@ class TestMiniBatch:
     @pytest.fixture(scope="module")
     def ac_ext(self):
         sample_rate = 22050
-        return AudioChunkExtractor(DATA_PATH, sample_rate)
+        return AudioChunkExtractor(REDUCED_DATA_PATH, sample_rate)
 
     def test_gen_minibatches_count(self, ac_ext):
         sample_rate = 22050
@@ -412,7 +413,7 @@ class TestMiniBatch:
         parser = CSVLabelParser(TEST_CSVLABEL_PATH)
         sf_pro = SegmentFeatureProcessor([ac_ext])
         sc_gen = SegmentContainerGenerator(
-                DATA_PATH,
+                REDUCED_DATA_PATH,
                 sf_pro,
                 label_parser=parser,
                 seg_duration=seg_duration,
@@ -478,6 +479,10 @@ class TestMiniBatch:
         spectral_flatness_threshold = 0.3
         seg_duration = 0.1
         seg_overlap = 0.5
+        
+        batch_size = 10
+        num_features = 64
+        num_time_bins = 17
 
         af_gen = AudioFrameGen(win_size=win_size, hop_size=hop_size)
 
@@ -520,14 +525,20 @@ class TestMiniBatch:
 
         active_segments = []
 
+        # compare data in segment and corresponding data in feature container
         for sc in sc_gen_e:
+            fc_path = os.path.join(FULL_DATA_PATH, sc.audio_path.replace(".wav",
+                ".fc.jl"))
+            fc = feature_container.FeatureContainer.load(fc_path)
             for s in sc.segments:
                 if s.activity:
+                    start_ind = fc.time_to_frame_ind(s.start_time)
+                    end_ind = start_ind + num_time_bins
+                    data = fc.features["mel_spectrum"]["data"][start_ind:end_ind]
+                    assert np.all(data==s.features["mel_spectrum"])
                     active_segments.append(s)
 
-        batch_size = 10
-        num_features = 64
-        num_time_bins = 17
+        # compare data in segment and corresponding data in minibatches
 
         mb_gen = MiniBatchGen(None,
                 "mel_spectrum",
@@ -540,9 +551,199 @@ class TestMiniBatch:
         minibatches = []
 
         mb_gen_e = mb_gen.execute(sc_gen,
+                active_segments_only=True,
                 with_targets=False,
                 with_filenames=False)
-        for mb in mb_gen_e:
-            minibatches.append(mb)
 
-        print("{0} vs {1}".format(len(active_segments), len(minibatches)))
+        count = 0
+        for mb, in mb_gen_e:
+            for data in mb:
+                assert np.all(data[0].T==active_segments[count].features["mel_spectrum"])
+                count += 1
+
+
+    def test_gen_minibatches_2d_w_scaler(self):
+
+        sample_rate = 22050 
+        win_size = 256
+        hop_size = 128
+        energy_threshold = 0.2
+        spectral_flatness_threshold = 0.3
+        seg_duration = 0.1
+        seg_overlap = 0.5
+        
+        batch_size = 10
+        num_features = 64
+        num_time_bins = 17
+
+        af_gen = AudioFrameGen(win_size=win_size, hop_size=hop_size)
+
+        en_ext = EnergyExtractor()
+        sf_ext = SpectralFlatnessExtractor()
+        mel_ext = MelSpectrumExtractor(
+                sample_rate=sample_rate,
+                fft_size=win_size,
+                n_mels=64,
+                min_freq=0,
+                max_freq=sample_rate/2)
+        ff_pro = FrameFeatureProcessor(
+                af_gen,
+                [en_ext, sf_ext, mel_ext],
+                FULL_DATA_PATH)
+
+        pca = None
+        scaler = joblib.load(os.path.join(DATA_PATH, "transform/mel64_norm/scaler.jl"))
+
+        ffc_ext = FrameFeatureChunkExtractor("mel_spectrum", pca, scaler)
+        act_det = ActivityDetection(
+                energy_threshold=energy_threshold,
+                spectral_flatness_threshold=spectral_flatness_threshold)
+        sf_pro = SegmentFeatureProcessor(
+                [act_det, ffc_ext],
+                ff_pro=ff_pro,
+                audio_root=FULL_DATA_PATH)
+
+        parser = CSVLabelParser(TEST_CSVLABEL_PATH)
+        sc_gen = SegmentContainerGenerator(
+               FULL_DATA_PATH,
+               sf_pro,
+               label_parser=parser,
+               seg_duration=seg_duration,
+               seg_overlap=seg_overlap)
+
+        sc_gen.reset()
+
+        sc_gen_e = sc_gen.execute()
+
+        active_segments = []
+
+        # compare data in segment and corresponding data in feature container
+        for sc in sc_gen_e:
+            fc_path = os.path.join(FULL_DATA_PATH, sc.audio_path.replace(".wav",
+                ".fc.jl"))
+            fc = feature_container.FeatureContainer.load(fc_path)
+            for s in sc.segments:
+                if s.activity:
+                    start_ind = fc.time_to_frame_ind(s.start_time)
+                    end_ind = start_ind + num_time_bins
+                    data = scaler.transform(fc.features["mel_spectrum"]["data"][start_ind:end_ind])
+                    assert np.all(data==s.features["mel_spectrum"])
+                    active_segments.append(s)
+
+        # compare data in segment and corresponding data in minibatches
+
+        mb_gen = MiniBatchGen(None,
+                "mel_spectrum",
+                batch_size,
+                num_features,
+                num_time_bins)
+        
+        sc_gen.reset()
+
+        minibatches = []
+
+        mb_gen_e = mb_gen.execute(sc_gen,
+                active_segments_only=True,
+                with_targets=False,
+                with_filenames=False)
+
+        count = 0
+        for mb, in mb_gen_e:
+            for data in mb:
+                assert np.all(data[0].T==active_segments[count].features["mel_spectrum"])
+                count += 1
+
+    
+    def test_gen_minibatches_2d_w_pca_scaler(self):
+
+        sample_rate = 22050 
+        win_size = 256
+        hop_size = 128
+        energy_threshold = 0.2
+        spectral_flatness_threshold = 0.3
+        seg_duration = 0.1
+        seg_overlap = 0.5
+        
+        batch_size = 10
+        num_features = 16
+        num_time_bins = 17
+
+        af_gen = AudioFrameGen(win_size=win_size, hop_size=hop_size)
+
+        en_ext = EnergyExtractor()
+        sf_ext = SpectralFlatnessExtractor()
+        mel_ext = MelSpectrumExtractor(
+                sample_rate=sample_rate,
+                fft_size=win_size,
+                n_mels=64,
+                min_freq=0,
+                max_freq=sample_rate/2)
+        ff_pro = FrameFeatureProcessor(
+                af_gen,
+                [en_ext, sf_ext, mel_ext],
+                FULL_DATA_PATH)
+
+        pca = joblib.load(os.path.join(DATA_PATH, "transform/mel64_pca16_norm/pca.jl"))
+        scaler = joblib.load(os.path.join(DATA_PATH, "transform/mel64_pca16_norm/scaler.jl"))
+
+        ffc_ext = FrameFeatureChunkExtractor("mel_spectrum", pca, scaler)
+        act_det = ActivityDetection(
+                energy_threshold=energy_threshold,
+                spectral_flatness_threshold=spectral_flatness_threshold)
+        sf_pro = SegmentFeatureProcessor(
+                [act_det, ffc_ext],
+                ff_pro=ff_pro,
+                audio_root=FULL_DATA_PATH)
+
+        parser = CSVLabelParser(TEST_CSVLABEL_PATH)
+        sc_gen = SegmentContainerGenerator(
+               FULL_DATA_PATH,
+               sf_pro,
+               label_parser=parser,
+               seg_duration=seg_duration,
+               seg_overlap=seg_overlap)
+
+        sc_gen.reset()
+
+        sc_gen_e = sc_gen.execute()
+
+        active_segments = []
+
+        # compare data in segment and corresponding data in feature container
+        for sc in sc_gen_e:
+            fc_path = os.path.join(FULL_DATA_PATH, sc.audio_path.replace(".wav",
+                ".fc.jl"))
+            fc = feature_container.FeatureContainer.load(fc_path)
+            for s in sc.segments:
+                if s.activity:
+                    start_ind = fc.time_to_frame_ind(s.start_time)
+                    end_ind = start_ind + num_time_bins
+                    data = scaler.transform(pca.transform(fc.features["mel_spectrum"]["data"][start_ind:end_ind]))
+                    assert np.all(data==s.features["mel_spectrum"])
+                    active_segments.append(s)
+
+        # compare data in segment and corresponding data in minibatches
+
+        mb_gen = MiniBatchGen(None,
+                "mel_spectrum",
+                batch_size,
+                num_features,
+                num_time_bins)
+        
+        sc_gen.reset()
+
+        minibatches = []
+
+        mb_gen_e = mb_gen.execute(sc_gen,
+                active_segments_only=True,
+                with_targets=False,
+                with_filenames=False)
+
+        count = 0
+        for mb, in mb_gen_e:
+            for data in mb:
+                assert np.all(data[0].T==active_segments[count].features["mel_spectrum"])
+                count += 1
+
+
+
