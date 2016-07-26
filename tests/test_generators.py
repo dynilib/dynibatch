@@ -11,7 +11,7 @@ from libdyni.parsers.label_parsers import CSVLabelParser
 from libdyni.features.segment_feature_processor import SegmentFeatureProcessor
 from libdyni.features.extractors.audio_chunk import AudioChunkExtractor
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
+DATA_PATH = os.path.join(os.path.dirname(__file__), "data/reduced_set")
 
 TEST_AUDIO_PATH_TUPLE_1 = (DATA_PATH, "ID0132.wav")
 TEST_AUDIO_PATH_TUPLE_2 = (DATA_PATH, "ID1238.wav")

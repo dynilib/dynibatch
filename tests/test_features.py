@@ -24,7 +24,7 @@ from libdyni.features.extractors.spectral_flatness import SpectralFlatnessExtrac
 from libdyni.generators.audio_frame_gen import AudioFrameGen
 from libdyni.generators.audio_frame_gen import Window
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
+DATA_PATH = os.path.join(os.path.dirname(__file__), "data/reduced_set")
 
 TEST_AUDIO_PATH_TUPLE = (DATA_PATH, "ID0132.wav")
 
@@ -263,7 +263,7 @@ class TestFrameFeatureProcessor:
     def af_gen(self):
         win_size = 256
         hop_size = 128
-        return AudioFrameGen(win_size, hop_size, Window.rect)
+        return AudioFrameGen(win_size, hop_size)
     
     @pytest.fixture(scope="module")
     def en_ext(self):
@@ -283,7 +283,7 @@ class TestFrameFeatureProcessor:
         ff_pro = FrameFeatureProcessor(af_gen, [en_ext])
         fc, created = ff_pro.execute(TEST_AUDIO_PATH_TUPLE)
         assert (created and
-                np.isclose(0.074310362339, fc.features["energy"]["data"][10]))
+                np.isclose(0.02682975, fc.features["energy"]["data"][10]))
 
     def test_execute_typeerror(self, af_gen):
         with pytest.raises(TypeError):
@@ -294,7 +294,7 @@ class TestFrameFeatureProcessor:
         ff_pro = FrameFeatureProcessor(af_gen, [en_ext], DATA_PATH)
         fc, created = ff_pro.execute(TEST_AUDIO_PATH_TUPLE)
         assert (not created and
-                np.isclose(0.074310362339, fc.features["energy"]["data"][10]))
+                np.isclose(0.02682975, fc.features["energy"]["data"][10]))
     
     def test_execute_save_load_fc(self, tmpdir, af_gen, en_ext):
         fc_path = str(tmpdir)
@@ -302,7 +302,7 @@ class TestFrameFeatureProcessor:
         fc, created_1 = ff_pro.execute(TEST_AUDIO_PATH_TUPLE)
         fc, created_2 = ff_pro.execute(TEST_AUDIO_PATH_TUPLE)
         assert (created_1 and not created_2 and
-                np.isclose(0.074310362339, fc.features["energy"]["data"][10]))
+                np.isclose(0.02682975, fc.features["energy"]["data"][10]))
 
         
 class TestSegmentFeatureProcessor:

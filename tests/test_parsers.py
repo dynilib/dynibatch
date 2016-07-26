@@ -3,7 +3,7 @@ import os
 
 from libdyni.parsers.label_parsers import CSVLabelParser
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
+DATA_PATH = os.path.join(os.path.dirname(__file__), "data/reduced_set")
 
 TEST_CSVLABEL_PATH = os.path.join(DATA_PATH, "labels.csv")
 
