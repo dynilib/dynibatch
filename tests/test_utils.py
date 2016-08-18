@@ -483,6 +483,8 @@ class TestMiniBatch:
         batch_size = 10
         num_features = 64
         num_time_bins = 17
+        
+        classes = ["bird_c", "bird_d"]
 
         af_gen = AudioFrameGen(win_size=win_size, hop_size=hop_size)
 
@@ -524,6 +526,7 @@ class TestMiniBatch:
         sc_gen_e = sc_gen.execute()
 
         active_segments = []
+        labels = []
 
         # compare data in segment and corresponding data in feature container
         for sc in sc_gen_e:
@@ -537,10 +540,11 @@ class TestMiniBatch:
                     data = fc.features["mel_spectrum"]["data"][start_ind:end_ind]
                     assert np.all(data==s.features["mel_spectrum"])
                     active_segments.append(s)
+                    labels.append(s.label)
 
         # compare data in segment and corresponding data in minibatches
 
-        mb_gen = MiniBatchGen(None,
+        mb_gen = MiniBatchGen(classes,
                 "mel_spectrum",
                 batch_size,
                 num_features,
@@ -552,14 +556,16 @@ class TestMiniBatch:
 
         mb_gen_e = mb_gen.execute(sc_gen,
                 active_segments_only=True,
-                with_targets=False,
+                with_targets=True,
                 with_filenames=False)
 
         count = 0
-        for mb, in mb_gen_e:
-            for data in mb:
+        for mb in mb_gen_e:
+            for data, target in zip(*mb):
                 assert np.all(data[0].T==active_segments[count].features["mel_spectrum"])
+                assert target == classes.index(labels[count])
                 count += 1
+
 
 
     def test_gen_minibatches_2d_w_scaler(self):
