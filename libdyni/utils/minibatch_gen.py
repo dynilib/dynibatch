@@ -32,8 +32,10 @@ class MiniBatchGen:
         else:
             minibatch = np.empty((self.batch_size, 1, self.n_features, self.n_time_bins), dtype=np.float32)
         
-        filenames = np.empty((self.batch_size), dtype="|U200")
-        targets = np.empty((self.batch_size), dtype=np.int16)
+        if with_filenames:
+            filenames = np.empty((self.batch_size), dtype="|U200")
+        if with_targets:
+            targets = np.empty((self.batch_size), dtype=np.int16)
 
         count = 0
         for sc in segment_container_gen.execute():
@@ -47,9 +49,9 @@ class MiniBatchGen:
                     else:
                         minibatch[count, 0, :, :] = s.features[self.feature_name].T
                     if with_filenames:
-                        self.filenames[count] = sc.audio_path
+                        filenames[count] = sc.audio_path
                     if with_targets:
-                        self.targets[count] = self.classes.index(s.label)
+                        targets[count] = self.classes.index(s.label)
 
                     count += 1
                     if count == self.batch_size:
@@ -61,13 +63,13 @@ class MiniBatchGen:
                             minibatch = np.empty((self.batch_size, 1, self.n_time_bins), dtype=np.float32)
                         else:
                             minibatch = np.empty((self.batch_size, 1, self.n_features, self.n_time_bins), dtype=np.float32)
-                        filenames = np.empty((self.batch_size), dtype="|U200")
-                        targets = np.empty((self.batch_size), dtype=np.int16)
 
                         if with_targets:
-                            data.append(self.targets)
+                            data.append(targets)
+                            targets = np.empty((self.batch_size), dtype=np.int16)
                         if with_filenames:
-                            data.append(self.filenames)
+                            data.append(filenames)
+                            filenames = np.empty((self.batch_size), dtype="|U200")
                         yield tuple(data)
 
 
