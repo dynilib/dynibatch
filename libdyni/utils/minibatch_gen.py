@@ -43,7 +43,7 @@ class MiniBatchGen:
             for s in sc.segments:
                 if not self.feature_name in s.features:
                     break
-                if not active_segments_only or s.activity:
+                if not active_segments_only or (hasattr(s, 'activity') and s.activity):
                     if self.n_features == 1:
                         minibatch[count, 0, :] = s.features[self.feature_name].T
                     else:
