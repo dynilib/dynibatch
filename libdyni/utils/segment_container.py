@@ -136,7 +136,7 @@ def create_segment_containers_from_audio_file(audio_path_tuple, **kwargs):
         duration = float(n_samples) / sample_rate
 
         if "seg_duration" in kwargs and kwargs["seg_duration"]:
-            sc.segments = split_data(duration, **kwargs)
+            sc.segments = create_fixed_duration_segments(duration, **kwargs)
         else:
             sc.segments.append(Segment(0, duration))
 
@@ -227,7 +227,7 @@ def load_segment_containers_from_dir(path):
             yield SegmentContainer.load(os.path.join(root, filename))
 
 
-def split_data(file_duration, seg_duration, seg_overlap=0.5):
+def create_fixed_duration_segments(file_duration, seg_duration, seg_overlap=0.5):
 
     segments = []
 

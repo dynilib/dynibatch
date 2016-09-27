@@ -185,20 +185,20 @@ class TestSegmentContainer:
             TEST_SEG_PATH_TUPLE_1)
         assert np.abs(sc.segments[0].duration - TEST_FIRST_SEGMENT_DURATION) < 1e-03
 
-    def test_split_data_duration(self):
+    def test_create_fixed_duration_segments_duration(self):
         file_duration = 12.5
         seg_duration = 0.4
         seg_overlap = 0.3
-        segments = segment_container.split_data(file_duration, seg_duration,
+        segments = segment_container.create_fixed_duration_segments(file_duration, seg_duration,
                 seg_overlap)
         assert np.all(np.isclose(np.asarray([s.duration for s in segments]),
                                  seg_duration))
 
-    def test_split_data_n_segments(self):
+    def test_create_fixed_duration_segments_n_segments(self):
         file_duration = 12.5
         seg_duration = 0.4
         seg_overlap = 0.3
-        segments = segment_container.split_data(file_duration, seg_duration,
+        segments = segment_container.create_fixed_duration_segments(file_duration, seg_duration,
             seg_overlap)
         assert len(segments) == utils.get_n_overlapping_chunks(
             file_duration,
