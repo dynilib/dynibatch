@@ -534,7 +534,7 @@ class TestMiniBatch:
                 ".fc.jl"))
             fc = feature_container.FeatureContainer.load(fc_path)
             for s in sc.segments:
-                if s.activity:
+                if hasattr(s, 'activity') and s.activity:
                     start_ind = fc.time_to_frame_ind(s.start_time)
                     end_ind = start_ind + num_time_bins
                     data = fc.features["mel_spectrum"]["data"][start_ind:end_ind]
@@ -629,7 +629,7 @@ class TestMiniBatch:
                 ".fc.jl"))
             fc = feature_container.FeatureContainer.load(fc_path)
             for s in sc.segments:
-                if s.activity:
+                if hasattr(s, 'activity') and s.activity:
                     start_ind = fc.time_to_frame_ind(s.start_time)
                     end_ind = start_ind + num_time_bins
                     data = scaler.transform(fc.features["mel_spectrum"]["data"][start_ind:end_ind])
@@ -721,7 +721,7 @@ class TestMiniBatch:
                 ".fc.jl"))
             fc = feature_container.FeatureContainer.load(fc_path)
             for s in sc.segments:
-                if s.activity:
+                if hasattr(s, 'activity') and s.activity:
                     start_ind = fc.time_to_frame_ind(s.start_time)
                     end_ind = start_ind + num_time_bins
                     data = scaler.transform(pca.transform(fc.features["mel_spectrum"]["data"][start_ind:end_ind]))
