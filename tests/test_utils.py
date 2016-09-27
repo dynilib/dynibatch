@@ -405,10 +405,12 @@ class TestMiniBatch:
         sample_rate = 22050
         return AudioChunkExtractor(REDUCED_DATA_PATH, sample_rate)
 
-    def test_gen_minibatches_count(self, ac_ext):
+    def test_gen_minibatches_1d(self, ac_ext):
         sample_rate = 22050
         seg_duration = 0.1
         seg_overlap = 0.5
+        seg_size = seg_duration * sample_rate
+        hop_size = int(seg_duration * (1 - seg_overlap) * sample_rate)
 
         parser = CSVLabelParser(TEST_CSVLABEL_PATH)
         sf_pro = SegmentFeatureProcessor([ac_ext])
@@ -451,20 +453,39 @@ class TestMiniBatch:
                     with_targets=True,
                     with_filenames=True)
             count = 0
+            start_time = 0.0
             for data, target, filenames in mb_gen_e:
                 if count < id0132_n_minibatches:
-                    assert np.all(target==classes.index("bird_c"))
-                    assert np.all(filenames=="ID0132.wav")
+                    for d, t, f in zip(data, target, filenames):
+                        start_ind = int(start_time * sample_rate)
+                        assert np.all(d==id0132_data[start_ind:start_ind+seg_size])
+                        assert t == classes.index("bird_c")
+                        assert f == "ID0132.wav"
+                        start_time += (1 - seg_overlap) * seg_duration
                 elif count == id0132_n_minibatches:
-                    assert (len(np.where(target==classes.index("bird_c"))[0]) ==
-                            id0132_n_chunks % batch_size)
-                    assert (len(np.where(target==classes.index("bird_d"))[0]) ==
-                            batch_size - (id0132_n_chunks % batch_size))
-                    assert np.all(filenames[:len(np.where(target==classes.index("bird_c"))[0])]=="ID0132.wav")
-                    assert np.all(filenames[len(np.where(target==classes.index("bird_c"))[0]):]=="ID1238.wav")
+                    start_time_reset = False
+                    for i, d in enumerate(zip(data, target, filenames)):
+                        if i < id0132_n_chunks % batch_size:
+                            start_ind = int(start_time * sample_rate)
+                            assert np.all(d[0]==id0132_data[start_ind:start_ind+seg_size])
+                            assert d[1] == classes.index("bird_c")
+                            assert d[2] == "ID0132.wav"
+                        else:
+                            if not start_time_reset:
+                                start_time = 0.0
+                                start_time_reset = True
+                            start_ind = int(start_time * sample_rate)
+                            assert np.all(d[0]==id1238_data[start_ind:start_ind+seg_size])
+                            assert d[1] == classes.index("bird_d")
+                            assert d[2] == "ID1238.wav"
+                        start_time += (1 - seg_overlap) * seg_duration
                 else:
-                    assert np.all(target==classes.index("bird_d"))
-                    assert np.all(filenames=="ID1238.wav")
+                    for d, t, f in zip(data, target, filenames):
+                        start_ind = int(start_time * sample_rate)
+                        assert np.all(d==id1238_data[start_ind:start_ind+seg_size])
+                        assert t == classes.index("bird_d")
+                        assert f == "ID1238.wav"
+                        start_time += (1 - seg_overlap) * seg_duration
                 count += 1
 
             assert count == n_minibatches
@@ -562,10 +583,9 @@ class TestMiniBatch:
         count = 0
         for mb in mb_gen_e:
             for data, target in zip(*mb):
-                assert np.all(data[0].T==active_segments[count].features["mel_spectrum"])
+                assert np.all(data.T==active_segments[count].features["mel_spectrum"])
                 assert target == classes.index(labels[count])
                 count += 1
-
 
 
     def test_gen_minibatches_2d_w_scaler(self):
@@ -656,7 +676,7 @@ class TestMiniBatch:
         count = 0
         for mb, in mb_gen_e:
             for data in mb:
-                assert np.all(data[0].T==active_segments[count].features["mel_spectrum"])
+                assert np.all(data.T==active_segments[count].features["mel_spectrum"])
                 count += 1
 
     
@@ -748,7 +768,7 @@ class TestMiniBatch:
         count = 0
         for mb, in mb_gen_e:
             for data in mb:
-                assert np.all(data[0].T==active_segments[count].features["mel_spectrum"])
+                assert np.all(data.T==active_segments[count].features["mel_spectrum"])
                 count += 1
 
 
