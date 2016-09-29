@@ -409,7 +409,7 @@ class TestMiniBatch:
         sample_rate = 22050
         seg_duration = 0.1
         seg_overlap = 0.5
-        seg_size = seg_duration * sample_rate
+        seg_size = int(seg_duration * sample_rate)
         hop_size = int(seg_duration * (1 - seg_overlap) * sample_rate)
 
         parser = CSVLabelParser(TEST_CSVLABEL_PATH)
@@ -583,7 +583,7 @@ class TestMiniBatch:
         count = 0
         for mb in mb_gen_e:
             for data, target in zip(*mb):
-                assert np.all(data.T==active_segments[count].features["mel_spectrum"])
+                assert np.all(data[0].T==active_segments[count].features["mel_spectrum"])
                 assert target == classes.index(labels[count])
                 count += 1
 
@@ -676,7 +676,7 @@ class TestMiniBatch:
         count = 0
         for mb, in mb_gen_e:
             for data in mb:
-                assert np.all(data.T==active_segments[count].features["mel_spectrum"])
+                assert np.all(data[0].T==active_segments[count].features["mel_spectrum"])
                 count += 1
 
     
@@ -768,7 +768,7 @@ class TestMiniBatch:
         count = 0
         for mb, in mb_gen_e:
             for data in mb:
-                assert np.all(data.T==active_segments[count].features["mel_spectrum"])
+                assert np.all(data[0].T==active_segments[count].features["mel_spectrum"])
                 count += 1
 
 
