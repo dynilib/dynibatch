@@ -27,7 +27,10 @@ class MiniBatchGen:
             with_targets=False,
             with_filenames=False):
         
-        minibatch = np.empty((self.batch_size, self.n_features, self.n_time_bins), dtype=np.float32)
+        if self.n_features == 1:
+            minibatch = np.empty((self.batch_size, 1, self.n_time_bins), dtype=np.float32)
+        else:
+            minibatch = np.empty((self.batch_size, 1, self.n_features, self.n_time_bins), dtype=np.float32)
         
         if with_filenames:
             filenames = np.empty((self.batch_size), dtype="|U200")
@@ -41,7 +44,10 @@ class MiniBatchGen:
                 if not self.feature_name in s.features:
                     break
                 if not active_segments_only or (hasattr(s, 'activity') and s.activity):
-                    minibatch[count, :, :] = s.features[self.feature_name].T
+                    if self.n_features == 1:
+                        minibatch[count, 0, :] = s.features[self.feature_name].T
+                    else:
+                        minibatch[count, 0, :, :] = s.features[self.feature_name].T
                     if with_filenames:
                         filenames[count] = sc.audio_path
                     if with_targets:
@@ -52,7 +58,11 @@ class MiniBatchGen:
                         count = 0
                         data = [minibatch]
 
-                        minibatch = np.empty((self.batch_size, self.n_features, self.n_time_bins), dtype=np.float32)
+                        # create new arrays (alternatively, arrays could be copied when yielded)
+                        if self.n_features == 1:
+                            minibatch = np.empty((self.batch_size, 1, self.n_time_bins), dtype=np.float32)
+                        else:
+                            minibatch = np.empty((self.batch_size, 1, self.n_features, self.n_time_bins), dtype=np.float32)
 
                         if with_targets:
                             data.append(targets)
