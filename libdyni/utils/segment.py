@@ -1,5 +1,5 @@
 from collections import defaultdict
-from enum import import Enum
+from enum import Enum
 import joblib
 
 from libdyni.utils.exceptions import ParameterError
