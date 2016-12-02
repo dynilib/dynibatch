@@ -1,17 +1,19 @@
 from collections import defaultdict
+from enum import import Enum
 import joblib
 
 from libdyni.utils.exceptions import ParameterError
 
 
-class common_labels:
-    no_activity = "na"
-    garbage = "ga"
-    unknown = "un"
+class CommonLabels(Enum):
+    no_activity = -1
+    garbage = -2
+    unknown = -3
 
 
 class Segment:
-    def __init__(self, start_time, end_time, label=common_labels.unknown):
+    """TODO"""
+    def __init__(self, start_time, end_time, label=CommonLabels.unknown):
 
         if start_time < 0 or end_time <= start_time:
             raise ParameterError(
@@ -86,7 +88,7 @@ def set_segment_labels(segments_from, segments_to, overlap_ratio=0.5):
                 s_to.label = k
                 continue
 
-        s_to.label = common_labels.unknown
+        s_to.label = CommonLabels.unknown
 
 
 def _get_overlap(start1, end1, start2, end2):

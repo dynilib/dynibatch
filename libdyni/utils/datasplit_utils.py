@@ -4,7 +4,7 @@ import random
 import time
 import joblib
 
-from libdyni.utils.segment import common_labels
+from libdyni.utils.segment import CommonLabels
 from libdyni.utils.stats import get_stats
 from libdyni.utils.exceptions import ParameterError
 
@@ -51,10 +51,10 @@ def create_random_datasplit(segment_containers,
     for sc in segment_containers:
         classes |= sc.labels
 
-    # remove segment.common_labels
-    classes.discard(common_labels.garbage)
-    classes.discard(common_labels.no_activity)
-    classes.discard(common_labels.unknown)
+    # remove segment.CommonLabels
+    classes.discard(CommonLabels.garbage)
+    classes.discard(CommonLabels.no_activity)
+    classes.discard(CommonLabels.unknown)
 
     # for every label, get audio_path set and split
     for c in classes:
