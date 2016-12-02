@@ -15,7 +15,7 @@ from libdyni.utils import utils
 from libdyni.utils.minibatch_gen import MiniBatchGen
 from libdyni.generators.audio_frame_gen import AudioFrameGen
 from libdyni.generators.segment_container_gen import SegmentContainerGenerator
-from libdyni.parsers.label_parsers import CSVLabelParser
+from libdyni.utils.label_parsers import CSVLabelParser
 from libdyni.features.extractors.energy import EnergyExtractor
 from libdyni.features.extractors.spectral_flatness import SpectralFlatnessExtractor
 from libdyni.features.extractors.mel_spectrum import MelSpectrumExtractor
@@ -76,7 +76,7 @@ class TestSegment:
         assert (segment_to_list[0].label == "a" and
             segment_to_list[1].label == "a" and
             segment_to_list[2].label == "b" and
-            segment_to_list[3].label == segment.common_labels.unknown)
+            segment_to_list[3].label == segment.CommonLabels.unknown)
 
     def test_set_segment_labels_overlap(self):
         segment_from_list = []
@@ -89,7 +89,7 @@ class TestSegment:
                 segment_to_list,
                 overlap_ratio=0.5)
         assert (segment_to_list[0].label == "a" and
-            segment_to_list[1].label == segment.common_labels.unknown)
+            segment_to_list[1].label == segment.CommonLabels.unknown)
 
 
 class TestSegmentContainer:
@@ -143,7 +143,7 @@ class TestSegmentContainer:
         n_segments = 5
         for i in range(n_segments):
             sc.segments.append(segment.Segment(i * 1, (i + 1) * 1))
-        assert sc.n_segments_with_label(segment.common_labels.unknown) == n_segments
+        assert sc.n_segments_with_label(segment.CommonLabels.unknown) == n_segments
 
     def test_n_active_segments_w_labels(self):
         sc = segment_container.SegmentContainer("fake_audio_path")
@@ -153,7 +153,7 @@ class TestSegmentContainer:
             sc.segments.append(segment.Segment(i * 1, (i + 1) * 1))
             if i in active_segment_ind:
                 sc.segments[-1].activity = True
-        assert sc.n_active_segments_with_label(segment.common_labels.unknown) == len(active_segment_ind)
+        assert sc.n_active_segments_with_label(segment.CommonLabels.unknown) == len(active_segment_ind)
 
     def test_create_segment_containers_from_audio_file_tuple(self):
         with pytest.raises(TypeError):
@@ -413,6 +413,7 @@ class TestMiniBatch:
         hop_size = int(seg_duration * (1 - seg_overlap) * sample_rate)
 
         parser = CSVLabelParser(TEST_CSVLABEL_PATH)
+        classes = parser.get_labels()
         sf_pro = SegmentFeatureProcessor([ac_ext])
         sc_gen = SegmentContainerGenerator(
                 REDUCED_DATA_PATH,
@@ -425,7 +426,6 @@ class TestMiniBatch:
         id1238_data, sr = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_2))
 
         n_epochs = 3
-        classes = ["bird_c", "bird_d"]
         batch_size = 10
         n_time_bins = int(seg_duration * sample_rate)
 
@@ -441,8 +441,7 @@ class TestMiniBatch:
         id0132_n_minibatches = int(id0132_n_chunks / batch_size)
         n_minibatches = int((id0132_n_chunks + id1238_n_chunks) / batch_size)
 
-        mb_gen = MiniBatchGen(classes,
-                "audio_chunk",
+        mb_gen = MiniBatchGen("audio_chunk",
                 batch_size,
                 1,
                 n_time_bins)
@@ -459,7 +458,7 @@ class TestMiniBatch:
                     for d, t, f in zip(data, target, filenames):
                         start_ind = int(start_time * sample_rate)
                         assert np.all(d==id0132_data[start_ind:start_ind+seg_size])
-                        assert t == classes.index("bird_c")
+                        assert t == classes["bird_c"]
                         assert f == "ID0132.wav"
                         start_time += (1 - seg_overlap) * seg_duration
                 elif count == id0132_n_minibatches:
@@ -468,7 +467,7 @@ class TestMiniBatch:
                         if i < id0132_n_chunks % batch_size:
                             start_ind = int(start_time * sample_rate)
                             assert np.all(d[0]==id0132_data[start_ind:start_ind+seg_size])
-                            assert d[1] == classes.index("bird_c")
+                            assert d[1] == classes["bird_c"]
                             assert d[2] == "ID0132.wav"
                         else:
                             if not start_time_reset:
@@ -476,14 +475,14 @@ class TestMiniBatch:
                                 start_time_reset = True
                             start_ind = int(start_time * sample_rate)
                             assert np.all(d[0]==id1238_data[start_ind:start_ind+seg_size])
-                            assert d[1] == classes.index("bird_d")
+                            assert d[1] == classes["bird_d"]
                             assert d[2] == "ID1238.wav"
                         start_time += (1 - seg_overlap) * seg_duration
                 else:
                     for d, t, f in zip(data, target, filenames):
                         start_ind = int(start_time * sample_rate)
                         assert np.all(d==id1238_data[start_ind:start_ind+seg_size])
-                        assert t == classes.index("bird_d")
+                        assert t == classes["bird_d"]
                         assert f == "ID1238.wav"
                         start_time += (1 - seg_overlap) * seg_duration
                 count += 1
@@ -505,8 +504,6 @@ class TestMiniBatch:
         num_features = 64
         num_time_bins = 17
         
-        classes = ["bird_c", "bird_d"]
-
         af_gen = AudioFrameGen(win_size=win_size, hop_size=hop_size)
 
         en_ext = EnergyExtractor()
@@ -564,9 +561,9 @@ class TestMiniBatch:
                     labels.append(s.label)
 
         # compare data in segment and corresponding data in minibatches
+        #classes = parser.get_labels()
 
-        mb_gen = MiniBatchGen(classes,
-                "mel_spectrum",
+        mb_gen = MiniBatchGen("mel_spectrum",
                 batch_size,
                 num_features,
                 num_time_bins)
@@ -584,7 +581,7 @@ class TestMiniBatch:
         for mb in mb_gen_e:
             for data, target in zip(*mb):
                 assert np.all(data[0].T==active_segments[count].features["mel_spectrum"])
-                assert target == classes.index(labels[count])
+                assert target == labels[count]
                 count += 1
 
 
@@ -658,8 +655,7 @@ class TestMiniBatch:
 
         # compare data in segment and corresponding data in minibatches
 
-        mb_gen = MiniBatchGen(None,
-                "mel_spectrum",
+        mb_gen = MiniBatchGen("mel_spectrum",
                 batch_size,
                 num_features,
                 num_time_bins)
@@ -750,8 +746,7 @@ class TestMiniBatch:
 
         # compare data in segment and corresponding data in minibatches
 
-        mb_gen = MiniBatchGen(None,
-                "mel_spectrum",
+        mb_gen = MiniBatchGen("mel_spectrum",
                 batch_size,
                 num_features,
                 num_time_bins)

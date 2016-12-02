@@ -7,7 +7,7 @@ import soundfile as sf
 from libdyni.generators.audio_frame_gen import AudioFrameGen
 from libdyni.generators.audio_frame_gen import Window
 from libdyni.generators.segment_container_gen import SegmentContainerGenerator
-from libdyni.parsers.label_parsers import CSVLabelParser
+from libdyni.utils.label_parsers import CSVLabelParser
 from libdyni.features.segment_feature_processor import SegmentFeatureProcessor
 from libdyni.features.extractors.audio_chunk import AudioChunkExtractor
 

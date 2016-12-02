@@ -9,13 +9,11 @@ class MiniBatchGen:
     """Generates batches of segments from segment container generator"""
 
     def __init__(self,
-            classes,
             feature_name,
             batch_size,
             n_features,
             n_time_bins):
  
-        self.classes = classes
         self.feature_name = feature_name
         self.batch_size = batch_size
         self.n_features = n_features
@@ -51,7 +49,7 @@ class MiniBatchGen:
                     if with_filenames:
                         filenames[count] = sc.audio_path
                     if with_targets:
-                        targets[count] = self.classes.index(s.label)
+                        targets[count] = s.label
 
                     count += 1
                     if count == self.batch_size:
