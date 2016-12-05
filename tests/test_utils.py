@@ -12,7 +12,7 @@ from libdyni.utils import segment_container
 from libdyni.utils import feature_container
 from libdyni.utils import datasplit_utils
 from libdyni.utils import utils
-from libdyni.utils.minibatch_gen import MiniBatchGen
+from libdyni.generators.minibatch_gen import MiniBatchGen
 from libdyni.generators.audio_frame_gen import AudioFrameGen
 from libdyni.generators.segment_container_gen import SegmentContainerGenerator
 from libdyni.utils.label_parsers import CSVLabelParser
@@ -421,7 +421,7 @@ class TestMiniBatch:
                 label_parser=parser,
                 seg_duration=seg_duration,
                 seg_overlap=seg_overlap)
-        
+
         id0132_data, sr = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
         id1238_data, sr = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_2))
 
@@ -489,21 +489,21 @@ class TestMiniBatch:
 
             assert count == n_minibatches
 
-        
+
     def test_gen_minibatches_2d(self):
 
-        sample_rate = 22050 
+        sample_rate = 22050
         win_size = 256
         hop_size = 128
         energy_threshold = 0.2
         spectral_flatness_threshold = 0.3
         seg_duration = 0.1
         seg_overlap = 0.5
-        
+
         batch_size = 10
         num_features = 64
         num_time_bins = 17
-        
+
         af_gen = AudioFrameGen(win_size=win_size, hop_size=hop_size)
 
         en_ext = EnergyExtractor()
@@ -567,7 +567,7 @@ class TestMiniBatch:
                 batch_size,
                 num_features,
                 num_time_bins)
-        
+
         sc_gen.reset()
 
         minibatches = []
@@ -587,14 +587,14 @@ class TestMiniBatch:
 
     def test_gen_minibatches_2d_w_scaler(self):
 
-        sample_rate = 22050 
+        sample_rate = 22050
         win_size = 256
         hop_size = 128
         energy_threshold = 0.2
         spectral_flatness_threshold = 0.3
         seg_duration = 0.1
         seg_overlap = 0.5
-        
+
         batch_size = 10
         num_features = 64
         num_time_bins = 17
@@ -659,7 +659,7 @@ class TestMiniBatch:
                 batch_size,
                 num_features,
                 num_time_bins)
-        
+
         sc_gen.reset()
 
         minibatches = []
@@ -675,17 +675,17 @@ class TestMiniBatch:
                 assert np.all(data[0].T==active_segments[count].features["mel_spectrum"])
                 count += 1
 
-    
+
     def test_gen_minibatches_2d_w_pca_scaler(self):
 
-        sample_rate = 22050 
+        sample_rate = 22050
         win_size = 256
         hop_size = 128
         energy_threshold = 0.2
         spectral_flatness_threshold = 0.3
         seg_duration = 0.1
         seg_overlap = 0.5
-        
+
         batch_size = 10
         num_features = 16
         num_time_bins = 17
@@ -750,7 +750,7 @@ class TestMiniBatch:
                 batch_size,
                 num_features,
                 num_time_bins)
-        
+
         sc_gen.reset()
 
         minibatches = []
@@ -765,6 +765,3 @@ class TestMiniBatch:
             for data in mb:
                 assert np.all(data[0].T==active_segments[count].features["mel_spectrum"])
                 count += 1
-
-
-
