@@ -9,34 +9,43 @@ class MiniBatchGen:
     """Generates batches of segments from segment container generator"""
 
     def __init__(self,
-            feature_name,
-            batch_size,
-            n_features,
-            n_time_bins):
- 
+                 segment_container_gen,
+                 feature_name,
+                 batch_size,
+                 n_features,
+                 n_time_bins):
+
+        self.segment_container_gen = segment_container_gen
         self.feature_name = feature_name
         self.batch_size = batch_size
         self.n_features = n_features
         self.n_time_bins = n_time_bins
 
+    def start(self):
+        """ start MiniBatchGen for generating minibatches """
+        self.segment_container_gen.start()
+
+    def reset(self):
+        """ reset MiniBatchGen for regenerating minibatches """
+        self.segment_container_gen.reset()
+
     def execute(self,
-            segment_container_gen,
-            active_segments_only=False,
-            with_targets=False,
-            with_filenames=False):
-        
+                active_segments_only=False,
+                with_targets=False,
+                with_filenames=False):
+
         if self.n_features == 1:
             minibatch = np.empty((self.batch_size, 1, self.n_time_bins), dtype=np.float32)
         else:
             minibatch = np.empty((self.batch_size, 1, self.n_features, self.n_time_bins), dtype=np.float32)
-        
+
         if with_filenames:
             filenames = np.empty((self.batch_size), dtype="|U200")
         if with_targets:
             targets = np.empty((self.batch_size), dtype=np.int16)
 
         count = 0
-        for sc in segment_container_gen.execute():
+        for sc in self.segment_container_gen.execute():
             logger.debug("iterate_minibatch: {}".format(sc.audio_path))
             for s in sc.segments:
                 if not self.feature_name in s.features:
@@ -69,5 +78,3 @@ class MiniBatchGen:
                             data.append(filenames)
                             filenames = np.empty((self.batch_size), dtype="|U200")
                         yield tuple(data)
-
-

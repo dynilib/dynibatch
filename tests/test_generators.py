@@ -161,16 +161,16 @@ class TestMiniBatch:
         id0132_n_minibatches = int(id0132_n_chunks / batch_size)
         n_minibatches = int((id0132_n_chunks + id1238_n_chunks) / batch_size)
 
-        mb_gen = MiniBatchGen("audio_chunk",
-                batch_size,
-                1,
-                n_time_bins)
+        mb_gen = MiniBatchGen(sc_gen,
+                              "audio_chunk",
+                              batch_size,
+                              1,
+                              n_time_bins)
 
         for i in range(n_epochs):
-            sc_gen.reset()
-            mb_gen_e = mb_gen.execute(sc_gen,
-                    with_targets=True,
-                    with_filenames=True)
+            mb_gen.reset()
+            mb_gen_e = mb_gen.execute(with_targets=True,
+                                      with_filenames=True)
             count = 0
             start_time = 0.0
             for data, target, filenames in mb_gen_e:
@@ -283,19 +283,17 @@ class TestMiniBatch:
         # compare data in segment and corresponding data in minibatches
         #classes = parser.get_labels()
 
-        mb_gen = MiniBatchGen("mel_spectrum",
-                batch_size,
-                num_features,
-                num_time_bins)
+        mb_gen = MiniBatchGen(sc_gen,
+                              "mel_spectrum",
+                              batch_size,
+                              num_features,
+                              num_time_bins)
 
-        sc_gen.reset()
+        mb_gen.start()
 
-        minibatches = []
-
-        mb_gen_e = mb_gen.execute(sc_gen,
-                active_segments_only=True,
-                with_targets=True,
-                with_filenames=False)
+        mb_gen_e = mb_gen.execute(active_segments_only=True,
+                                  with_targets=True,
+                                  with_filenames=False)
 
         count = 0
         for mb in mb_gen_e:
@@ -375,19 +373,17 @@ class TestMiniBatch:
 
         # compare data in segment and corresponding data in minibatches
 
-        mb_gen = MiniBatchGen("mel_spectrum",
-                batch_size,
-                num_features,
-                num_time_bins)
+        mb_gen = MiniBatchGen(sc_gen,
+                              "mel_spectrum",
+                              batch_size,
+                              num_features,
+                              num_time_bins)
 
-        sc_gen.reset()
+        mb_gen.start()
 
-        minibatches = []
-
-        mb_gen_e = mb_gen.execute(sc_gen,
-                active_segments_only=True,
-                with_targets=False,
-                with_filenames=False)
+        mb_gen_e = mb_gen.execute(active_segments_only=True,
+                                  with_targets=False,
+                                  with_filenames=False)
 
         count = 0
         for mb, in mb_gen_e:
@@ -466,19 +462,17 @@ class TestMiniBatch:
 
         # compare data in segment and corresponding data in minibatches
 
-        mb_gen = MiniBatchGen("mel_spectrum",
-                batch_size,
-                num_features,
-                num_time_bins)
+        mb_gen = MiniBatchGen(sc_gen,
+                              "mel_spectrum",
+                              batch_size,
+                              num_features,
+                              num_time_bins)
 
-        sc_gen.reset()
+        mb_gen.start()
 
-        minibatches = []
-
-        mb_gen_e = mb_gen.execute(sc_gen,
-                active_segments_only=True,
-                with_targets=False,
-                with_filenames=False)
+        mb_gen_e = mb_gen.execute(active_segments_only=True,
+                                  with_targets=False,
+                                  with_filenames=False)
 
         count = 0
         for mb, in mb_gen_e:
