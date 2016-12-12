@@ -1,7 +1,7 @@
 import pytest
 import os
 
-from libdyni.utils.label_parsers import CSVLabelParser
+from libdyni.parsers.label_parsers import CSVLabelParser
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data/reduced_set")
 
@@ -20,4 +20,3 @@ class TestCSVLabelParser:
         parser = CSVLabelParser(TEST_CSVLABEL_PATH)
         classes = parser.get_labels()
         assert parser.get_label("ID0131") == classes["bird_b"]
-
