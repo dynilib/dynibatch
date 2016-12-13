@@ -17,12 +17,10 @@
     "spectral_flatness_threshold":0.3
   },
 
-  "features": [
-    {
+  "feature": {
       "name": "mel",
       "n_mels": 64,
       "min_freq": 0,
       "max_freq": 11025
-    }
-  ]
+    }  
 }

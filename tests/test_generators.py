@@ -479,3 +479,22 @@ class TestMiniBatch:
             for data in mb:
                 assert np.all(data[0].T==active_segments[count].features["mel_spectrum"])
                 count += 1
+
+class TestMiniBatchGenFromConfig:
+    """
+        Test Minibatch instance creation from json config file
+    """
+
+    def test_init(self):
+        try:
+            MiniBatchGen.from_json_config_file("tests/config/config_test.json")
+        except Exception as e:
+            pytest.fail("Unexpected Error: {}".format(e))
+
+    def test_get_minibatch(self):
+        mb_gen = MiniBatchGen.from_json_config_file("tests/config/config_test.json")
+        mb_gen.start()
+        try:
+            mb_gen.execute()
+        except Exception as e:
+            pytest.fail("Unexpected Error: {}".format(e))
