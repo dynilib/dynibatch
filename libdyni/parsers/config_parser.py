@@ -1,7 +1,7 @@
 """
     module to create a mionibatch generator from a config file
 """
-import ast
+import json
 # generators
 from libdyni.generators.audio_frame_gen import AudioFrameGen
 from libdyni.generators.segment_container_gen import SegmentContainerGenerator
@@ -31,7 +31,7 @@ def parse_config_file(config_path):
 
     # TODO deal with feaatureroot argument
     with open(config_path) as config_description:
-        config_dict = ast.literal_eval(config_description.read())
+        config_dict = json.loads(config_description.read())
 
     # Prepare config
 
