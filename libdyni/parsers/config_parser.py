@@ -86,7 +86,8 @@ def parse_config_file(config_path):
     sc_gen.start()
 
     # generate mini-batches
-    mb_gen = MiniBatchGen(feat_minibatch[0].name, # TODO deal with multiple features
+    mb_gen = MiniBatchGen(sc_gen,
+                          feat_minibatch[0].name, # TODO deal with multiple features
                           batch_size,
                           n_features,
                           n_time_bins)
