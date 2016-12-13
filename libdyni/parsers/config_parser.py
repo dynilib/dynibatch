@@ -17,7 +17,7 @@ from libdyni.features.extractors.mel_spectrum import MelSpectrumExtractor
 # activity detection
 from libdyni.features.extractors.activity_detection import ActivityDetection
 # utils
-from libdyni.utils import label_parsers
+from libdyni.parsers import label_parsers
 from libdyni.utils import exceptions
 
 
