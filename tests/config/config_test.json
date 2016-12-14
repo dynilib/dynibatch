@@ -12,7 +12,7 @@
   "batch_size":50,
 
   "activity_detection" : {
-    "name": "default",
+    "name": "simple",
     "energy_threshold":0.2,
     "spectral_flatness_threshold":0.3
   },

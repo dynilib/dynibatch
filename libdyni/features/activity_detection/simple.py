@@ -4,13 +4,12 @@ import numpy as np
 
 from libdyni.features.extractors import segment_feature as sfe
 
-__all__ = ['ActivityDetection']
 
 logger = logging.getLogger(__name__)
 
 
-class ActivityDetection(sfe.SegmentFrameBasedFeatureExtractor):
-    """Bird activity detection, based on signal energy and voiceness
+class Simple(sfe.SegmentFrameBasedFeatureExtractor):
+    """simple bird activity detection, based on signal energy and voiceness
 
     The activity detection is executed on all segments of a segment container.
     Activity is detected when the mean frame-based energy of the segment is
@@ -39,7 +38,7 @@ class ActivityDetection(sfe.SegmentFrameBasedFeatureExtractor):
         Returns:
             The name of SegmentFrameBasedFeatureExtractor, it is also its type
         """
-        return 'activity_detection'
+        return 'simple'
 
     def execute(self, segment_container, feature_container):
         """Executes the activity detection.

@@ -9,7 +9,7 @@ from librosa.feature.spectral import melspectrogram
 from librosa.feature.spectral import mfcc as lr_mfcc
 from librosa import logamplitude
 
-from libdyni.features.extractors.activity_detection import ActivityDetection
+from libdyni.features.activity_detection.simple import Simple
 from libdyni.utils.feature_container import FeatureContainer
 from libdyni.utils.segment import Segment
 from libdyni.utils.segment_container import SegmentContainer
@@ -33,7 +33,7 @@ class TestActivityDetection:
 
     def test_init(self):
         try:
-            ActivityDetection(
+            Simple(
                     energy_threshold=0.3,
                     spectral_flatness_threshold=0.2)
         except Exception as e:
@@ -63,7 +63,7 @@ class TestActivityDetection:
         sc = SegmentContainer("fake_audio_path")
         sc.segments = segment_list
 
-        act_det = ActivityDetection(
+        act_det = Simple(
                 energy_threshold=0.3,
                 spectral_flatness_threshold=0.2)
 

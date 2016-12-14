@@ -17,7 +17,7 @@ from libdyni.features.extractors.energy import EnergyExtractor
 from libdyni.features.extractors.spectral_flatness import SpectralFlatnessExtractor
 from libdyni.features.extractors.mel_spectrum import MelSpectrumExtractor
 from libdyni.features.extractors.frame_feature_chunk import FrameFeatureChunkExtractor
-from libdyni.features.extractors.activity_detection import ActivityDetection
+from libdyni.features.activity_detection.simple import Simple
 from libdyni.features.frame_feature_processor import FrameFeatureProcessor
 
 from libdyni.utils import feature_container
@@ -243,7 +243,7 @@ class TestMiniBatch:
         scaler = None
 
         ffc_ext = FrameFeatureChunkExtractor("mel_spectrum", pca, scaler)
-        act_det = ActivityDetection(
+        act_det = Simple(
                 energy_threshold=energy_threshold,
                 spectral_flatness_threshold=spectral_flatness_threshold)
         sf_pro = SegmentFeatureProcessor(
@@ -336,7 +336,7 @@ class TestMiniBatch:
         scaler = joblib.load(os.path.join(DATA_PATH, "transform/mel64_norm/scaler.jl"))
 
         ffc_ext = FrameFeatureChunkExtractor("mel_spectrum", pca, scaler)
-        act_det = ActivityDetection(
+        act_det = Simple(
                 energy_threshold=energy_threshold,
                 spectral_flatness_threshold=spectral_flatness_threshold)
         sf_pro = SegmentFeatureProcessor(
@@ -425,7 +425,7 @@ class TestMiniBatch:
         scaler = joblib.load(os.path.join(DATA_PATH, "transform/mel64_pca16_norm/scaler.jl"))
 
         ffc_ext = FrameFeatureChunkExtractor("mel_spectrum", pca, scaler)
-        act_det = ActivityDetection(
+        act_det = Simple(
                 energy_threshold=energy_threshold,
                 spectral_flatness_threshold=spectral_flatness_threshold)
         sf_pro = SegmentFeatureProcessor(

@@ -14,7 +14,7 @@ from libdyni.features.extractors.energy import EnergyExtractor
 from libdyni.features.extractors.spectral_flatness import SpectralFlatnessExtractor
 from libdyni.features.extractors.mel_spectrum import MelSpectrumExtractor
 # activity detection
-from libdyni.features.extractors.activity_detection import ActivityDetection
+from libdyni.features.activity_detection.simple import Simple
 # utils
 from libdyni.parsers import label_parsers
 from libdyni.utils import exceptions
@@ -75,14 +75,14 @@ class MiniBatchGen:
 
             act_det_config = config["activity_detection"]
 
-            if act_det_config["name"] == "default":
+            if act_det_config["name"] == "simple":
 
                 # frame features needed for the activity detection
                 en_ext = EnergyExtractor()
                 sf_ext = SpectralFlatnessExtractor()
                 frame_feature_extractors |= set([en_ext, sf_ext])
 
-                act_det = ActivityDetection(
+                act_det = Simple(
                     energy_threshold=act_det_config["energy_threshold"],
                     spectral_flatness_threshold=act_det_config["spectral_flatness_threshold"])
 
