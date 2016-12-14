@@ -1,4 +1,6 @@
 name: libdyni
+channels: !!python/tuple
+- defaults
 dependencies:
 - astroid=1.4.4=py35_0
 - backports=1.0=py35_0
@@ -21,7 +23,7 @@ dependencies:
 - jupyter_core=4.1.0=py35_0
 - lazy-object-proxy=1.2.1=py35_0
 - libffi=3.0.13=0
-- libgfortran=3.0=0
+- libgfortran=3.0.0=1
 - libpng=1.6.17=0
 - libsodium=1.0.10=0
 - libxml2=2.9.2=0
@@ -29,11 +31,11 @@ dependencies:
 - markupsafe=0.23=py35_2
 - matplotlib=1.5.1=np111py35_0
 - mistune=0.7.2=py35_0
-- mkl=11.3.1=0
+- mkl=11.3.3=0
 - nbconvert=4.2.0=py35_0
 - nbformat=4.0.1=py35_0
 - notebook=4.2.0=py35_0
-- numpy=1.11.0=py35_0
+- numpy=1.11.2=py35_0
 - openssl=1.0.2h=0
 - path.py=8.2.1=py35_0
 - pexpect=4.0.1=py35_0
@@ -54,8 +56,8 @@ dependencies:
 - qt=4.8.7=1
 - qtconsole=4.2.1=py35_0
 - readline=6.2=2
-- scikit-learn=0.17.1=np111py35_0
-- scipy=0.17.0=np111py35_2
+- scikit-learn=0.18.1=np111py35_0
+- scipy=0.18.1=np111py35_0
 - setuptools=21.2.1=py35_0
 - simplegeneric=0.8.1=py35_0
 - sip=4.16.9=py35_0
@@ -81,4 +83,5 @@ dependencies:
   - librosa==0.4.2
   - pysoundfile==0.8.1
   - xmltodict==0.10.1
+prefix: /home/vroger/miniconda3/envs/libdyni
 
