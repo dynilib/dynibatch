@@ -41,6 +41,15 @@ class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
             n_mels=n_mels,
             fmin=min_freq,
             fmax=max_freq)
+    
+    @classmethod
+    def from_config_dict(cls, audio_frame_config, config):
+        return cls(
+                sample_rate=audio_frame_config["sample_rate"],
+                fft_size=audio_frame_config["win_size"],
+                n_mels=config["n_mels"],
+                min_freq=config["min_freq"],
+                max_freq=config["max_freq"])
 
     @property
     def name(self):

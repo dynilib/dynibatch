@@ -9,12 +9,9 @@ from libdyni.generators.segment_container_gen import SegmentContainerGenerator
 from libdyni.features.frame_feature_processor import FrameFeatureProcessor
 from libdyni.features.extractors.frame_feature_chunk import FrameFeatureChunkExtractor
 from libdyni.features.segment_feature_processor import SegmentFeatureProcessor
-
-from libdyni.features.extractors.energy import EnergyExtractor
-from libdyni.features.extractors.spectral_flatness import SpectralFlatnessExtractor
-from libdyni.features.extractors.mel_spectrum import MelSpectrumExtractor
+from libdyni.features import extractors
 # activity detection
-from libdyni.features.activity_detection.simple import Simple
+from libdyni.features import activity_detection
 # utils
 from libdyni.parsers import label_parsers
 from libdyni.utils import exceptions
@@ -54,61 +51,37 @@ class MiniBatchGen:
         with open(config_path) as config_file:
             config = json.loads(config_file.read())
         
-        # audio and short-term frames config
-        sample_rate = config["sample_rate"]
-        win_size = config["win_size"]
-        hop_size = config["hop_size"]
+        # audio frame config
+        af_config = config["audio_frame_config"]
 
         # segment config
-        seg_duration = config["seg_duration"]
-        seg_overlap = config["seg_overlap"]
+        seg_config = config["segment_config"]
 
         # minibatch config
         batch_size = config["batch_size"]
-        num_frames_per_seg = int(seg_duration * sample_rate / hop_size)   
+        num_frames_per_seg = int(seg_config["seg_duration"] * 
+                af_config["sample_rate"] / af_config["hop_size"])   
         
         # create a parser to get the labels from the label file
         label_parser = label_parsers.CSVLabelParser(config["label_file_path"])
 
         # get activity detection
         if "activity_detection" in config:
-
             act_det_config = config["activity_detection"]
-
-            if act_det_config["name"] == "simple":
-
-                # frame features needed for the activity detection
-                en_ext = EnergyExtractor()
-                sf_ext = SpectralFlatnessExtractor()
-                frame_feature_extractors |= set([en_ext, sf_ext])
-
-                act_det = Simple(
-                    energy_threshold=act_det_config["energy_threshold"],
-                    spectral_flatness_threshold=act_det_config["spectral_flatness_threshold"])
-
-            else:
-                raise exceptions.LibdyniError("Activity detector {} not supported".format(
-                    act_det_config['name']))
+            act_det = activity_detection.factory(
+                    act_det_config["name"],
+                    audio_frame_config=af_config,
+                    config=act_det_config.get("config"))
+            frame_feature_extractors |= act_det.get_required_frame_feats()
         else:
             act_det = None
 
         # get feature that will feed the minibatch
         feat_config = config["feature"]
-
-        if feat_config['name'] == 'mel':
-            # mel spectra config
-            n_mels = feat_config["n_mels"]
-            min_freq = feat_config["min_freq"]
-            max_freq = feat_config["max_freq"]
-            feature = MelSpectrumExtractor(
-                sample_rate=sample_rate,
-                fft_size=win_size,
-                n_mels=n_mels,
-                min_freq=min_freq,
-                max_freq=max_freq)
-        else:
-            raise exceptions.LibdyniError("Feature {} not supported".format(
-                feat_config['name']))
+        feature = extractors.factory(
+                feat_config["name"],
+                audio_frame_config=af_config,
+                feat_config.get("config"))
 
         frame_feature_extractors.add(feature)
 

@@ -7,6 +7,10 @@ class SpectralFlatnessExtractor(SpectrumFrameFeatureExtractor):
 
     def __init__(self):
         super().__init__()
+    
+    @classmethod
+    def from_config_dict(cls, _, _):
+        return cls()
 
     @property
     def name(self):

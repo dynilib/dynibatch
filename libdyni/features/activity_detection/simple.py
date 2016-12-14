@@ -32,6 +32,12 @@ class Simple(sfe.SegmentFrameBasedFeatureExtractor):
         self.energy_threshold = energy_threshold
         self.spectral_flatness_threshold = spectral_flatness_threshold
 
+    @classmethod
+    def from_config_dict(cls, _, config):
+        return cls(
+                config["energy_threshold"],
+                config["spectral_flatness_threshold"])
+
     @property
     def name(self):
         return self.__module__.split('.')[-1]
