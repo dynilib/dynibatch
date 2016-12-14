@@ -1,6 +1,7 @@
 import os
 import joblib
 import re
+from random import shuffle
 
 import soundfile as sf
 
@@ -25,7 +26,7 @@ class SegmentContainer:
     @property
     def segments(self):
         return self._segments
-    
+
     @segments.setter
     def segments(self, segments):
         self._segments = segments
@@ -85,7 +86,7 @@ class SegmentContainer:
         return [False for f in features]
 
 
-def create_segment_containers_from_audio_files(audio_root, **kwargs):
+def create_segment_containers_from_audio_files(audio_root, random_list=False, **kwargs):
     """
     Args:
         audio_root
@@ -95,11 +96,12 @@ def create_segment_containers_from_audio_files(audio_root, **kwargs):
     """
 
     for root, _, filenames in os.walk(audio_root):
+        if random_list:
+            shuffle(filenames)
+        else:
+            filenames.sort()
 
-        # TODO: randomize (we use sorted so that the list is the always the same
-        # for the unit tests)
-        for filename in sorted(filenames):
-
+        for filename in filenames:
             _, extension = os.path.splitext(filename)
             if not extension in ALLOWED_AUDIO_EXT:
                 continue  # only get audio files
@@ -176,7 +178,7 @@ def create_segment_containers_from_seg_files(seg_file_root,
                     audio_file_ext,
                     seg_file_ext,
                     seg_file_separator)
-        
+
 
 def create_segment_containers_from_seg_file(seg_file_path_tuple,
                                              audio_file_ext=".wav",
