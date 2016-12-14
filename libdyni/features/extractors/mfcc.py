@@ -15,8 +15,8 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
         n_mfcc (int)
         min_freq (int)
         max_freq (int)
-        log_amp (boolean): whether or not to compute the log of the mel
-        spectrum.
+        top_db (float): threshold log amplitude at top_db below the peak:
+            max(log(S)) - top_db
     """
 
     def __init__(self,
