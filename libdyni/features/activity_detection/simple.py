@@ -34,11 +34,7 @@ class Simple(sfe.SegmentFrameBasedFeatureExtractor):
 
     @property
     def name(self):
-        """
-        Returns:
-            The name of SegmentFrameBasedFeatureExtractor, it is also its type
-        """
-        return 'simple'
+        return self.__module__.split('.')[-1]
 
     def execute(self, segment_container, feature_container):
         """Executes the activity detection.

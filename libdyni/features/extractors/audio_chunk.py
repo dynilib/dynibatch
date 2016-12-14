@@ -17,11 +17,7 @@ class AudioChunkExtractor(SegmentFeatureExtractor):
 
     @property
     def name(self):
-        """
-        Returns:
-            The name of SegmentFrameBasedFeatureExtractor, it is also its type
-        """
-        return "audio_chunk"
+        return self.__module__.split('.')[-1]
 
     def execute(self, segment_container):
 
