@@ -3,6 +3,8 @@ import joblib
 import re
 from random import shuffle
 
+from sklearn.model_selection import train_test_split
+from numpy.random import RandomState
 import soundfile as sf
 
 from libdyni.utils.segment import Segment
@@ -86,17 +88,34 @@ class SegmentContainer:
         return [False for f in features]
 
 
-def create_segment_containers_from_audio_files(audio_root, random_list=False, **kwargs):
+def create_segment_containers_from_audio_files(audio_root,
+                                               random_list=False,
+                                               label_parser=None,
+                                               **kwargs):
     """
     Args:
         audio_root
+        random_list
+        label_parser if a label_parser is specify the result will be stratified
         (seg_duration
         (seg_overlap)
     Yields: segment container
     """
 
     for root, _, filenames in os.walk(audio_root):
-        if random_list:
+        if label_parser:
+            list_label = [label_parser.get_label(filename) for filename in filenames]
+            if random_list:
+                filenames, _ = train_test_split(filenames,
+                                                test_size=0,
+                                                random_state=RandomState(),
+                                                stratify=list_label)
+            else:
+                filenames, _ = train_test_split(filenames,
+                                                test_size=0,
+                                                random_state=42,
+                                                stratify=list_label)
+        elif random_list:
             shuffle(filenames)
         else:
             filenames.sort()
