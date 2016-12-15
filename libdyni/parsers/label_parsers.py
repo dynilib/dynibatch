@@ -31,4 +31,3 @@ class CSVLabelParser:
 
     def get_labels(self):
         return self._label_dict
-

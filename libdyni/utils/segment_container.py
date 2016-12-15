@@ -195,7 +195,7 @@ def create_segment_containers_from_seg_file(seg_file_path_tuple,
     if not isinstance(seg_file_path_tuple, tuple):
         raise TypeError("seg_file_path_tuple must be a tuple")
 
-    if not audio_file_ext in ALLOWED_AUDIO_EXT:
+    if audio_file_ext not in ALLOWED_AUDIO_EXT:
         raise exceptions.ParameterError(
             "{} is not an allowed audio file extension")
 

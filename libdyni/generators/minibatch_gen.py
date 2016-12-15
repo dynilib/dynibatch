@@ -71,7 +71,6 @@ class MiniBatchGen:
 
         # get activity detection
         if "activity_detection" in config:
-
             act_det_config = config["activity_detection"]
 
             if act_det_config["name"] == "simple":
@@ -156,6 +155,15 @@ class MiniBatchGen:
                 active_segments_only=False,
                 with_targets=False,
                 with_filenames=False):
+        """
+            Produce a minibatch generator
+
+            Args:
+                active_segments_only: data returned only contain activities
+                with_targets: return labels associated to the data
+                with_filenames: return filenames where the data were taken
+            Return: data + targets (if with_targets) + filenames (if with_filenames)
+        """
 
         if self.n_features == 1:
             minibatch = np.empty((self.batch_size, 1, self.n_time_bins),
