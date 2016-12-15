@@ -47,13 +47,13 @@ class MiniBatchGen:
                 config_path: path to the JSON config file
             Returns a minibatch generator
         """
-        
+
         frame_feature_extractors = set()
-        
+
         # parse json file
         with open(config_path) as config_file:
             config = json.loads(config_file.read())
-        
+
         # audio and short-term frames config
         sample_rate = config["sample_rate"]
         win_size = config["win_size"]
@@ -61,12 +61,11 @@ class MiniBatchGen:
 
         # segment config
         seg_duration = config["seg_duration"]
-        seg_overlap = config["seg_overlap"]
 
         # minibatch config
         batch_size = config["batch_size"]
-        num_frames_per_seg = int(seg_duration * sample_rate / hop_size)   
-        
+        num_frames_per_seg = int(seg_duration * sample_rate / hop_size)
+
         # create a parser to get the labels from the label file
         label_parser = label_parsers.CSVLabelParser(config["label_file_path"])
 
@@ -126,7 +125,7 @@ class MiniBatchGen:
             [act_det, ffc_ext],
             ff_pro=ff_pro,
             audio_root=config["audio_root"])
-    
+
         # create and start the segment container generator that will use all the objects
         # above to generate for every audio files a segment container containing the list
         # of segments with the labels, the feature and an "activity detected" boolean
@@ -137,12 +136,12 @@ class MiniBatchGen:
             label_parser=label_parser,
             seg_duration=config["seg_duration"],
             seg_overlap=config["seg_overlap"])
-    
+
         return  MiniBatchGen(sc_gen,
-                              feat_config['name'],
-                              batch_size,
-                              feature.size,
-                              num_frames_per_seg)
+                             feat_config['name'],
+                             batch_size,
+                             feature.size,
+                             num_frames_per_seg)
 
 
     def start(self):
@@ -159,9 +158,11 @@ class MiniBatchGen:
                 with_filenames=False):
 
         if self.n_features == 1:
-            minibatch = np.empty((self.batch_size, 1, self.n_time_bins), dtype=np.float32)
+            minibatch = np.empty((self.batch_size, 1, self.n_time_bins),
+                                 dtype=np.float32)
         else:
-            minibatch = np.empty((self.batch_size, 1, self.n_features, self.n_time_bins), dtype=np.float32)
+            minibatch = np.empty((self.batch_size, 1, self.n_features, self.n_time_bins),
+                                 dtype=np.float32)
 
         if with_filenames:
             filenames = np.empty((self.batch_size), dtype="|U200")
@@ -191,9 +192,11 @@ class MiniBatchGen:
 
                         # create new arrays (alternatively, arrays could be copied when yielded)
                         if self.n_features == 1:
-                            minibatch = np.empty((self.batch_size, 1, self.n_time_bins), dtype=np.float32)
+                            minibatch = np.empty((self.batch_size, 1, self.n_time_bins),
+                                                 dtype=np.float32)
                         else:
-                            minibatch = np.empty((self.batch_size, 1, self.n_features, self.n_time_bins), dtype=np.float32)
+                            minibatch = np.empty((self.batch_size, 1, self.n_features, self.n_time_bins),
+                                                 dtype=np.float32)
 
                         if with_targets:
                             data.append(targets)

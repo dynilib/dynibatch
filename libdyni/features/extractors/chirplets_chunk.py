@@ -10,7 +10,7 @@ LOGGER = logging.getLogger(__name__)
 class ChirpletsChunkExtractor(SegmentFeatureExtractor):
     """Ugly chirplets-specific chunk extractor.
     Waiting for chirplets code to be integrated to libdyni.
-    
+
     Attributes:
         sample_rate (int): sample rate in Hz
         chirplets_root (str): path to chirplets root

@@ -1,6 +1,6 @@
 import os
-import joblib
 import re
+import joblib
 
 import soundfile as sf
 
@@ -25,7 +25,7 @@ class SegmentContainer:
     @property
     def segments(self):
         return self._segments
-    
+
     @segments.setter
     def segments(self, segments):
         self._segments = segments
@@ -105,13 +105,12 @@ def create_segment_containers_from_audio_files(audio_root, **kwargs):
                 continue  # only get audio files
 
             audio_path_tuple = (
-                    audio_root,
-                    os.path.relpath(os.path.join(
-                        root, filename), audio_root))
+                audio_root,
+                os.path.relpath(os.path.join(root, filename), audio_root))
 
             yield create_segment_containers_from_audio_file(
-                    audio_path_tuple,
-                    **kwargs)
+                audio_path_tuple,
+                **kwargs)
 
 
 def create_segment_containers_from_audio_file(audio_path_tuple, **kwargs):
@@ -164,24 +163,23 @@ def create_segment_containers_from_seg_files(seg_file_root,
             if not ext == seg_file_ext:
                 continue  # only get seg files
 
-            seg_file_path_tuple = (seg_file_root,
-                    os.path.relpath(
-                        os.path.join(
-                            root,
-                            filename.replace(seg_file_ext, audio_file_ext)),
-                        seg_file_root))
+            seg_file_path_tuple = (
+                seg_file_root,
+                os.path.relpath(
+                    os.path.join(root, filename.replace(seg_file_ext, audio_file_ext)),
+                    seg_file_root))
 
             yield create_segment_containers_from_seg_file(
-                    seg_file_path_tuple,
-                    audio_file_ext,
-                    seg_file_ext,
-                    seg_file_separator)
-        
+                seg_file_path_tuple,
+                audio_file_ext,
+                seg_file_ext,
+                seg_file_separator)
+
 
 def create_segment_containers_from_seg_file(seg_file_path_tuple,
-                                             audio_file_ext=".wav",
-                                             seg_file_ext=".seg",
-                                             seg_file_separator="\t"):
+                                            audio_file_ext=".wav",
+                                            seg_file_ext=".seg",
+                                            seg_file_separator="\t"):
     """
     Args:
         - seg_file_path_tuple: seg file path as a tuple (<audio root>,
@@ -198,14 +196,14 @@ def create_segment_containers_from_seg_file(seg_file_path_tuple,
         raise TypeError("seg_file_path_tuple must be a tuple")
 
     if not audio_file_ext in ALLOWED_AUDIO_EXT:
-        raise exceptions.ParameterError("{} is not an allowed audio file " +
-                "extension")
+        raise exceptions.ParameterError(
+            "{} is not an allowed audio file extension")
 
     with open(os.path.join(*seg_file_path_tuple), "r") as f:
 
         sc = SegmentContainer(
-                seg_file_path_tuple[1].replace(seg_file_ext,
-                                              audio_file_ext))
+            seg_file_path_tuple[1].replace(seg_file_ext,
+                                           audio_file_ext))
         for line in f:
             start_time, end_time, label = _parse_segment_file_line(
                 line, seg_file_separator)
@@ -240,11 +238,12 @@ def create_fixed_duration_segments(file_duration, seg_duration, seg_overlap=0.5)
 
 def _parse_segment_file_line(line, field_separator):
 
-    pattern = re.compile("^\s*[0-9]+\.[0-9]+\s*" + re.escape(field_separator) +
-            "\s*[0-9]+\.[0-9]+\s*" + re.escape(field_separator) + "\s*.+\s*$")
+    pattern = re.compile(
+        "^\s*[0-9]+\.[0-9]+\s*" + re.escape(field_separator) +
+        "\s*[0-9]+\.[0-9]+\s*" + re.escape(field_separator) + "\s*.+\s*$")
     if not line.count(field_separator) == 2 and re.match(pattern, line):
-        raise exceptions.ParsingError("Cannot parse line '{}'".
-                format(line))
+        raise exceptions.ParsingError(
+            "Cannot parse line '{}'".format(line))
 
     tmp = line.split(field_separator)
     start_time = float(tmp[0].strip())

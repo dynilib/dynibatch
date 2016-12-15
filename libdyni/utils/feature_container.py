@@ -23,8 +23,8 @@ class FeatureContainer:
         Returns a list of booleans"""
         return [name in self.features and not
                 self.features.get(name).get("data") is None and
-                config == self.features.get(name).get("config",
-                                             dict()) for name, config in features]
+                config == self.features.get(name).get("config", dict())
+                for name, config in features]
 
     @staticmethod
     def load(path):

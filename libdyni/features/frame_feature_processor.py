@@ -40,7 +40,7 @@ class FrameFeatureProcessor(object):
         if not all(isinstance(fe, ffe.FrameFeatureExtractor)
                    for fe in feature_extractors):
             raise TypeError('All feature extractors must be instances of ' +
-                    'FrameFeatureExtractor.')
+                            'FrameFeatureExtractor.')
 
         # TODO (jul): convert some attributes to properties to make them
         # immutable?
