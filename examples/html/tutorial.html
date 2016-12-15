@@ -11766,7 +11766,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">libdyni.utils.segment_container</span> <span class="k">import</span> <span class="n">create_segment_containers_from_audio_files</span>
@@ -11774,10 +11774,10 @@ div#notebook {
 
 
 <span class="c1"># create a segment container generator</span>
-<span class="n">sc_gen</span> <span class="o">=</span> <span class="n">create_segment_containers_from_audio_files</span><span class="p">(</span><span class="s2">&quot;../../tests/data&quot;</span><span class="p">)</span>
+<span class="n">sc_gen</span> <span class="o">=</span> <span class="n">create_segment_containers_from_audio_files</span><span class="p">(</span><span class="s2">&quot;../../tests/data/full_set&quot;</span><span class="p">)</span>
 
 <span class="c1"># instanciate the label parser (labels.csv contains the pairs file/label)</span>
-<span class="n">parser</span> <span class="o">=</span> <span class="n">CSVLabelParser</span><span class="p">(</span><span class="s2">&quot;../../tests/data/labels.csv&quot;</span><span class="p">)</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">CSVLabelParser</span><span class="p">(</span><span class="s2">&quot;../../tests/data/full_set/labels.csv&quot;</span><span class="p">)</span>
 
 <span class="c1"># now for every segment container, set and show the label</span>
 <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">sc_gen</span><span class="p">:</span>
@@ -11795,8 +11795,9 @@ div#notebook {
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Label for file ID0132.wav: {&#39;bird_c&#39;}
-Label for file ID1238.wav: {&#39;bird_d&#39;}
+<pre>Label for file ID0132.wav: {2}
+Label for file ID1238.wav: {3}
+Label for file ID1322.wav: {3}
 </pre>
 </div>
 </div>
@@ -11816,7 +11817,7 @@ Label for file ID1238.wav: {&#39;bird_d&#39;}
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
@@ -11830,7 +11831,7 @@ Label for file ID1238.wav: {&#39;bird_d&#39;}
 <span class="n">pylab</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
 
 <span class="c1"># data</span>
-<span class="n">audio_root</span> <span class="o">=</span> <span class="s2">&quot;../../tests/data&quot;</span>
+<span class="n">audio_root</span> <span class="o">=</span> <span class="s2">&quot;../../tests/data/full_set&quot;</span>
 <span class="n">audio_filename</span> <span class="o">=</span> <span class="s2">&quot;ID0132.wav&quot;</span>
 
 <span class="c1"># create and execute an audio frame generator</span>
@@ -11861,11 +11862,11 @@ Label for file ID1238.wav: {&#39;bird_d&#39;}
 </div>
 </div>
 
-<div class="output_area"><div class="prompt output_prompt">Out[2]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[3]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>[&lt;matplotlib.lines.Line2D at 0x7f6d38bcc208&gt;]</pre>
+<pre>[&lt;matplotlib.lines.Line2D at 0x7fe67646db38&gt;]</pre>
 </div>
 
 </div>
@@ -12536,7 +12537,7 @@ gOtEcW5xAAAAAElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">libdyni.generators.segment_container_gen</span> <span class="k">import</span> <span class="n">SegmentContainerGenerator</span>
@@ -12547,9 +12548,9 @@ gOtEcW5xAAAAAElFTkSuQmCC
 <span class="kn">from</span> <span class="nn">libdyni.features.frame_feature_processor</span> <span class="k">import</span> <span class="n">FrameFeatureProcessor</span>
 <span class="kn">from</span> <span class="nn">libdyni.features.segment_feature_processor</span> <span class="k">import</span> <span class="n">SegmentFeatureProcessor</span>
 <span class="kn">from</span> <span class="nn">libdyni.features.extractors.frame_feature_chunk</span> <span class="k">import</span> <span class="n">FrameFeatureChunkExtractor</span>
-<span class="kn">from</span> <span class="nn">libdyni.features.extractors.activity_detection</span> <span class="k">import</span> <span class="n">ActivityDetection</span>
+<span class="kn">from</span> <span class="nn">libdyni.features.activity_detection.simple</span> <span class="k">import</span> <span class="n">Simple</span>
 <span class="kn">from</span> <span class="nn">libdyni.parsers</span> <span class="k">import</span> <span class="n">label_parsers</span>
-<span class="kn">from</span> <span class="nn">libdyni.utils.batch</span> <span class="k">import</span> <span class="n">gen_minibatches</span>
+<span class="kn">from</span> <span class="nn">libdyni.generators.minibatch_gen</span> <span class="k">import</span> <span class="n">MiniBatchGen</span>
 
 
 <span class="c1">#################</span>
@@ -12580,16 +12581,12 @@ gOtEcW5xAAAAAElFTkSuQmCC
 <span class="n">n_features</span> <span class="o">=</span> <span class="n">n_mels</span>
 <span class="n">n_time_bins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">seg_duration</span> <span class="o">*</span> <span class="n">sample_rate</span> <span class="o">/</span> <span class="n">hop_size</span><span class="p">)</span>
 
-<span class="c1"># sorted list of labels for the audio files in audio_root</span>
-<span class="c1"># the file/label pairs are defined in label.csv</span>
-<span class="n">labels</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="s2">&quot;bird_c&quot;</span><span class="p">,</span> <span class="s2">&quot;bird_d&quot;</span><span class="p">])</span>
-
 <span class="c1">##############</span>
 <span class="c1"># Processing #</span>
 <span class="c1">##############</span>
 
 <span class="c1"># create a parser to get the labels from the labels.csv file</span>
-<span class="n">parser</span> <span class="o">=</span> <span class="n">label_parsers</span><span class="o">.</span><span class="n">CSVLabelParser</span><span class="p">(</span><span class="s2">&quot;../../tests/data/labels.csv&quot;</span><span class="p">)</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">label_parsers</span><span class="o">.</span><span class="n">CSVLabelParser</span><span class="p">(</span><span class="s2">&quot;../../tests/data/full_set/labels.csv&quot;</span><span class="p">)</span>
 
 <span class="c1"># create needed short-term (aka frame-based) feature extractors</span>
 <span class="n">en_ext</span> <span class="o">=</span> <span class="n">EnergyExtractor</span><span class="p">()</span> <span class="c1"># needed for the activity detection</span>
@@ -12605,15 +12602,13 @@ gOtEcW5xAAAAAElFTkSuQmCC
 <span class="n">af_gen</span> <span class="o">=</span> <span class="n">AudioFrameGen</span><span class="p">(</span><span class="n">win_size</span><span class="o">=</span><span class="n">win_size</span><span class="p">,</span> <span class="n">hop_size</span><span class="o">=</span><span class="n">hop_size</span><span class="p">)</span>
 
 <span class="c1"># create a frame feature processor, in charge of computing all short-term features</span>
-<span class="n">ff_pro</span> <span class="o">=</span> <span class="n">FrameFeatureProcessor</span><span class="p">(</span>
-    <span class="n">af_gen</span><span class="p">,</span>
-    <span class="p">[</span><span class="n">en_ext</span><span class="p">,</span> <span class="n">sf_ext</span><span class="p">,</span> <span class="n">mel_ext</span><span class="p">])</span>
+<span class="n">ff_pro</span> <span class="o">=</span> <span class="n">FrameFeatureProcessor</span><span class="p">(</span><span class="n">af_gen</span><span class="p">,</span>
+                               <span class="p">[</span><span class="n">en_ext</span><span class="p">,</span> <span class="n">sf_ext</span><span class="p">,</span> <span class="n">mel_ext</span><span class="p">])</span>
 
 <span class="c1"># create needed segment-based feature extractors</span>
 <span class="n">ffc_ext</span> <span class="o">=</span> <span class="n">FrameFeatureChunkExtractor</span><span class="p">(</span><span class="n">mel_ext</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-<span class="n">act_det</span> <span class="o">=</span> <span class="n">ActivityDetection</span><span class="p">(</span>
-        <span class="n">energy_threshold</span><span class="o">=</span><span class="n">energy_threshold</span><span class="p">,</span>
-        <span class="n">spectral_flatness_threshold</span><span class="o">=</span><span class="n">spectral_flatness_threshold</span><span class="p">)</span>
+<span class="n">act_det</span> <span class="o">=</span> <span class="n">Simple</span><span class="p">(</span><span class="n">energy_threshold</span><span class="o">=</span><span class="n">energy_threshold</span><span class="p">,</span>
+                 <span class="n">spectral_flatness_threshold</span><span class="o">=</span><span class="n">spectral_flatness_threshold</span><span class="p">)</span>
 
 <span class="c1"># create a segment feature processor, in charge of computing all segment-based features</span>
 <span class="c1"># (here only chunks of mel spectra sequences)</span>
@@ -12625,51 +12620,34 @@ gOtEcW5xAAAAAElFTkSuQmCC
 <span class="c1"># create and start the segment container generator that will use all the objects above to generate</span>
 <span class="c1"># for every audio files a segment container containing the list of segments with the labels,</span>
 <span class="c1"># the mel spectra and an &quot;activity detected&quot; boolean attribute</span>
-<span class="n">sc_gen</span> <span class="o">=</span> <span class="n">SegmentContainerGenerator</span><span class="p">(</span>
-       <span class="n">audio_root</span><span class="p">,</span>       
-       <span class="n">sf_pro</span><span class="p">,</span>
-       <span class="n">label_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">,</span> 
-       <span class="n">seg_duration</span><span class="o">=</span><span class="n">seg_duration</span><span class="p">,</span>
-       <span class="n">seg_overlap</span><span class="o">=</span><span class="n">seg_overlap</span><span class="p">)</span>
-<span class="n">sc_gen</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">sc_gen</span> <span class="o">=</span> <span class="n">SegmentContainerGenerator</span><span class="p">(</span><span class="n">audio_root</span><span class="p">,</span>       
+                                   <span class="n">sf_pro</span><span class="p">,</span>
+                                   <span class="n">label_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">,</span>
+                                   <span class="n">seg_duration</span><span class="o">=</span><span class="n">seg_duration</span><span class="p">,</span>
+                                   <span class="n">seg_overlap</span><span class="o">=</span><span class="n">seg_overlap</span><span class="p">)</span>
 
 <span class="c1"># generate mini-batches</span>
-<span class="n">mb_gen</span> <span class="o">=</span> <span class="n">gen_minibatches</span><span class="p">(</span>
-    <span class="n">sc_gen</span><span class="p">,</span>
-    <span class="n">labels</span><span class="p">,</span>
-    <span class="n">batch_size</span><span class="p">,</span>
-    <span class="n">n_features</span><span class="p">,</span>
-    <span class="n">n_time_bins</span><span class="p">,</span>
-    <span class="n">mel_ext</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-    <span class="n">active_segment_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">mb_gen</span> <span class="o">=</span> <span class="n">MiniBatchGen</span><span class="p">(</span><span class="n">sc_gen</span><span class="p">,</span>
+                      <span class="n">mel_ext</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                      <span class="n">batch_size</span><span class="p">,</span>
+                      <span class="n">n_features</span><span class="p">,</span>
+                      <span class="n">n_time_bins</span><span class="p">)</span>
+
+<span class="n">mb_gen</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">mb</span> <span class="o">=</span> <span class="n">mb_gen</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">active_segments_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">with_targets</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># get the first mini-batch</span>
-<span class="n">data</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">mb_gen</span><span class="p">)</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">mb</span><span class="p">)</span>
 </pre></div>
 
 </div>
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>/home/jul/Development/miniconda/envs/libdyni/lib/python3.5/site-packages/librosa/core/audio.py:37: UserWarning: Could not import scikits.samplerate. Falling back to scipy.signal
-  warnings.warn(&#39;Could not import scikits.samplerate. &#39;
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Show the label indices of the first mini-batch</span>
@@ -12687,7 +12665,7 @@ gOtEcW5xAAAAAElFTkSuQmCC
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Label indices:
-[0 0 0 0 0 0 0 0 0 0]
+[2 2 2 2 2 2 2 2 2 2]
 </pre>
 </div>
 </div>
@@ -12698,7 +12676,7 @@ gOtEcW5xAAAAAElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># and the data</span>
@@ -12809,6 +12787,19 @@ gOtEcW5xAAAAAElFTkSuQmCC
 </div>
 </div>
 
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+</div>
 </div>
 </div>
 
