@@ -137,7 +137,7 @@ class MiniBatchGen:
             seg_overlap=config["seg_overlap"])
 
         return  MiniBatchGen(sc_gen,
-                             feat_config['name'],
+                             feature.name,
                              batch_size,
                              feature.size,
                              num_frames_per_seg)
