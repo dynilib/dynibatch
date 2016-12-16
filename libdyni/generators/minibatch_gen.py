@@ -117,7 +117,7 @@ class MiniBatchGen:
         )
 
         # create needed segment-based feature extractors
-        ffc_ext = FrameFeatureChunkExtractor(feat_config['name'])
+        ffc_ext = FrameFeatureChunkExtractor(feature.name)
 
         # create a segment feature processor, in charge of computing all segment-based features
         sf_pro = SegmentFeatureProcessor(
