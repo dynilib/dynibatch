@@ -276,11 +276,6 @@ class TestFrameFeatureProcessor:
         assert (created and
                 np.isclose(0.02682975, fc.features["energy"]["data"][10]))
 
-    def test_execute_typeerror(self, af_gen):
-        with pytest.raises(TypeError):
-            ac_ext = AudioChunkExtractor(22050)
-            FrameFeatureProcessor(af_gen, [ac_ext])
-
     def test_execute_existing_fc(self, af_gen, en_ext):
         ff_pro = FrameFeatureProcessor(af_gen, [en_ext], DATA_PATH)
         fc, created = ff_pro.execute(TEST_AUDIO_PATH_TUPLE)
