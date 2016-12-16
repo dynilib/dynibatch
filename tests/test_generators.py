@@ -474,3 +474,15 @@ class TestMiniBatchGenFromConfig:
             mb_gen.execute()
         except Exception as e:
             pytest.fail("Unexpected Error: {}".format(e))
+
+    def test_consume_minibatch(self):
+        mb_gen = MiniBatchGen.from_json_config_file("tests/config/config_test.json")
+        mb_gen.start()
+        mb = mb_gen.execute()
+        try:
+            data = next(mb, None)
+            while mb:
+                data = next(mb, None)
+
+        except Exception as e:
+            pytest.fail("Unexpected Error: {}".format(e))
