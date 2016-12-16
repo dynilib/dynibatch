@@ -480,9 +480,8 @@ class TestMiniBatchGenFromConfig:
         mb_gen.start()
         mb = mb_gen.execute()
         try:
-            data = next(mb, None)
-            while data:
-                data = next(mb, None)
+            for data in mb:
+                pass
 
         except Exception as e:
             pytest.fail("Unexpected Error: {}".format(e))
