@@ -44,8 +44,8 @@ class SegmentFeatureProcessor:
         Returns tuple (segment_container, segment_container_has_features)
         """
 
-        LOGGER.debug("Processing {} segment container".format(
-            segment_container.audio_path))
+        LOGGER.debug("Processing %s segment container",
+                     segment_container.audio_path)
 
         # check if segment container already has all wanted features
         has_features = segment_container.has_features(

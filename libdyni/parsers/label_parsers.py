@@ -21,7 +21,7 @@ class CSVLabelParser:
                     sline = line.split(",")
 
                     label = sline[1].strip()
-                    if not label in self._label_dict:
+                    if label not in self._label_dict:
                         self._label_dict[label] = len(self._label_dict)
 
                     self._labels[sline[0].strip()] = self._label_dict[label]
@@ -31,4 +31,3 @@ class CSVLabelParser:
 
     def get_labels(self):
         return self._label_dict
-

@@ -10,11 +10,7 @@ class SpectralFlatnessExtractor(SpectrumFrameFeatureExtractor):
 
     @property
     def name(self):
-        """
-        Returns:
-            The name of SegmentFrameBasedFeatureExtractor, it is also its type
-        """
-        return "spectral_flatness"
+        return self.__module__.split('.')[-1]
 
     @property
     def size(self):

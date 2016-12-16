@@ -12,7 +12,10 @@ class CommonLabels(Enum):
 
 
 class Segment:
-    """TODO"""
+    """
+        Segments are the base elements to be fed to the learning algorithm: 1 segment = 1 observation.
+    """
+
     def __init__(self, start_time, end_time, label=CommonLabels.unknown):
 
         if start_time < 0 or end_time <= start_time:

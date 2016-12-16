@@ -4,13 +4,12 @@ import numpy as np
 
 from libdyni.features.extractors import segment_feature as sfe
 
-__all__ = ['ActivityDetection']
 
 logger = logging.getLogger(__name__)
 
 
-class ActivityDetection(sfe.SegmentFrameBasedFeatureExtractor):
-    """Bird activity detection, based on signal energy and voiceness
+class Simple(sfe.SegmentFrameBasedFeatureExtractor):
+    """simple bird activity detection, based on signal energy and voiceness
 
     The activity detection is executed on all segments of a segment container.
     Activity is detected when the mean frame-based energy of the segment is
@@ -35,11 +34,7 @@ class ActivityDetection(sfe.SegmentFrameBasedFeatureExtractor):
 
     @property
     def name(self):
-        """
-        Returns:
-            The name of SegmentFrameBasedFeatureExtractor, it is also its type
-        """
-        return 'activity_detection'
+        return self.__module__.split('.')[-1]
 
     def execute(self, segment_container, feature_container):
         """Executes the activity detection.
@@ -67,14 +62,17 @@ class ActivityDetection(sfe.SegmentFrameBasedFeatureExtractor):
             start_ind = feature_container.time_to_frame_ind(s.start_time)
             end_ind = start_ind + feature_container.time_to_frame_ind(
                 s.duration)
-            
+
             if (end_ind > len(feature_container.features["energy"]["data"]) or
                     end_ind > len(feature_container.features["spectral_flatness"]["data"])):
                 # that can happen if the end time of the latest analysis frame
                 # is earlier than the end time of the segment
-                logger.debug("Segment {0:.3f}-{1:.3f} from {2} end time".format(s.start_time,
-                                s.end_time, segment_container.audio_path) +
-                        " exceed feature container size for extractor {}.".format(self.name))
+                logger.debug(
+                    "Segment {0:.3f}-{1:.3f} from {2} end time".format(
+                        s.start_time,
+                        s.end_time,
+                        segment_container.audio_path) +
+                    " exceed feature container size for extractor {}.".format(self.name))
                 break
 
             en = feature_container.features["energy"]["data"][start_ind:end_ind]

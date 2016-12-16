@@ -1,14 +1,11 @@
 {
-  "audio_root": "tests/data/full_set",
-  "features_root": "tests/data/feature_root_test",
-  "label_file_path": "tests/data/full_set/labels.csv",
-  "datasplit_path": "TODO",
+  "audio_root": "../../tests/data/full_set",
+  "label_file_path": "../../tests/data/full_set/labels.csv",
   "sample_rate": 22050,
   "win_size":256,
   "hop_size":128,
   "seg_duration": 0.2,
   "seg_overlap": 0.5,
-  "scaler_path": "TODO",
   "batch_size":50,
 
   "activity_detection" : {
@@ -22,5 +19,5 @@
       "n_mels": 64,
       "min_freq": 0,
       "max_freq": 11025
-    }  
+    }
 }

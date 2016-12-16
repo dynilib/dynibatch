@@ -15,8 +15,8 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
         n_mfcc (int)
         min_freq (int)
         max_freq (int)
-        log_amp (boolean): whether or not to compute the log of the mel
-        spectrum.
+        top_db (float): threshold log amplitude at top_db below the peak:
+            max(log(S)) - top_db
     """
 
     def __init__(self,
@@ -47,11 +47,7 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
 
     @property
     def name(self):
-        """
-        Returns:
-            The name of SegmentFrameBasedFeatureExtractor, it is also its type
-        """
-        return 'mfcc'
+        return self.__module__.split('.')[-1]
 
     @property
     def size(self):
@@ -75,5 +71,5 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
         Returns the mfcc as a numpy array
         """
         data = librosa.logamplitude(np.dot(self._mel_basis, data),
-                top_db=self.top_db)
+                                    top_db=self.top_db)
         return np.dot(self._dct_basis, data)

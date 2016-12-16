@@ -1,6 +1,6 @@
 import os
-import pytest
 import random
+import pytest
 
 import numpy as np
 
@@ -53,14 +53,13 @@ class TestSegment:
         segment_to_list.append(segment.Segment(0.6, 1.1))
         segment_to_list.append(segment.Segment(1.7, 1.8))
         segment_to_list.append(segment.Segment(2.5, 2.7))
-        segment.set_segment_labels(
-                segment_from_list,
-                segment_to_list,
-                overlap_ratio=0.5)
-        assert (segment_to_list[0].label == "a" and
-            segment_to_list[1].label == "a" and
-            segment_to_list[2].label == "b" and
-            segment_to_list[3].label == segment.CommonLabels.unknown)
+        segment.set_segment_labels(segment_from_list,
+                                   segment_to_list,
+                                   overlap_ratio=0.5)
+        assert(segment_to_list[0].label == "a" and
+               segment_to_list[1].label == "a" and
+               segment_to_list[2].label == "b" and
+               segment_to_list[3].label == segment.CommonLabels.unknown)
 
     def test_set_segment_labels_overlap(self):
         segment_from_list = []
@@ -68,12 +67,11 @@ class TestSegment:
         segment_to_list = []
         segment_to_list.append(segment.Segment(0.4, 1.5))
         segment_to_list.append(segment.Segment(0.6, 1.5))
-        segment.set_segment_labels(
-                segment_from_list,
-                segment_to_list,
-                overlap_ratio=0.5)
-        assert (segment_to_list[0].label == "a" and
-            segment_to_list[1].label == segment.CommonLabels.unknown)
+        segment.set_segment_labels(segment_from_list,
+                                   segment_to_list,
+                                   overlap_ratio=0.5)
+        assert(segment_to_list[0].label == "a" and
+               segment_to_list[1].label == segment.CommonLabels.unknown)
 
 
 class TestSegmentContainer:
@@ -173,8 +171,9 @@ class TestSegmentContainer:
         file_duration = 12.5
         seg_duration = 0.4
         seg_overlap = 0.3
-        segments = segment_container.create_fixed_duration_segments(file_duration, seg_duration,
-                seg_overlap)
+        segments = segment_container.create_fixed_duration_segments(file_duration,
+                                                                    seg_duration,
+                                                                    seg_overlap)
         assert np.all(np.isclose(np.asarray([s.duration for s in segments]),
                                  seg_duration))
 
@@ -182,8 +181,9 @@ class TestSegmentContainer:
         file_duration = 12.5
         seg_duration = 0.4
         seg_overlap = 0.3
-        segments = segment_container.create_fixed_duration_segments(file_duration, seg_duration,
-            seg_overlap)
+        segments = segment_container.create_fixed_duration_segments(file_duration,
+                                                                    seg_duration,
+                                                                    seg_overlap)
         assert len(segments) == utils.get_n_overlapping_chunks(
             file_duration,
             seg_duration,
@@ -201,22 +201,20 @@ class TestFeatureContainer:
 
     def test_init(self):
         try:
-            feature_container.FeatureContainer(
-                    "fake_audio_path",
-                    22050,
-                    256,
-                    128)
+            feature_container.FeatureContainer("fake_audio_path",
+                                               22050,
+                                               256,
+                                               128)
         except:
             pytest.fail("Unexpected Error")
 
     def test_features_ok(self):
         features = ["feat1", "feat2"]
         configs = ["config1", "config2"]
-        fc =  feature_container.FeatureContainer(
-                    "fake_audio_path",
-                    22050,
-                    256,
-                    128)
+        fc = feature_container.FeatureContainer("fake_audio_path",
+                                                22050,
+                                                256,
+                                                128)
         fc.features["feat1"]["data"] = np.random.sample(10)
         fc.features["feat1"]["config"] = "config1"
         fc.features["feat2"]["data"] = np.random.sample(10)
@@ -226,11 +224,10 @@ class TestFeatureContainer:
     def test_features_wrong_features(self):
         features = ["feat1", "feat3"]
         configs = ["config1", "config2"]
-        fc =  feature_container.FeatureContainer(
-                    "fake_audio_path",
-                    22050,
-                    256,
-                    128)
+        fc = feature_container.FeatureContainer("fake_audio_path",
+                                                22050,
+                                                256,
+                                                128)
         fc.features["feat1"]["data"] = np.random.sample(10)
         fc.features["feat1"]["config"] = "config1"
         fc.features["feat2"]["data"] = np.random.sample(10)
@@ -240,11 +237,10 @@ class TestFeatureContainer:
     def test_features_wrong_configs(self):
         features = ["feat1", "feat2"]
         configs = ["config1", "config3"]
-        fc =  feature_container.FeatureContainer(
-                    "fake_audio_path",
-                    22050,
-                    256,
-                    128)
+        fc = feature_container.FeatureContainer("fake_audio_path",
+                                                22050,
+                                                256,
+                                                128)
         fc.features["feat1"]["data"] = np.random.sample(10)
         fc.features["feat1"]["config"] = "config1"
         fc.features["feat2"]["data"] = np.random.sample(10)
@@ -254,11 +250,10 @@ class TestFeatureContainer:
     def test_features_empty_features(self):
         features = ["feat1", "feat2"]
         configs = ["config1", "config2"]
-        fc =  feature_container.FeatureContainer(
-                    "fake_audio_path",
-                    22050,
-                    256,
-                    128)
+        fc = feature_container.FeatureContainer("fake_audio_path",
+                                                22050,
+                                                256,
+                                                128)
         fc.features["feat1"]["data"] = np.random.sample(10)
         fc.features["feat1"]["config"] = "config1"
         fc.features["feat2"]["config"] = "config2"
@@ -268,11 +263,10 @@ class TestFeatureContainer:
         sample_rate = 22050
         win_size = 256
         hop_size = 128
-        fc =  feature_container.FeatureContainer(
-                    "fake_audio_path",
-                    sample_rate,
-                    win_size,
-                    hop_size)
+        fc = feature_container.FeatureContainer("fake_audio_path",
+                                                sample_rate,
+                                                win_size,
+                                                hop_size)
         assert fc.time_to_frame_ind(0.015) == 2
 
 
@@ -290,10 +284,9 @@ class TestUtils:
             start += hop
             n_chunks += 1
 
-        assert utils.get_n_overlapping_chunks(
-                file_duration,
-                seg_duration,
-                seg_overlap) == n_chunks
+        assert utils.get_n_overlapping_chunks(file_duration,
+                                              seg_duration,
+                                              seg_overlap) == n_chunks
 
 
 class TestDatasplit:
@@ -333,8 +326,10 @@ class TestDatasplit:
             train_set = set(random.sample(file_set, 700))
             validation_set = set(random.sample(file_set-train_set, 100))
             test_set = set(random.sample(file_set-train_set-validation_set, 200))
-            datasplit_utils.create_datasplit(train_set, validation_set, test_set,
-                    name="fake_datasplit")
+            datasplit_utils.create_datasplit(train_set,
+                                             validation_set,
+                                             test_set,
+                                             name="fake_datasplit")
         except Exception as e:
             pytest.fail("Unexpected Error: {}".format(e))
 
@@ -343,36 +338,35 @@ class TestDatasplit:
         train_set = set(random.sample(file_set, 700))
         validation_set = set(random.sample(file_set-train_set, 100))
         test_set = set(random.sample(file_set-train_set-validation_set, 200))
-        ds = datasplit_utils.create_datasplit(train_set, validation_set, test_set,
-                name="fake_datasplit")
+        ds = datasplit_utils.create_datasplit(train_set,
+                                              validation_set,
+                                              test_set,
+                                              name="fake_datasplit")
         assert (len(ds["sets"]["train"]) == 700 and
                 len(ds["sets"]["validation"]) == 100 and
                 len(ds["sets"]["test"]) == 200)
 
     def test_create_random_datasplit_init(self, sc_list):
         try:
-            datasplit_utils.create_random_datasplit(
-                    sc_list,
-                    train_ratio=0.7,
-                    validation_ratio=0.1,
-                    test_ratio=0.2)
+            datasplit_utils.create_random_datasplit(sc_list,
+                                                    train_ratio=0.7,
+                                                    validation_ratio=0.1,
+                                                    test_ratio=0.2)
         except Exception as e:
             pytest.fail("Unexpected Error: {}".format(e))
 
     def test_create_random_datasplit_set_dont_sumup_to_one(self, sc_list):
         with pytest.raises(ParameterError):
-            datasplit_utils.create_random_datasplit(
-                    sc_list,
-                    train_ratio=0.8,
-                    validation_ratio=0.1,
-                    test_ratio=0.2)
+            datasplit_utils.create_random_datasplit(sc_list,
+                                                    train_ratio=0.8,
+                                                    validation_ratio=0.1,
+                                                    test_ratio=0.2)
 
     def test_create_random_datasplit_count(self, sc_list):
-        ds = datasplit_utils.create_random_datasplit(
-                    sc_list,
-                    train_ratio=0.7,
-                    validation_ratio=0.1,
-                    test_ratio=0.2)
+        ds = datasplit_utils.create_random_datasplit(sc_list,
+                                                     train_ratio=0.7,
+                                                     validation_ratio=0.1,
+                                                     test_ratio=0.2)
         assert (len(ds["sets"]["train"]) == 700 and
                 len(ds["sets"]["validation"]) == 100 and
                 len(ds["sets"]["test"]) == 200)

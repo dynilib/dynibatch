@@ -10,7 +10,7 @@ LOGGER = logging.getLogger(__name__)
 class ChirpletsChunkExtractor(SegmentFeatureExtractor):
     """Ugly chirplets-specific chunk extractor.
     Waiting for chirplets code to be integrated to libdyni.
-    
+
     Attributes:
         sample_rate (int): sample rate in Hz
         chirplets_root (str): path to chirplets root
@@ -52,7 +52,7 @@ class ChirpletsChunkExtractor(SegmentFeatureExtractor):
 
             # chirplets are not computed over the whole file (only over the greatest power
             # of 2 smaller than file size), so not all segments will have data
-            if not end_ind < chirplets.shape[0]:
+            if end_ind >= chirplets.shape[0]:
                 break
 
             data = chirplets[start_ind:end_ind]

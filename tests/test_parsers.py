@@ -1,5 +1,5 @@
-import pytest
 import os
+import pytest
 
 from libdyni.parsers.label_parsers import CSVLabelParser
 
@@ -21,4 +21,3 @@ class TestCSVLabelParser:
         parser = CSVLabelParser(TEST_CSVLABEL_PATH)
         classes = parser.get_labels()
         assert parser.get_label("ID0131") == classes["bird_b"]
-

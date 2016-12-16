@@ -14,7 +14,7 @@ from libdyni.features.extractors.energy import EnergyExtractor
 from libdyni.features.extractors.spectral_flatness import SpectralFlatnessExtractor
 from libdyni.features.extractors.mel_spectrum import MelSpectrumExtractor
 # activity detection
-from libdyni.features.extractors.activity_detection import ActivityDetection
+from libdyni.features.activity_detection.simple import Simple
 # utils
 from libdyni.parsers import label_parsers
 from libdyni.utils import exceptions
@@ -47,13 +47,13 @@ class MiniBatchGen:
                 config_path: path to the JSON config file
             Returns a minibatch generator
         """
-        
+
         frame_feature_extractors = set()
-        
+
         # parse json file
         with open(config_path) as config_file:
             config = json.loads(config_file.read())
-        
+
         # audio and short-term frames config
         sample_rate = config["sample_rate"]
         win_size = config["win_size"]
@@ -61,28 +61,26 @@ class MiniBatchGen:
 
         # segment config
         seg_duration = config["seg_duration"]
-        seg_overlap = config["seg_overlap"]
 
         # minibatch config
         batch_size = config["batch_size"]
-        num_frames_per_seg = int(seg_duration * sample_rate / hop_size)   
-        
+        num_frames_per_seg = int(seg_duration * sample_rate / hop_size)
+
         # create a parser to get the labels from the label file
         label_parser = label_parsers.CSVLabelParser(config["label_file_path"])
 
         # get activity detection
         if "activity_detection" in config:
-
             act_det_config = config["activity_detection"]
 
-            if act_det_config["name"] == "default":
+            if act_det_config["name"] == "simple":
 
                 # frame features needed for the activity detection
                 en_ext = EnergyExtractor()
                 sf_ext = SpectralFlatnessExtractor()
                 frame_feature_extractors |= set([en_ext, sf_ext])
 
-                act_det = ActivityDetection(
+                act_det = Simple(
                     energy_threshold=act_det_config["energy_threshold"],
                     spectral_flatness_threshold=act_det_config["spectral_flatness_threshold"])
 
@@ -119,14 +117,14 @@ class MiniBatchGen:
         )
 
         # create needed segment-based feature extractors
-        ffc_ext = FrameFeatureChunkExtractor(feat_config['name'])
+        ffc_ext = FrameFeatureChunkExtractor(feature.name)
 
         # create a segment feature processor, in charge of computing all segment-based features
         sf_pro = SegmentFeatureProcessor(
             [act_det, ffc_ext],
             ff_pro=ff_pro,
             audio_root=config["audio_root"])
-    
+
         # create and start the segment container generator that will use all the objects
         # above to generate for every audio files a segment container containing the list
         # of segments with the labels, the feature and an "activity detected" boolean
@@ -137,12 +135,12 @@ class MiniBatchGen:
             label_parser=label_parser,
             seg_duration=config["seg_duration"],
             seg_overlap=config["seg_overlap"])
-    
+
         return  MiniBatchGen(sc_gen,
-                              feat_config['name'],
-                              batch_size,
-                              feature.size,
-                              num_frames_per_seg)
+                             feature.name,
+                             batch_size,
+                             feature.size,
+                             num_frames_per_seg)
 
 
     def start(self):
@@ -157,11 +155,22 @@ class MiniBatchGen:
                 active_segments_only=False,
                 with_targets=False,
                 with_filenames=False):
+        """
+            Produce a minibatch generator
+
+            Args:
+                active_segments_only: data returned only contain activities
+                with_targets: return labels associated to the data
+                with_filenames: return filenames where the data were taken
+            Return: data + targets (if with_targets) + filenames (if with_filenames)
+        """
 
         if self.n_features == 1:
-            minibatch = np.empty((self.batch_size, 1, self.n_time_bins), dtype=np.float32)
+            minibatch = np.empty((self.batch_size, 1, self.n_time_bins),
+                                 dtype=np.float32)
         else:
-            minibatch = np.empty((self.batch_size, 1, self.n_features, self.n_time_bins), dtype=np.float32)
+            minibatch = np.empty((self.batch_size, 1, self.n_features, self.n_time_bins),
+                                 dtype=np.float32)
 
         if with_filenames:
             filenames = np.empty((self.batch_size), dtype="|U200")
@@ -170,9 +179,9 @@ class MiniBatchGen:
 
         count = 0
         for sc in self.segment_container_gen.execute():
-            logger.debug("iterate_minibatch: {}".format(sc.audio_path))
+            logger.debug("iterate_minibatch: %s", sc.audio_path)
             for s in sc.segments:
-                if not self.feature_name in s.features:
+                if self.feature_name not in s.features:
                     break
                 if not active_segments_only or (hasattr(s, 'activity') and s.activity):
                     if self.n_features == 1:
@@ -191,9 +200,11 @@ class MiniBatchGen:
 
                         # create new arrays (alternatively, arrays could be copied when yielded)
                         if self.n_features == 1:
-                            minibatch = np.empty((self.batch_size, 1, self.n_time_bins), dtype=np.float32)
+                            minibatch = np.empty((self.batch_size, 1, self.n_time_bins),
+                                                 dtype=np.float32)
                         else:
-                            minibatch = np.empty((self.batch_size, 1, self.n_features, self.n_time_bins), dtype=np.float32)
+                            minibatch = np.empty((self.batch_size, 1, self.n_features, self.n_time_bins),
+                                                 dtype=np.float32)
 
                         if with_targets:
                             data.append(targets)
