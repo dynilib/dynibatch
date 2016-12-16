@@ -481,7 +481,7 @@ class TestMiniBatchGenFromConfig:
         mb = mb_gen.execute()
         try:
             data = next(mb, None)
-            while mb:
+            while data:
                 data = next(mb, None)
 
         except Exception as e:
