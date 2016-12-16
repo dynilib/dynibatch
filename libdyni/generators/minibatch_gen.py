@@ -134,7 +134,8 @@ class MiniBatchGen:
             sf_pro,
             label_parser=label_parser,
             seg_duration=config["seg_duration"],
-            seg_overlap=config["seg_overlap"])
+            seg_overlap=config["seg_overlap"],
+            random_order=config["random_batch"])
 
         return  MiniBatchGen(sc_gen,
                              feature.name,
