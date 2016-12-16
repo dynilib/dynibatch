@@ -101,7 +101,7 @@ def create_segment_containers_from_audio_files(audio_root, **kwargs):
         for filename in sorted(filenames):
 
             _, extension = os.path.splitext(filename)
-            if not extension in ALLOWED_AUDIO_EXT:
+            if extension not in ALLOWED_AUDIO_EXT:
                 continue  # only get audio files
 
             audio_path_tuple = (
@@ -160,7 +160,7 @@ def create_segment_containers_from_seg_files(seg_file_root,
         for filename in filenames:
 
             _, ext = os.path.splitext(filename)
-            if not ext == seg_file_ext:
+            if ext != seg_file_ext:
                 continue  # only get seg files
 
             seg_file_path_tuple = (
@@ -219,7 +219,7 @@ def load_segment_containers_from_dir(path):
         for filename in filenames:
 
             _, ext = os.path.splitext(filename)
-            if not ext == SC_EXTENSION:
+            if ext != SC_EXTENSION:
                 continue  # only get segment containers
 
             yield SegmentContainer.load(os.path.join(root, filename))
@@ -241,7 +241,7 @@ def _parse_segment_file_line(line, field_separator):
     pattern = re.compile(
         "^\s*[0-9]+\.[0-9]+\s*" + re.escape(field_separator) +
         "\s*[0-9]+\.[0-9]+\s*" + re.escape(field_separator) + "\s*.+\s*$")
-    if not line.count(field_separator) == 2 and re.match(pattern, line):
+    if line.count(field_separator) != 2 and re.match(pattern, line):
         raise exceptions.ParsingError(
             "Cannot parse line '{}'".format(line))
 

@@ -82,8 +82,8 @@ class FrameFeatureProcessor(object):
                 has_features = fc.has_features([(fe.name, fe.config) \
                         for fe in self.feature_extractors])
                 if all(has_features):
-                    LOGGER.debug(
-                        'Feature container {} with all required features found!'.format(feature_container_path))
+                    LOGGER.debug('Feature container %s with all required features found!',
+                                 feature_container_path)
                     return fc, False
 
         # TODO (jul) move to audio_frame_gen module?

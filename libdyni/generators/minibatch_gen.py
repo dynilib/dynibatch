@@ -179,9 +179,9 @@ class MiniBatchGen:
 
         count = 0
         for sc in self.segment_container_gen.execute():
-            logger.debug("iterate_minibatch: {}".format(sc.audio_path))
+            logger.debug("iterate_minibatch: %s", sc.audio_path)
             for s in sc.segments:
-                if not self.feature_name in s.features:
+                if self.feature_name not in s.features:
                     break
                 if not active_segments_only or (hasattr(s, 'activity') and s.activity):
                     if self.n_features == 1:
