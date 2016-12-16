@@ -11766,7 +11766,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">libdyni.utils.segment_container</span> <span class="k">import</span> <span class="n">create_segment_containers_from_audio_files</span>
@@ -11817,7 +11817,7 @@ Label for file ID1322.wav: {3}
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
@@ -11862,11 +11862,11 @@ Label for file ID1322.wav: {3}
 </div>
 </div>
 
-<div class="output_area"><div class="prompt output_prompt">Out[3]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[2]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>[&lt;matplotlib.lines.Line2D at 0x7fe67646db38&gt;]</pre>
+<pre>[&lt;matplotlib.lines.Line2D at 0x7f1a02cddf28&gt;]</pre>
 </div>
 
 </div>
@@ -12537,7 +12537,7 @@ gOtEcW5xAAAAAElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">libdyni.generators.segment_container_gen</span> <span class="k">import</span> <span class="n">SegmentContainerGenerator</span>
@@ -12644,10 +12644,25 @@ gOtEcW5xAAAAAElFTkSuQmCC
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>/home/vroger/miniconda3/envs/libdyni/lib/python3.5/site-packages/librosa/core/audio.py:37: UserWarning: Could not import scikits.samplerate. Falling back to scipy.signal
+  warnings.warn(&#39;Could not import scikits.samplerate. &#39;
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Show the label indices of the first mini-batch</span>
@@ -12676,7 +12691,7 @@ gOtEcW5xAAAAAElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># and the data</span>
@@ -12787,6 +12802,37 @@ gOtEcW5xAAAAAElFTkSuQmCC
 </div>
 </div>
 
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Do-the-same-with-a-config-file">Do the same with a config file<a class="anchor-link" href="#Do-the-same-with-a-config-file">&#182;</a></h1><p>Config files are written in JSON and contain all the parameter to automatically create a minibatch generator.
+An example of config file is provided in example_config.json</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">libdyni.generators.minibatch_gen</span> <span class="k">import</span> <span class="n">MiniBatchGen</span>
+
+<span class="n">mb_gen</span> <span class="o">=</span> <span class="n">MiniBatchGen</span><span class="o">.</span><span class="n">from_json_config_file</span><span class="p">(</span><span class="s2">&quot;example_config.json&quot;</span><span class="p">)</span>
+<span class="n">mb_gen</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">mb</span> <span class="o">=</span> <span class="n">mb_gen</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">active_segments_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">with_targets</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># get the first mini-batch</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">mb</span><span class="p">)</span>
+</pre></div>
+
+</div>
 </div>
 </div>
 
