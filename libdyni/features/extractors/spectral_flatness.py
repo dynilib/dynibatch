@@ -9,7 +9,7 @@ class SpectralFlatnessExtractor(SpectrumFrameFeatureExtractor):
         super().__init__()
     
     @classmethod
-    def from_config_dict(cls, _, _):
+    def from_config_dict(cls, audio_frame_config, feature_config):
         return cls()
 
     @property

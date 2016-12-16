@@ -25,7 +25,7 @@
   },
 
   "feature": {
-      "name": "mel",
+      "name": "mel_spectrum",
       "config": {
           "n_mels": 64,
           "min_freq": 0,
