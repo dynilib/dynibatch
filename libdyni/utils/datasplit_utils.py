@@ -78,14 +78,12 @@ def create_random_datasplit(segment_containers,
         test_file_subset = file_set - train_file_subset - validation_file_subset
 
         if len(train_file_subset) < 2:
-            logger.warning(
-                "The number of files in the train set for label {0} is smaller than 2".format(c))
+            logger.warning("The number of files in the train set for label %s is smaller than 2", c)
         if validation_ratio > 0 and len(validation_file_subset) < 2:
             logger.warning(
-                "The number of files in the validation set for label {0} is smaller than 2".format(c))
+                "The number of files in the validation set for label %s is smaller than 2", c)
         if len(test_file_subset) < 2:
-            logger.warning(
-                "The number of files in the test set for label {0} is smaller than 2".format(c))
+            logger.warning("The number of files in the test set for label %s is smaller than 2", c)
 
         train_set |= train_file_subset
         test_set |= test_file_subset

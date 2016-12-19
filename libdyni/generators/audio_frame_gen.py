@@ -55,7 +55,7 @@ class AudioFrameGen:
         """ Yields the windowed frames"""
 
         # make sure the file is mono
-        if not sf.info(path).channels == 1:
+        if sf.info(path).channels != 1:
             raise Exception("Please use only mono files")
 
         for frame in sf.blocks(path,

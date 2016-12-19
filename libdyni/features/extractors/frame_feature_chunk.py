@@ -44,11 +44,13 @@ class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
             if end_ind > len(feature_container.features[self.name]["data"]):
                 # that can happen if the end time of the latest analysis frame
                 # is earlier than the end time of the segment
-                logger.debug("Segment {0:.3f}-{1:.3f} from {2} end time".format(s.start_time,
-                                s.end_time, segment_container.audio_path) +
-                        " exceed feature container size for feature {}.".format(self.name))
+                logger.debug("Segment {0:.3f}-{1:.3f} from {2} end time".format(
+                    s.start_time,
+                    s.end_time,
+                    segment_container.audio_path) +
+                             " exceed feature container size for feature {}.".format(self.name))
                 break
-            
+
             data = feature_container.features[self.name]["data"][start_ind:end_ind]
             if self.pca:
                 data = self.pca.transform(data)

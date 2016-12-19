@@ -81,5 +81,5 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
         Returns the mfcc as a numpy array
         """
         data = librosa.logamplitude(np.dot(self._mel_basis, data),
-                top_db=self.top_db)
+                                    top_db=self.top_db)
         return np.dot(self._dct_basis, data)

@@ -80,14 +80,17 @@ class Simple(sfe.SegmentFrameBasedFeatureExtractor):
             start_ind = feature_container.time_to_frame_ind(s.start_time)
             end_ind = start_ind + feature_container.time_to_frame_ind(
                 s.duration)
-            
+
             if (end_ind > len(feature_container.features["energy"]["data"]) or
                     end_ind > len(feature_container.features["spectral_flatness"]["data"])):
                 # that can happen if the end time of the latest analysis frame
                 # is earlier than the end time of the segment
-                logger.debug("Segment {0:.3f}-{1:.3f} from {2} end time".format(s.start_time,
-                                s.end_time, segment_container.audio_path) +
-                        " exceed feature container size for extractor {}.".format(self.name))
+                logger.debug(
+                    "Segment {0:.3f}-{1:.3f} from {2} end time".format(
+                        s.start_time,
+                        s.end_time,
+                        segment_container.audio_path) +
+                    " exceed feature container size for extractor {}.".format(self.name))
                 break
 
             en = feature_container.features["energy"]["data"][start_ind:end_ind]

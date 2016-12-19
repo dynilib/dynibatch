@@ -45,7 +45,7 @@ class SegmentContainerGenerator:
         # process
         for sc in self._sc_gen:
 
-            if self._dataset and not sc.audio_path in self._dataset:
+            if self._dataset and sc.audio_path not in self._dataset:
                 continue
 
             if self._label_parser:
