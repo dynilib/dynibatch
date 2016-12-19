@@ -85,7 +85,7 @@ class MiniBatchGen:
         frame_feature_config_list.append(config["feature"])
 
         # instanciate all frame feature extractors
-        # TODO check redundancy
+        # TODO check for redundancy
         frame_feature_extractors = []
         for ff_cfg in frame_feature_config_list:
             frame_feature_extractors.append(extractors.factory(
@@ -134,7 +134,7 @@ class MiniBatchGen:
                     seg_overlap=seg_config["seg_overlap"])
 
         mb_gen_dict = {}
-        for set_name, sc_gen in sc_gen_dict:
+        for set_name, sc_gen in sc_gen_dict.items():
             mb_gen_dict[set_name] = MiniBatchGen(sc_gen,
                               config['feature']['name'],
                               batch_size,

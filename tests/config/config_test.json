@@ -1,8 +1,8 @@
 {
   "audio_root": "tests/data/full_set",
-  "features_root": "tests/data/feature_root_test",
+  "features_root": "tests/data/feature_root",
   "label_file_path": "tests/data/full_set/labels.csv",
-  "datasplit_path": "TODO",
+  "datasplit_path": "",
   "batch_size":50,
 
   "segment_config" : {

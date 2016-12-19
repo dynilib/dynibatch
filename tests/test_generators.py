@@ -1,6 +1,7 @@
 import pytest
 import os
 import joblib
+import shutil
 
 import numpy as np
 import soundfile as sf
@@ -31,6 +32,8 @@ FULL_DATA_PATH = os.path.join(DATA_PATH, "full_set")
 TEST_AUDIO_PATH_TUPLE_1 = (REDUCED_DATA_PATH, "ID0132.wav")
 TEST_AUDIO_PATH_TUPLE_2 = (REDUCED_DATA_PATH, "ID1238.wav")
 TEST_CSVLABEL_PATH = os.path.join(REDUCED_DATA_PATH, "labels.csv")
+
+FEATURE_ROOT = os.path.join(DATA_PATH, "feature_root")
 
 class TestAudioFrameGen:
 
@@ -492,9 +495,15 @@ class TestMiniBatchGenFromConfig:
             pytest.fail("Unexpected Error: {}".format(e))
 
     def test_get_minibatch(self):
-        mb_gen = MiniBatchGen.from_json_config_file("tests/config/config_test.json")
-        mb_gen.start()
+        mb_gen_dict = MiniBatchGen.from_json_config_file("tests/config/config_test.json")
         try:
-            mb_gen.execute()
+            if not os.path.exists(FEATURE_ROOT):
+                os.makedirs(FEATURE_ROOT)
+            for set_name, mb_gen in mb_gen_dict.items():
+                mb_gen.start()
+                mb_gen_e = mb_gen.execute()
+                next(mb_gen_e)
         except Exception as e:
             pytest.fail("Unexpected Error: {}".format(e))
+        finally:
+            shutil.rmtree(FEATURE_ROOT)
