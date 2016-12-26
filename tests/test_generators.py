@@ -483,3 +483,85 @@ class TestMiniBatchGenFromConfig:
             pytest.fail("Unexpected Error: {}".format(e))
         finally:
             shutil.rmtree(FEATURE_ROOT)
+    
+    def test_data(self):
+        """
+        Compare data from "manual" constructor to config file-based constructor.
+        """
+        
+        # construct minibatch generator "manually"
+
+        sample_rate = 22050
+        win_size = 256
+        hop_size = 128
+        energy_threshold = 0.2
+        spectral_flatness_threshold = 0.3
+        seg_duration = 0.2
+        seg_overlap = 0.5
+
+        batch_size = 50
+        num_features = 64
+        num_time_bins = 34
+
+        af_gen = AudioFrameGen(win_size=win_size, hop_size=hop_size)
+
+        en_ext = EnergyExtractor()
+        sf_ext = SpectralFlatnessExtractor()
+        mel_ext = MelSpectrumExtractor(sample_rate=sample_rate,
+                                       fft_size=win_size,
+                                       n_mels=64,
+                                       min_freq=0,
+                                       max_freq=sample_rate/2)
+        ff_pro = FrameFeatureProcessor(af_gen,
+                                       [en_ext, sf_ext, mel_ext],
+                                       FULL_DATA_PATH)
+
+        ffc_ext = FrameFeatureChunkExtractor("mel_spectrum")
+        act_det = Simple(energy_threshold=energy_threshold,
+                         spectral_flatness_threshold=spectral_flatness_threshold)
+        sf_pro = SegmentFeatureProcessor([act_det, ffc_ext],
+                                         ff_pro=ff_pro,
+                                         audio_root=FULL_DATA_PATH)
+
+        parser = CSVLabelParser(TEST_CSVLABEL_PATH)
+        sc_gen = SegmentContainerGenerator(FULL_DATA_PATH,
+                                           sf_pro,
+                                           label_parser=parser,
+                                           seg_duration=seg_duration,
+                                           seg_overlap=seg_overlap)
+
+        mb_gen_1 = MiniBatchGen(sc_gen,
+                              "mel_spectrum",
+                              batch_size,
+                              num_features,
+                              num_time_bins)
+
+        
+        # construct minibatch generator from config file
+        mb_gen_dict = MiniBatchGen.from_json_config_file("tests/config/config_test.json")
+        mb_gen_2 = mb_gen_dict["default"]
+
+        # execute and compare
+        try:
+            mb_gen_1.start()
+            mb_gen_1_e = mb_gen_1.execute(active_segments_only=True,
+                                      with_targets=True,
+                                      with_filenames=False)
+
+            mb_gen_2.start()
+            mb_gen_2_e = mb_gen_2.execute(active_segments_only=True,
+                                      with_targets=True,
+                                      with_filenames=False)
+
+            if not os.path.exists(FEATURE_ROOT):
+                os.makedirs(FEATURE_ROOT)
+
+            for mb1, mb2 in zip(mb_gen_1_e, mb_gen_2_e):
+                assert np.all(mb1[0] == mb2[0])
+                assert np.all(mb1[1] == mb2[1])
+
+        except Exception as e:
+            pytest.fail("Unexpected Error: {}".format(e))
+
+        finally:
+            shutil.rmtree(FEATURE_ROOT)
