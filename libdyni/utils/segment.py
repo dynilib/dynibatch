@@ -28,6 +28,9 @@ class Segment:
         self._label = label
         self._features = dict()
 
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
     @property
     def start_time(self):
         return self._start_time
