@@ -46,15 +46,15 @@ class MiniBatchGen:
                 config_path: path to the JSON config file
             Returns a minibatch generator
         """
-        
+
         # list of frame feature names and config required to compute segment
         # based features
         frame_feature_config_list = []
-        
+
         # parse json file
         with open(config_path) as config_file:
             config = json.loads(config_file.read())
-        
+
         # audio frame config
         af_config = config["audio_frame_config"]
 
@@ -63,9 +63,9 @@ class MiniBatchGen:
 
         # minibatch config
         batch_size = config["batch_size"]
-        num_frames_per_seg = int(seg_config["seg_duration"] * 
-                af_config["sample_rate"] / af_config["hop_size"])   
-        
+        num_frames_per_seg = int(seg_config["seg_duration"] *
+                af_config["sample_rate"] / af_config["hop_size"])
+
         # create a parser to get the labels from the label file
         label_parser = label_parsers.CSVLabelParser(config["label_file_path"])
 
@@ -109,7 +109,7 @@ class MiniBatchGen:
             [act_det, ffc_ext],
             ff_pro=ff_pro,
             audio_root=config["audio_root"])
-    
+
         datasplit_path = config.get("datasplit_path")
         sc_gen_dict = {}
         if not datasplit_path:
@@ -120,7 +120,9 @@ class MiniBatchGen:
                 sf_pro,
                 label_parser=label_parser,
                 seg_duration=seg_config["seg_duration"],
-                seg_overlap=seg_config["seg_overlap"])
+                seg_overlap=seg_config["seg_overlap"],
+                is_random_order=config["random_batch"],
+                is_stratify=config["random_batch"])
         else:
             # else create one per set in the datasplit
             datasplit = joblib.load(datasplit_path)
@@ -131,7 +133,9 @@ class MiniBatchGen:
                     label_parser=label_parser,
                     dataset=datasplit["sets"][set_name],
                     seg_duration=seg_config["seg_duration"],
-                    seg_overlap=seg_config["seg_overlap"])
+                    seg_overlap=seg_config["seg_overlap"],
+                    is_random_order=config["random_batch"],
+                    is_stratify=config["random_batch"])
 
         mb_gen_dict = {}
         for set_name, sc_gen in sc_gen_dict.items():

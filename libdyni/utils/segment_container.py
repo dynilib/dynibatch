@@ -1,7 +1,11 @@
 import os
 import re
+from random import shuffle
 import joblib
 
+from sklearn.model_selection import train_test_split
+import numpy as np
+from numpy.random import RandomState
 import soundfile as sf
 
 from libdyni.utils.segment import Segment
@@ -17,6 +21,9 @@ class SegmentContainer:
     def __init__(self, audio_path):
         self._audio_path = audio_path  # relative to some root data path
         self._segments = []
+
+    def __eq__(self, other): 
+        return self.__dict__ == other.__dict__
 
     @property
     def audio_path(self):
@@ -85,25 +92,48 @@ class SegmentContainer:
         return [False for f in features]
 
 
-def create_segment_containers_from_audio_files(audio_root, **kwargs):
+def create_segment_containers_from_audio_files(audio_root,
+                                               is_random_list=False,
+                                               label_parser=None,
+                                               **kwargs):
     """
     Args:
         audio_root
+        random_list
+        label_parser if a label_parser is specify the result will be stratified
         (seg_duration
         (seg_overlap)
     Yields: segment container
     """
 
     for root, _, filenames in os.walk(audio_root):
-
-        # TODO: randomize (we use sorted so that the list is the always the same
-        # for the unit tests)
-        for filename in sorted(filenames):
-
+        audio_filenames = []
+        for filename in filenames:
             _, extension = os.path.splitext(filename)
-            if extension not in ALLOWED_AUDIO_EXT:
-                continue  # only get audio files
+            if extension in ALLOWED_AUDIO_EXT:
+                audio_filenames.append(filename)  # only get audio files
 
+        if label_parser:
+            list_label = [label_parser.get_label(filename) for filename in audio_filenames]
+            if is_random_list:
+                train, test = train_test_split(audio_filenames,
+                                               test_size=len(np.unique(list_label)),
+                                               random_state=RandomState(),
+                                               stratify=list_label)
+            else:
+                train, test = train_test_split(audio_filenames,
+                                                      test_size=len(np.unique(list_label)),
+                                                      random_state=42,
+                                                      stratify=list_label)
+
+            # it is a fix, because if n_test < n_classes raise an error
+            audio_filenames = train + test
+        elif is_random_list:
+            shuffle(audio_filenames)
+        else:
+            audio_filenames.sort()
+
+        for filename in audio_filenames:
             audio_path_tuple = (
                 audio_root,
                 os.path.relpath(os.path.join(root, filename), audio_root))

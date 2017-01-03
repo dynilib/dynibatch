@@ -7,6 +7,8 @@
   "seg_duration": 0.2,
   "seg_overlap": 0.5,
   "batch_size":50,
+  "random_batch":0,
+  "batch_stratification":0,
 
   "activity_detection" : {
     "name": "simple",

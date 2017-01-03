@@ -4,6 +4,8 @@
   "label_file_path": "tests/data/full_set/labels.csv",
   "datasplit_path": "",
   "batch_size":50,
+  "random_batch":0,
+  "batch_stratification":0,
 
   "segment_config" : {
       "seg_duration": 0.2,
@@ -31,5 +33,5 @@
           "min_freq": 0,
           "max_freq": 11025
       }
-    }  
+    }
 }

@@ -18,7 +18,9 @@ class SegmentContainerGenerator:
                  label_parser=None,
                  dataset=None,
                  seg_duration=0.5,
-                 seg_overlap=0.9):
+                 seg_overlap=0.9,
+                 is_random_order=False,
+                 is_stratify=False):
 
         self._audio_root = audio_root
         self._label_parser = label_parser
@@ -26,12 +28,20 @@ class SegmentContainerGenerator:
         self._dataset = dataset
         self._seg_duration = seg_duration
         self._seg_overlap = seg_overlap
+        self._is_random_order = is_random_order
+        if is_stratify:
+            self._stratification = self._label_parser
+        else:
+            self._stratification = None
+
         self._sc_gen = None
 
     def start(self):
         # create segment container with fixed-length segments
         self._sc_gen = create_segment_containers_from_audio_files(
             self._audio_root,
+            self._is_random_order,
+            label_parser=self._stratification,
             seg_duration=self._seg_duration,
             seg_overlap=self._seg_overlap)
 
