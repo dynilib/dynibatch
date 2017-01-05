@@ -22,7 +22,7 @@ class SegmentContainer:
         self._audio_path = audio_path  # relative to some root data path
         self._segments = []
 
-    def __eq__(self, other): 
+    def __eq__(self, other):
         return self.__dict__ == other.__dict__
 
     @property
@@ -106,41 +106,41 @@ def create_segment_containers_from_audio_files(audio_root,
     Yields: segment container
     """
 
+    audio_filenames = []
     for root, _, filenames in os.walk(audio_root):
-        audio_filenames = []
         for filename in filenames:
             _, extension = os.path.splitext(filename)
             if extension in ALLOWED_AUDIO_EXT:
-                audio_filenames.append(filename)  # only get audio files
+                audio_filenames.append(os.path.join(root, filename))  # only get audio files
 
-        if label_parser:
-            list_label = [label_parser.get_label(filename) for filename in audio_filenames]
-            if is_random_list:
-                train, test = train_test_split(audio_filenames,
-                                               test_size=len(np.unique(list_label)),
-                                               random_state=RandomState(),
-                                               stratify=list_label)
-            else:
-                train, test = train_test_split(audio_filenames,
-                                                      test_size=len(np.unique(list_label)),
-                                                      random_state=42,
-                                                      stratify=list_label)
-
-            # it is a fix, because if n_test < n_classes raise an error
-            audio_filenames = train + test
-        elif is_random_list:
-            shuffle(audio_filenames)
+    if label_parser:
+        list_label = [label_parser.get_label(filename) for filename in audio_filenames]
+        if is_random_list:
+            train, test = train_test_split(audio_filenames,
+                                           test_size=len(np.unique(list_label)),
+                                           random_state=RandomState(),
+                                           stratify=list_label)
         else:
-            audio_filenames.sort()
+            train, test = train_test_split(audio_filenames,
+                                           test_size=len(np.unique(list_label)),
+                                           random_state=42,
+                                           stratify=list_label)
 
-        for filename in audio_filenames:
-            audio_path_tuple = (
-                audio_root,
-                os.path.relpath(os.path.join(root, filename), audio_root))
+        # it is a fix, because if n_test < n_classes raise an error
+        audio_filenames = train + test
+    elif is_random_list:
+        shuffle(audio_filenames)
+    else:
+        audio_filenames.sort()
 
-            yield create_segment_containers_from_audio_file(
-                audio_path_tuple,
-                **kwargs)
+    for filename in audio_filenames:
+        audio_path_tuple = (
+            audio_root,
+            os.path.relpath(filename, audio_root))
+
+        yield create_segment_containers_from_audio_file(
+            audio_path_tuple,
+            **kwargs)
 
 
 def create_segment_containers_from_audio_file(audio_path_tuple, **kwargs):

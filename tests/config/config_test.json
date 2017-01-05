@@ -1,7 +1,7 @@
 {
-  "audio_root": "tests/data/full_set",
+  "audio_root": "tests/data",
   "features_root": "tests/data/feature_root",
-  "label_file_path": "tests/data/full_set/labels.csv",
+  "label_file_path": "tests/data/labels.csv",
   "datasplit_path": "",
   "batch_size":50,
   "random_batch":0,

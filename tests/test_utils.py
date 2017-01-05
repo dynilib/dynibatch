@@ -14,17 +14,15 @@ from libdyni.parsers import label_parsers
 
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
-REDUCED_DATA_PATH = os.path.join(DATA_PATH, "reduced_set")
-DATA_PATH_FULL_SET = os.path.join(DATA_PATH, "full_set")
 
-TEST_AUDIO_PATH_TUPLE_1 = (REDUCED_DATA_PATH, "ID0132.wav")
-TEST_AUDIO_PATH_TUPLE_2 = (REDUCED_DATA_PATH, "ID1238.wav")
-TEST_SEG_PATH_TUPLE_1 = (REDUCED_DATA_PATH, "ID0132.seg")
+TEST_AUDIO_PATH_TUPLE_1 = (DATA_PATH, "ID0132.wav")
+TEST_AUDIO_PATH_TUPLE_2 = (DATA_PATH, "ID1238.wav")
+TEST_SEG_PATH_TUPLE_1 = (DATA_PATH, "ID0132.seg")
 TEST_DURATION = 15.45
 TEST_N_SEGMENTS = 4
 TEST_FIRST_SEGMENT_DURATION = 0.79
 SEGMENT_CONTAINER_LISTS_TO_GENERATE = 100
-TEST_CSVLABEL_PATH = os.path.join(DATA_PATH_FULL_SET, "labels.csv")
+TEST_CSVLABEL_PATH = os.path.join(DATA_PATH, "labels.csv")
 
 class TestSegment:
 
@@ -143,14 +141,14 @@ class TestSegmentContainer:
 
     def test_create_random_segment_containers(self):
         sc_ref = segment_container.create_segment_containers_from_audio_files(
-            DATA_PATH_FULL_SET,
+            DATA_PATH,
             is_random_list=True,
             label_parser=None)
 
         sc_generated = []
         for _ in range(SEGMENT_CONTAINER_LISTS_TO_GENERATE):
             sc_generated.append(segment_container.create_segment_containers_from_audio_files(
-                DATA_PATH_FULL_SET,
+                DATA_PATH,
                 is_random_list=True,
                 label_parser=None))
 
@@ -166,14 +164,14 @@ class TestSegmentContainer:
         label_parser = label_parsers.CSVLabelParser(TEST_CSVLABEL_PATH)
 
         sc_ref = segment_container.create_segment_containers_from_audio_files(
-            DATA_PATH_FULL_SET,
+            DATA_PATH,
             is_random_list=False,
             label_parser=label_parser)
 
         sc_generated = []
         for _ in range(SEGMENT_CONTAINER_LISTS_TO_GENERATE):
             sc_generated.append(segment_container.create_segment_containers_from_audio_files(
-                DATA_PATH_FULL_SET,
+                DATA_PATH,
                 is_random_list=False,
                 label_parser=label_parser))
 

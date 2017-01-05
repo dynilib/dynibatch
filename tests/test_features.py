@@ -24,7 +24,7 @@ from libdyni.features.extractors.spectral_flatness import SpectralFlatnessExtrac
 from libdyni.generators.audio_frame_gen import AudioFrameGen
 
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), "data/reduced_set")
+DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
 
 TEST_AUDIO_PATH_TUPLE = (DATA_PATH, "ID0132.wav")
 

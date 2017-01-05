@@ -26,12 +26,12 @@ from libdyni.utils import utils
 
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
-REDUCED_DATA_PATH = os.path.join(DATA_PATH, "reduced_set")
-FULL_DATA_PATH = os.path.join(DATA_PATH, "full_set")
 
-TEST_AUDIO_PATH_TUPLE_1 = (REDUCED_DATA_PATH, "ID0132.wav")
-TEST_AUDIO_PATH_TUPLE_2 = (REDUCED_DATA_PATH, "ID1238.wav")
-TEST_CSVLABEL_PATH = os.path.join(REDUCED_DATA_PATH, "labels.csv")
+TEST_AUDIO_PATH_TUPLE_1 = (DATA_PATH, "ID0132.wav")
+TEST_AUDIO_PATH_TUPLE_2 = (DATA_PATH, "ID0133.wav")
+TEST_AUDIO_PATH_TUPLE_3 = (DATA_PATH, "ID1238.wav")
+TEST_AUDIO_PATH_TUPLE_4 = (DATA_PATH, "ID1322.wav")
+TEST_CSVLABEL_PATH = os.path.join(DATA_PATH, "labels.csv")
 
 FEATURE_ROOT = os.path.join(DATA_PATH, "feature_root")
 
@@ -101,11 +101,11 @@ class TestSegmentContainerGenerator:
         sc_list = [sc for sc in sc_gen.execute()]
 
         id0132_data, _ = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
-        id1238_data, _ = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_2))
+        id1238_data, _ = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_4))
 
         first_seg = sc_list[0].segments[0]
         first_seg_ref = id0132_data[:int(seg_duration*sample_rate)]
-        last_seg = sc_list[1].segments[-1]
+        last_seg = sc_list[-1].segments[-1]
         start_time = 0.0
         while start_time + seg_duration < len(id1238_data) / sample_rate:
             start_time += seg_duration * seg_overlap
@@ -113,7 +113,7 @@ class TestSegmentContainerGenerator:
         last_seg_ref = \
             id1238_data[int(start_time*sample_rate):int((start_time+seg_duration)*sample_rate)]
 
-        assert (len(sc_list) == 2 and
+        assert (len(sc_list) == 4 and
                 np.all(first_seg_ref == first_seg.features["audio_chunk"]) and
                 np.all(last_seg_ref == last_seg.features["audio_chunk"]))
 
@@ -123,7 +123,7 @@ class TestMiniBatch:
     @pytest.fixture(scope="module")
     def ac_ext(self):
         sample_rate = 22050
-        return AudioChunkExtractor(REDUCED_DATA_PATH, sample_rate)
+        return AudioChunkExtractor(DATA_PATH, sample_rate)
 
     def test_gen_minibatches_1d(self, ac_ext):
         sample_rate = 22050
@@ -134,28 +134,36 @@ class TestMiniBatch:
         parser = CSVLabelParser(TEST_CSVLABEL_PATH)
         classes = parser.get_labels()
         sf_pro = SegmentFeatureProcessor([ac_ext])
-        sc_gen = SegmentContainerGenerator(REDUCED_DATA_PATH,
+        sc_gen = SegmentContainerGenerator(DATA_PATH,
                                            sf_pro,
                                            label_parser=parser,
                                            seg_duration=seg_duration,
                                            seg_overlap=seg_overlap)
 
         id0132_data, _ = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
-        id1238_data, _ = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_2))
+        id0133_data, _ = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_2))
+        id1238_data, _ = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_3))
+        id1322_data, _ = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_4))
 
         n_epochs = 3
         batch_size = 10
         n_time_bins = int(seg_duration * sample_rate)
 
+        chunk_size = sample_rate * seg_duration
         id0132_n_chunks = utils.get_n_overlapping_chunks(len(id0132_data),
-                                                         sample_rate * seg_duration,
+                                                         chunk_size,
+                                                         seg_overlap)
+        id0133_n_chunks = utils.get_n_overlapping_chunks(len(id0133_data),
+                                                         chunk_size,
                                                          seg_overlap)
         id1238_n_chunks = utils.get_n_overlapping_chunks(len(id1238_data),
-                                                         sample_rate * seg_duration,
+                                                         chunk_size,
+                                                         seg_overlap)
+        id1322_n_chunks = utils.get_n_overlapping_chunks(len(id1322_data),
+                                                         chunk_size,
                                                          seg_overlap)
 
-        id0132_n_minibatches = int(id0132_n_chunks / batch_size)
-        n_minibatches = int((id0132_n_chunks + id1238_n_chunks) / batch_size)
+        n_minibatches = (id0132_n_chunks + id0133_n_chunks + id1238_n_chunks + id1322_n_chunks) // batch_size
 
         mb_gen = MiniBatchGen(sc_gen,
                               "audio_chunk",
@@ -163,44 +171,51 @@ class TestMiniBatch:
                               1,
                               n_time_bins)
 
-        for i in range(n_epochs):
+        for _ in range(n_epochs):
             mb_gen.reset()
             mb_gen_e = mb_gen.execute(with_targets=True,
                                       with_filenames=True)
             count = 0
             start_time = 0.0
-            for data, target, filenames in mb_gen_e:
-                if count < id0132_n_minibatches:
-                    for d, t, f in zip(data, target, filenames):
-                        start_ind = int(start_time * sample_rate)
-                        assert np.all(d == id0132_data[start_ind:start_ind+seg_size])
-                        assert t == classes["bird_c"]
+            chunk_count = 0
+            is_dataset1, is_dataset2, is_dataset3 = [True, True, True]
+            for data, targets, filenames in mb_gen_e:
+                for d, t, f in zip(data, targets, filenames):
+                    start_ind = int(start_time * sample_rate)
+                    if chunk_count < id0132_n_chunks:
                         assert f == "ID0132.wav"
-                        start_time += (1 - seg_overlap) * seg_duration
-                elif count == id0132_n_minibatches:
-                    start_time_reset = False
-                    for i, d in enumerate(zip(data, target, filenames)):
-                        if i < id0132_n_chunks % batch_size:
-                            start_ind = int(start_time * sample_rate)
-                            assert np.all(d[0] == id0132_data[start_ind:start_ind+seg_size])
-                            assert d[1] == classes["bird_c"]
-                            assert d[2] == "ID0132.wav"
-                        else:
-                            if not start_time_reset:
-                                start_time = 0.0
-                                start_time_reset = True
-                            start_ind = int(start_time * sample_rate)
-                            assert np.all(d[0] == id1238_data[start_ind:start_ind+seg_size])
-                            assert d[1] == classes["bird_d"]
-                            assert d[2] == "ID1238.wav"
-                        start_time += (1 - seg_overlap) * seg_duration
-                else:
-                    for d, t, f in zip(data, target, filenames):
-                        start_ind = int(start_time * sample_rate)
-                        assert np.all(d == id1238_data[start_ind:start_ind+seg_size])
-                        assert t == classes["bird_d"]
+                        assert t == classes["bird_c"]
+                        assert np.all(d == id0132_data[start_ind:start_ind+seg_size])
+                    elif chunk_count < id0132_n_chunks + id0133_n_chunks:
+                        if is_dataset1:
+                            is_dataset1 = False
+                            start_time = 0.0
+                            start_ind = 0
+
+                        assert f == "ID0133.wav"
+                        assert t == classes["bird_c"]
+                        assert np.all(d == id0133_data[start_ind:start_ind+seg_size])
+                    elif chunk_count < id0132_n_chunks + id0133_n_chunks + id1238_n_chunks:
+                        if is_dataset2:
+                            is_dataset2 = False
+                            start_time = 0.0
+                            start_ind = 0
+
                         assert f == "ID1238.wav"
-                        start_time += (1 - seg_overlap) * seg_duration
+                        assert t == classes["bird_d"]
+                        assert np.all(d == id1238_data[start_ind:start_ind+seg_size])
+                    else:
+                        if is_dataset3:
+                            is_dataset3 = False
+                            start_time = 0.0
+                            start_ind = 0
+
+                        assert f == "ID1322.wav"
+                        assert t == classes["bird_d"]
+                        assert np.all(d == id1322_data[start_ind:start_ind+seg_size])
+
+                    start_time += (1 - seg_overlap) * seg_duration
+                    chunk_count += 1
                 count += 1
 
             assert count == n_minibatches
@@ -231,7 +246,7 @@ class TestMiniBatch:
                                        max_freq=sample_rate/2)
         ff_pro = FrameFeatureProcessor(af_gen,
                                        [en_ext, sf_ext, mel_ext],
-                                       FULL_DATA_PATH)
+                                       DATA_PATH)
 
         pca = None
         scaler = None
@@ -241,10 +256,10 @@ class TestMiniBatch:
                          spectral_flatness_threshold=spectral_flatness_threshold)
         sf_pro = SegmentFeatureProcessor([act_det, ffc_ext],
                                          ff_pro=ff_pro,
-                                         audio_root=FULL_DATA_PATH)
+                                         audio_root=DATA_PATH)
 
         parser = CSVLabelParser(TEST_CSVLABEL_PATH)
-        sc_gen = SegmentContainerGenerator(FULL_DATA_PATH,
+        sc_gen = SegmentContainerGenerator(DATA_PATH,
                                            sf_pro,
                                            label_parser=parser,
                                            seg_duration=seg_duration,
@@ -259,7 +274,7 @@ class TestMiniBatch:
 
         # compare data in segment and corresponding data in feature container
         for sc in sc_gen_e:
-            fc_path = os.path.join(FULL_DATA_PATH, sc.audio_path.replace(".wav", ".fc.jl"))
+            fc_path = os.path.join(DATA_PATH, sc.audio_path.replace(".wav", ".fc.jl"))
             fc = feature_container.FeatureContainer.load(fc_path)
             for s in sc.segments:
                 if hasattr(s, 'activity') and s.activity:
@@ -318,7 +333,7 @@ class TestMiniBatch:
                                        max_freq=sample_rate/2)
         ff_pro = FrameFeatureProcessor(af_gen,
                                        [en_ext, sf_ext, mel_ext],
-                                       FULL_DATA_PATH)
+                                       DATA_PATH)
 
         pca = None
         scaler = joblib.load(os.path.join(DATA_PATH, "transform/mel64_norm/scaler.jl"))
@@ -328,10 +343,10 @@ class TestMiniBatch:
                          spectral_flatness_threshold=spectral_flatness_threshold)
         sf_pro = SegmentFeatureProcessor([act_det, ffc_ext],
                                          ff_pro=ff_pro,
-                                         audio_root=FULL_DATA_PATH)
+                                         audio_root=DATA_PATH)
 
         parser = CSVLabelParser(TEST_CSVLABEL_PATH)
-        sc_gen = SegmentContainerGenerator(FULL_DATA_PATH,
+        sc_gen = SegmentContainerGenerator(DATA_PATH,
                                            sf_pro,
                                            label_parser=parser,
                                            seg_duration=seg_duration,
@@ -345,7 +360,7 @@ class TestMiniBatch:
 
         # compare data in segment and corresponding data in feature container
         for sc in sc_gen_e:
-            fc_path = os.path.join(FULL_DATA_PATH, sc.audio_path.replace(".wav", ".fc.jl"))
+            fc_path = os.path.join(DATA_PATH, sc.audio_path.replace(".wav", ".fc.jl"))
             fc = feature_container.FeatureContainer.load(fc_path)
             for s in sc.segments:
                 if hasattr(s, 'activity') and s.activity:
@@ -401,7 +416,7 @@ class TestMiniBatch:
                                        max_freq=sample_rate/2)
         ff_pro = FrameFeatureProcessor(af_gen,
                                        [en_ext, sf_ext, mel_ext],
-                                       FULL_DATA_PATH)
+                                       DATA_PATH)
 
         pca = joblib.load(os.path.join(DATA_PATH, "transform/mel64_pca16_norm/pca.jl"))
         scaler = joblib.load(os.path.join(DATA_PATH, "transform/mel64_pca16_norm/scaler.jl"))
@@ -411,10 +426,10 @@ class TestMiniBatch:
                          spectral_flatness_threshold=spectral_flatness_threshold)
         sf_pro = SegmentFeatureProcessor([act_det, ffc_ext],
                                          ff_pro=ff_pro,
-                                         audio_root=FULL_DATA_PATH)
+                                         audio_root=DATA_PATH)
 
         parser = CSVLabelParser(TEST_CSVLABEL_PATH)
-        sc_gen = SegmentContainerGenerator(FULL_DATA_PATH,
+        sc_gen = SegmentContainerGenerator(DATA_PATH,
                                            sf_pro,
                                            label_parser=parser,
                                            seg_duration=seg_duration,
@@ -428,7 +443,7 @@ class TestMiniBatch:
 
         # compare data in segment and corresponding data in feature container
         for sc in sc_gen_e:
-            fc_path = os.path.join(FULL_DATA_PATH, sc.audio_path.replace(".wav", ".fc.jl"))
+            fc_path = os.path.join(DATA_PATH, sc.audio_path.replace(".wav", ".fc.jl"))
             fc = feature_container.FeatureContainer.load(fc_path)
             for s in sc.segments:
                 if hasattr(s, 'activity') and s.activity:
@@ -483,12 +498,12 @@ class TestMiniBatchGenFromConfig:
             pytest.fail("Unexpected Error: {}".format(e))
         finally:
             shutil.rmtree(FEATURE_ROOT)
-    
+
     def test_data(self):
         """
         Compare data from "manual" constructor to config file-based constructor.
         """
-        
+
         # construct minibatch generator "manually"
 
         sample_rate = 22050
@@ -514,17 +529,17 @@ class TestMiniBatchGenFromConfig:
                                        max_freq=sample_rate/2)
         ff_pro = FrameFeatureProcessor(af_gen,
                                        [en_ext, sf_ext, mel_ext],
-                                       FULL_DATA_PATH)
+                                       DATA_PATH)
 
         ffc_ext = FrameFeatureChunkExtractor("mel_spectrum")
         act_det = Simple(energy_threshold=energy_threshold,
                          spectral_flatness_threshold=spectral_flatness_threshold)
         sf_pro = SegmentFeatureProcessor([act_det, ffc_ext],
                                          ff_pro=ff_pro,
-                                         audio_root=FULL_DATA_PATH)
+                                         audio_root=DATA_PATH)
 
         parser = CSVLabelParser(TEST_CSVLABEL_PATH)
-        sc_gen = SegmentContainerGenerator(FULL_DATA_PATH,
+        sc_gen = SegmentContainerGenerator(DATA_PATH,
                                            sf_pro,
                                            label_parser=parser,
                                            seg_duration=seg_duration,
@@ -536,7 +551,7 @@ class TestMiniBatchGenFromConfig:
                               num_features,
                               num_time_bins)
 
-        
+
         # construct minibatch generator from config file
         mb_gen_dict = MiniBatchGen.from_json_config_file("tests/config/config_test.json")
         mb_gen_2 = mb_gen_dict["default"]
