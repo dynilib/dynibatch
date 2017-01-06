@@ -11774,10 +11774,10 @@ div#notebook {
 
 
 <span class="c1"># create a segment container generator</span>
-<span class="n">sc_gen</span> <span class="o">=</span> <span class="n">create_segment_containers_from_audio_files</span><span class="p">(</span><span class="s2">&quot;../../tests/data/full_set&quot;</span><span class="p">)</span>
+<span class="n">sc_gen</span> <span class="o">=</span> <span class="n">create_segment_containers_from_audio_files</span><span class="p">(</span><span class="s2">&quot;../../tests/data&quot;</span><span class="p">)</span>
 
 <span class="c1"># instanciate the label parser (labels.csv contains the pairs file/label)</span>
-<span class="n">parser</span> <span class="o">=</span> <span class="n">CSVLabelParser</span><span class="p">(</span><span class="s2">&quot;../../tests/data/full_set/labels.csv&quot;</span><span class="p">)</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">CSVLabelParser</span><span class="p">(</span><span class="s2">&quot;../../tests/data/labels.csv&quot;</span><span class="p">)</span>
 
 <span class="c1"># now for every segment container, set and show the label</span>
 <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">sc_gen</span><span class="p">:</span>
@@ -11796,6 +11796,7 @@ div#notebook {
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Label for file ID0132.wav: {2}
+Label for file ID0133.wav: {2}
 Label for file ID1238.wav: {3}
 Label for file ID1322.wav: {3}
 </pre>
@@ -11831,7 +11832,7 @@ Label for file ID1322.wav: {3}
 <span class="n">pylab</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
 
 <span class="c1"># data</span>
-<span class="n">audio_root</span> <span class="o">=</span> <span class="s2">&quot;../../tests/data/full_set&quot;</span>
+<span class="n">audio_root</span> <span class="o">=</span> <span class="s2">&quot;../../tests/data&quot;</span>
 <span class="n">audio_filename</span> <span class="o">=</span> <span class="s2">&quot;ID0132.wav&quot;</span>
 
 <span class="c1"># create and execute an audio frame generator</span>
@@ -11866,7 +11867,7 @@ Label for file ID1322.wav: {3}
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>[&lt;matplotlib.lines.Line2D at 0x7f1a02cddf28&gt;]</pre>
+<pre>[&lt;matplotlib.lines.Line2D at 0x7f9b40577cf8&gt;]</pre>
 </div>
 
 </div>
@@ -12586,7 +12587,7 @@ gOtEcW5xAAAAAElFTkSuQmCC
 <span class="c1">##############</span>
 
 <span class="c1"># create a parser to get the labels from the labels.csv file</span>
-<span class="n">parser</span> <span class="o">=</span> <span class="n">label_parsers</span><span class="o">.</span><span class="n">CSVLabelParser</span><span class="p">(</span><span class="s2">&quot;../../tests/data/full_set/labels.csv&quot;</span><span class="p">)</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">label_parsers</span><span class="o">.</span><span class="n">CSVLabelParser</span><span class="p">(</span><span class="s2">&quot;../../tests/data/labels.csv&quot;</span><span class="p">)</span>
 
 <span class="c1"># create needed short-term (aka frame-based) feature extractors</span>
 <span class="n">en_ext</span> <span class="o">=</span> <span class="n">EnergyExtractor</span><span class="p">()</span> <span class="c1"># needed for the activity detection</span>
@@ -12637,7 +12638,7 @@ gOtEcW5xAAAAAElFTkSuQmCC
 <span class="n">mb</span> <span class="o">=</span> <span class="n">mb_gen</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">active_segments_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">with_targets</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># get the first mini-batch</span>
-<span class="n">data</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">mb</span><span class="p">)</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">mb</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12666,7 +12667,7 @@ gOtEcW5xAAAAAElFTkSuQmCC
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Show the label indices of the first mini-batch</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Label indices:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Label indices:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">targets</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -12825,14 +12826,123 @@ An example of config file is provided in example_config.json</p>
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">libdyni.generators.minibatch_gen</span> <span class="k">import</span> <span class="n">MiniBatchGen</span>
 
 <span class="n">mb_gen</span> <span class="o">=</span> <span class="n">MiniBatchGen</span><span class="o">.</span><span class="n">from_json_config_file</span><span class="p">(</span><span class="s2">&quot;example_config.json&quot;</span><span class="p">)</span>
-<span class="n">mb_gen</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-<span class="n">mb</span> <span class="o">=</span> <span class="n">mb_gen</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">active_segments_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">with_targets</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">mb_gen</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">mb</span> <span class="o">=</span> <span class="n">mb_gen</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">active_segments_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">with_targets</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># get the first mini-batch</span>
 <span class="n">data</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">mb</span><span class="p">)</span>
+
+<span class="c1"># show the labels indices and the data of the firs mini-batch</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Label indices:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">targets</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mel spectra (truncated):</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 </pre></div>
 
 </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Label indices:
+[2 2 2 2 2 2 2 2 2 2]
+Mel spectra (truncated):
+[[[[-77.88076782 -66.65984344 -85.78934479 ..., -61.77670288 -69.87345886
+    -66.31863403]
+   [-74.55519867 -63.33428192 -82.46378326 ..., -58.45114136 -66.54789734
+    -62.9930687 ]
+   [-66.03651428 -51.91387939 -58.83434677 ..., -49.6537323  -54.32802963
+    -62.22982788]
+   ..., 
+   [-52.81373978 -56.42927933 -57.59656143 ..., -45.98276901 -46.00500107
+    -45.56991959]
+   [-54.35548019 -55.33501053 -53.44735718 ..., -52.01996231 -51.14955139
+    -50.94314575]
+   [-61.97282028 -56.9071846  -58.29795074 ..., -59.93020248 -59.93471146
+    -54.18180847]]]
+
+
+ [[[-75.68052673 -72.4744339  -95.34684753 ..., -92.85736847 -68.09340668
+    -61.43295288]
+   [-72.35495758 -69.14886475 -92.02128601 ..., -89.53180695 -64.76783752
+    -58.10738754]
+   [-59.55133438 -55.01808548 -62.05028534 ..., -55.01891327 -55.13725662
+    -52.58815765]
+   ..., 
+   [-53.12981415 -50.01371765 -51.11210632 ..., -54.59425354 -51.61140442
+    -54.05944443]
+   [-54.07550812 -53.38811111 -53.34747696 ..., -56.17362595 -52.94422913
+    -59.890522  ]
+   [-58.15501022 -57.97169113 -56.77929306 ..., -61.40216446 -52.91544342
+    -63.99854279]]]
+
+
+ [[[-67.12281799 -68.72060394 -72.96092987 ..., -87.88312531 -68.47286987
+    -74.69589996]
+   [-63.79724884 -65.39504242 -69.63536835 ..., -84.55755615 -65.14730072
+    -71.37033844]
+   [-51.50327682 -58.38234711 -60.64006042 ..., -52.32159042 -53.42242432
+    -65.59535217]
+   ..., 
+   [-50.74246597 -44.23286438 -45.24972534 ..., -49.06516266 -47.90545273
+    -51.40767288]
+   [-53.79285049 -50.02662277 -52.67823029 ..., -50.08366776 -52.70608902
+    -49.46236801]
+   [-62.03483963 -53.43784714 -57.04169464 ..., -54.90446472 -56.12475586
+    -54.917099  ]]]
+
+
+ ..., 
+ [[[-68.06482697 -70.6432724  -68.73229218 ..., -80.74584961 -66.31039429
+    -67.38722992]
+   [-64.73926544 -67.31771088 -65.40673065 ..., -77.42028046 -62.98482895
+    -64.0616684 ]
+   [-56.84818268 -53.10140228 -49.20680237 ..., -53.4901619  -62.23062897
+    -55.5881424 ]
+   ..., 
+   [-53.16926575 -49.32261658 -52.52849579 ..., -53.68796539 -53.36948776
+    -55.63058853]
+   [-52.54328918 -50.94367981 -51.08142471 ..., -53.9724617  -53.37283707
+    -54.73107529]
+   [-61.43606186 -54.11021042 -56.64054108 ..., -54.33579636 -56.93286896
+    -55.42055893]]]
+
+
+ [[[-70.57924652 -73.09832764 -70.07554626 ..., -77.24311829 -64.16478729
+    -70.66811371]
+   [-67.253685   -69.77275848 -66.74997711 ..., -73.91755676 -60.83922195
+    -67.34255219]
+   [-58.06739426 -63.24688339 -62.54263687 ..., -50.91062546 -53.3068924
+    -54.68761826]
+   ..., 
+   [-52.42127228 -48.13520813 -53.96286392 ..., -48.01916504 -48.5043335
+    -51.35004425]
+   [-50.84687424 -51.52099991 -58.50524521 ..., -49.02523422 -47.29510117
+    -51.22759628]
+   [-58.3094368  -57.08455658 -58.83781815 ..., -50.5095787  -56.91412735
+    -51.96370316]]]
+
+
+ [[[-73.56750488 -67.71328735 -72.21214294 ..., -76.56441498 -72.44521332
+    -64.8015213 ]
+   [-70.24194336 -64.3877182  -68.88658142 ..., -73.23885345 -69.11964417
+    -61.47595596]
+   [-51.82940674 -54.89487076 -51.79399872 ..., -53.71609497 -48.68716049
+    -48.87018204]
+   ..., 
+   [-48.73300552 -44.48386383 -50.62590027 ..., -49.68765259 -53.97488785
+    -54.15042496]
+   [-50.96985245 -49.78147888 -53.98550034 ..., -54.57501221 -51.60131073
+    -57.00195312]
+   [-54.23483276 -56.22404099 -57.84348679 ..., -57.31592941 -54.84722137
+    -59.9726181 ]]]]
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
