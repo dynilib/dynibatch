@@ -54,7 +54,8 @@ class TestActivityDetection:
         segment_list = []
         for i in range(4):
             segment_list.append(
-                Segment((i * hop_size) / sample_rate, ((i * hop_size) + win_size - 1) / sample_rate))
+                Segment((i * hop_size) / sample_rate,
+                        ((i * hop_size) + win_size - 1) / sample_rate))
 
         sc = SegmentContainer("fake_audio_path")
         sc.segments = segment_list
@@ -154,10 +155,10 @@ class TestFrameFeatureChunkExtractor:
         ffc_ext = FrameFeatureChunkExtractor("fake_feature")
         ffc_ext.execute(sc, feature_container)
 
-        assert(np.all(s0.features["fake_feature"] == \
+        assert np.all(s0.features["fake_feature"] == \
                feature_container.features["fake_feature"]["data"][s0_start_ind:s0_end_ind]) and \
                np.all(s1.features["fake_feature"] == \
-               feature_container.features["fake_feature"]["data"][s1_start_ind:s1_end_ind]))
+               feature_container.features["fake_feature"]["data"][s1_start_ind:s1_end_ind])
 
 
 class TestMelSpectrumExtractor:
@@ -315,7 +316,7 @@ class TestSegmentFeatureProcessor:
         sf_pro = SegmentFeatureProcessor([ac_ext])
         sf_pro.execute(segment_container)
         assert np.all(segment_container.segments[0].features["audio_chunk"] ==
-                data[int(0.5 * sample_rate):int(0.6 * sample_rate)])
+                      data[int(0.5 * sample_rate):int(0.6 * sample_rate)])
 
     def test_execute_typeerror(self):
         with pytest.raises(TypeError):

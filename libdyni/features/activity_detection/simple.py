@@ -26,20 +26,20 @@ class Simple(sfe.SegmentFrameBasedFeatureExtractor):
     """
 
     def __init__(self,
-            energy_threshold=0.2,
-            spectral_flatness_threshold=0.3):
+                 energy_threshold=0.2,
+                 spectral_flatness_threshold=0.3):
         super().__init__()
 
         self.frame_feature_config = [
-                {
-                    "name": "energy",
-                    "config": {}
-                    },
-                {
-                    "name": "spectral_flatness",
-                    "config": {}
-                    }
-                ]
+            {
+                "name": "energy",
+                "config": {}
+                },
+            {
+                "name": "spectral_flatness",
+                "config": {}
+                }
+            ]
 
         self.energy_threshold = energy_threshold
         self.spectral_flatness_threshold = spectral_flatness_threshold
@@ -47,8 +47,8 @@ class Simple(sfe.SegmentFrameBasedFeatureExtractor):
     @classmethod
     def from_config_dict(cls, audio_frame_config, feature_config):
         return cls(
-                feature_config["energy_threshold"],
-                feature_config["spectral_flatness_threshold"])
+            feature_config["energy_threshold"],
+            feature_config["spectral_flatness_threshold"])
 
     @property
     def name(self):

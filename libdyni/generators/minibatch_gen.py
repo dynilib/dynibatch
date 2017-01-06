@@ -15,7 +15,6 @@ from libdyni.features import extractors
 from libdyni.features import activity_detection
 # utils
 from libdyni.parsers import label_parsers
-from libdyni.utils import exceptions
 
 
 logger = logging.getLogger(__name__)
@@ -64,7 +63,7 @@ class MiniBatchGen:
         # minibatch config
         batch_size = config["batch_size"]
         num_frames_per_seg = int(seg_config["seg_duration"] *
-                af_config["sample_rate"] / af_config["hop_size"])
+                                 af_config["sample_rate"] / af_config["hop_size"])
 
         # create a parser to get the labels from the label file
         label_parser = label_parsers.CSVLabelParser(config["label_file_path"])
@@ -73,9 +72,9 @@ class MiniBatchGen:
         if "activity_detection" in config:
             act_det_config = config["activity_detection"]
             act_det = activity_detection.factory(
-                    act_det_config["name"],
-                    audio_frame_config=af_config,
-                    feature_config=act_det_config.get("config"))
+                act_det_config["name"],
+                audio_frame_config=af_config,
+                feature_config=act_det_config.get("config"))
             # get features required by the activity detection
             frame_feature_config_list += act_det.frame_feature_config
         else:
@@ -89,14 +88,14 @@ class MiniBatchGen:
         frame_feature_extractors = []
         for ff_cfg in frame_feature_config_list:
             frame_feature_extractors.append(extractors.factory(
-                    ff_cfg["name"],
-                    audio_frame_config=af_config,
-                    feature_config=ff_cfg.get("config")))
+                ff_cfg["name"],
+                audio_frame_config=af_config,
+                feature_config=ff_cfg.get("config")))
 
         # create a frame feature processor, in charge of computing all short-term features
         ff_pro = FrameFeatureProcessor(
             AudioFrameGen(win_size=af_config["win_size"],
-                hop_size=af_config["hop_size"]),
+                          hop_size=af_config["hop_size"]),
             frame_feature_extractors,
             feature_container_root=config.get('features_root')
         )
@@ -126,7 +125,7 @@ class MiniBatchGen:
         else:
             # else create one per set in the datasplit
             datasplit = joblib.load(datasplit_path)
-            for set_name, file_list in datasplit["sets"].items():
+            for set_name, _ in datasplit["sets"].items():
                 sc_gen_dict[set_name] = SegmentContainerGenerator(
                     config["audio_root"],
                     sf_pro,
@@ -139,11 +138,12 @@ class MiniBatchGen:
 
         mb_gen_dict = {}
         for set_name, sc_gen in sc_gen_dict.items():
-            mb_gen_dict[set_name] = MiniBatchGen(sc_gen,
-                              config['feature']['name'],
-                              batch_size,
-                              frame_feature_extractors[-1].size, # it is the last added
-                              num_frames_per_seg)
+            mb_gen_dict[set_name] = MiniBatchGen(
+                sc_gen,
+                config['feature']['name'],
+                batch_size,
+                frame_feature_extractors[-1].size, # it is the last added
+                num_frames_per_seg)
 
         return mb_gen_dict
 

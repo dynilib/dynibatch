@@ -88,7 +88,8 @@ class FrameFeatureProcessor(object):
 
         # TODO (jul) move to audio_frame_gen module?
         info = audio.info(os.path.join(*audio_path))
-        n_samples = int((info.frames - self.audio_frame_gen.win_size) / self.audio_frame_gen.hop_size) + 1
+        n_samples = int((info.frames - self.audio_frame_gen.win_size) /
+                        self.audio_frame_gen.hop_size) + 1
 
         if not fc or not any(has_features):
             # if fc has none of the desired features, create a new one

@@ -8,8 +8,8 @@ LOGGER = logging.getLogger(__name__)
 
 
 class SegmentContainerGenerator:
-    """Segment container generator
-    Segments contain labels and all required features
+    """ Segment container generator
+        Segments contain labels and all required features
     """
 
     def __init__(self,
@@ -37,7 +37,10 @@ class SegmentContainerGenerator:
         self._sc_gen = None
 
     def start(self):
-        # create segment container with fixed-length segments
+        """
+            create segment container with fixed-length segments
+        """
+        
         self._sc_gen = create_segment_containers_from_audio_files(
             self._audio_root,
             self._is_random_order,

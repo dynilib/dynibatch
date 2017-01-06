@@ -157,7 +157,7 @@ class TestSegmentContainer:
         for sc_try in sc_generated:
             list_equals += sc_ref == list(sc_try)
 
-        assert(list_equals < SEGMENT_CONTAINER_LISTS_TO_GENERATE)
+        assert list_equals < SEGMENT_CONTAINER_LISTS_TO_GENERATE
 
 
     def test_create_stratified_segment_containers(self):
@@ -180,7 +180,7 @@ class TestSegmentContainer:
         for sc_try in sc_generated:
             list_equals += sc_ref == list(sc_try)
 
-        assert(list_equals == SEGMENT_CONTAINER_LISTS_TO_GENERATE)
+        assert list_equals == SEGMENT_CONTAINER_LISTS_TO_GENERATE
 
 
     def test_create_segment_containers_from_audio_file_tuple(self):

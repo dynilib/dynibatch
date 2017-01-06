@@ -1,3 +1,7 @@
+"""
+    Module containing parsers of label files
+"""
+
 from os.path import basename, splitext
 
 

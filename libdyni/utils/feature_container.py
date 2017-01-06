@@ -16,11 +16,15 @@ class FeatureContainer:
         self.features = defaultdict(dict)
 
     def has_features(self, features):
-        """Check whether the feature container has a set of features with a
-        given config.
-        Args:
-            features: list of tuple (name, config)
-        Returns a list of booleans"""
+        """
+            Check whether the feature container has a set of features with a
+            given config.
+
+            Args:
+                features: list of tuple (name, config)
+            Returns a list of booleans
+        """
+
         return [name in self.features and
                 self.features.get(name).get("data") is not None and
                 config == self.features.get(name).get("config", dict())

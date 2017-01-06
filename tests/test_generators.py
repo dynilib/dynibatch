@@ -1,7 +1,7 @@
 import os
+import shutil
 import pytest
 import joblib
-import shutil
 
 import numpy as np
 import soundfile as sf
@@ -163,7 +163,8 @@ class TestMiniBatch:
                                                          chunk_size,
                                                          seg_overlap)
 
-        n_minibatches = (id0132_n_chunks + id0133_n_chunks + id1238_n_chunks + id1322_n_chunks) // batch_size
+        n_minibatches = (id0132_n_chunks + id0133_n_chunks +
+                         id1238_n_chunks + id1322_n_chunks) // batch_size
 
         mb_gen = MiniBatchGen(sc_gen,
                               "audio_chunk",
@@ -490,7 +491,7 @@ class TestMiniBatchGenFromConfig:
         try:
             if not os.path.exists(FEATURE_ROOT):
                 os.makedirs(FEATURE_ROOT)
-            for set_name, mb_gen in mb_gen_dict.items():
+            for _, mb_gen in mb_gen_dict.items():
                 mb_gen.start()
                 mb_gen_e = mb_gen.execute()
                 next(mb_gen_e)
@@ -546,10 +547,10 @@ class TestMiniBatchGenFromConfig:
                                            seg_overlap=seg_overlap)
 
         mb_gen_1 = MiniBatchGen(sc_gen,
-                              "mel_spectrum",
-                              batch_size,
-                              num_features,
-                              num_time_bins)
+                                "mel_spectrum",
+                                batch_size,
+                                num_features,
+                                num_time_bins)
 
 
         # construct minibatch generator from config file
@@ -560,13 +561,13 @@ class TestMiniBatchGenFromConfig:
         try:
             mb_gen_1.start()
             mb_gen_1_e = mb_gen_1.execute(active_segments_only=True,
-                                      with_targets=True,
-                                      with_filenames=False)
+                                          with_targets=True,
+                                          with_filenames=False)
 
             mb_gen_2.start()
             mb_gen_2_e = mb_gen_2.execute(active_segments_only=True,
-                                      with_targets=True,
-                                      with_filenames=False)
+                                          with_targets=True,
+                                          with_filenames=False)
 
             if not os.path.exists(FEATURE_ROOT):
                 os.makedirs(FEATURE_ROOT)

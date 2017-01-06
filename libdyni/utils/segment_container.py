@@ -269,8 +269,8 @@ def create_fixed_duration_segments(file_duration, seg_duration, seg_overlap=0.5)
 def _parse_segment_file_line(line, field_separator):
 
     pattern = re.compile(
-        "^\s*[0-9]+\.[0-9]+\s*" + re.escape(field_separator) +
-        "\s*[0-9]+\.[0-9]+\s*" + re.escape(field_separator) + "\s*.+\s*$")
+        "^\\s*[0-9]+\\.[0-9]+\\s*" + re.escape(field_separator) +
+        "\\s*[0-9]+\\.[0-9]+\\s*" + re.escape(field_separator) + "\\s*.+\\s*$")
     if line.count(field_separator) != 2 and re.match(pattern, line):
         raise exceptions.ParsingError(
             "Cannot parse line '{}'".format(line))

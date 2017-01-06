@@ -13,7 +13,8 @@ class CommonLabels(Enum):
 
 class Segment:
     """
-        Segments are the base elements to be fed to the learning algorithm: 1 segment = 1 observation.
+        Segments are the base elements to be fed to the learning algorithm:
+        1 segment = 1 observation.
     """
 
     def __init__(self, start_time, end_time, label=CommonLabels.unknown):
