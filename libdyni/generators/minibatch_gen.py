@@ -164,10 +164,10 @@ class MiniBatchGen:
             Produce a minibatch generator
 
             Args:
-                active_segments_only: data returned only contain activities
+                active_segments_only: return only segments with "activity" attribute set to True
                 with_targets: return labels associated to the data
                 with_filenames: return filenames where the data were taken
-            Return: data + targets (if with_targets) + filenames (if with_filenames)
+            Return: tuple(data, targets (if with_targets), filenames (if with_filenames))
         """
 
         if self.n_features == 1:
