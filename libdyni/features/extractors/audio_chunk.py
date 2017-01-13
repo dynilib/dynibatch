@@ -5,7 +5,7 @@ import numpy as np
 from libdyni.features.extractors.segment_feature import SegmentFeatureExtractor
 
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class AudioChunkExtractor(SegmentFeatureExtractor):

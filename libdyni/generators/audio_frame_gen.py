@@ -6,7 +6,7 @@ from scipy.signal import hann
 import soundfile as sf
 
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Window(Enum):

@@ -10,7 +10,7 @@ from libdyni.utils import feature_container
 
 __all__ = ['FrameFeatureProcessor']
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class FrameFeatureProcessor(object):
@@ -82,7 +82,7 @@ class FrameFeatureProcessor(object):
                 has_features = fc.has_features([(fe.name, fe.config) \
                         for fe in self.feature_extractors])
                 if all(has_features):
-                    LOGGER.debug('Feature container %s with all required features found!',
+                    logger.debug('Feature container %s with all required features found!',
                                  feature_container_path)
                     return fc, False
 

@@ -9,7 +9,7 @@ from libdyni.features.extractors.chirplets_chunk import ChirpletsChunkExtractor
 
 __all__ = ['SegmentFeatureProcessor']
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class SegmentFeatureProcessor:
@@ -44,14 +44,14 @@ class SegmentFeatureProcessor:
         Returns tuple (segment_container, segment_container_has_features)
         """
 
-        LOGGER.debug("Processing %s segment container",
+        logger.debug("Processing %s segment container",
                      segment_container.audio_path)
 
         # check if segment container already has all wanted features
         has_features = segment_container.has_features(
             [fe.name for fe in self.__feature_extractors])
         if all(has_features):
-            LOGGER.debug("Segment container has all requested features")
+            logger.debug("Segment container has all requested features")
             return
 
         # get feature container if needed
@@ -61,7 +61,7 @@ class SegmentFeatureProcessor:
             fc, created = self.__frame_feature_pro.execute(
                 (self._audio_root, segment_container.audio_path))
             if created:
-                LOGGER.debug("Feature container created")
+                logger.debug("Feature container created")
 
         for fe in compress(self.__feature_extractors,
                            [not hf for hf in has_features]):
