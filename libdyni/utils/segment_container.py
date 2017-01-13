@@ -93,7 +93,7 @@ class SegmentContainer:
 
 
 def create_segment_containers_from_audio_files(audio_root,
-                                               is_random_list=False,
+                                               randomize=False,
                                                label_parser=None,
                                                **kwargs):
     """
@@ -114,21 +114,21 @@ def create_segment_containers_from_audio_files(audio_root,
                 audio_filenames.append(os.path.join(root, filename))  # only get audio files
 
     if label_parser:
-        list_label = [label_parser.get_label(filename) for filename in audio_filenames]
-        if is_random_list:
+        label_list = [label_parser.get_label(filename) for filename in audio_filenames]
+        if randomize:
             train, test = train_test_split(audio_filenames,
-                                           test_size=len(np.unique(list_label)),
+                                           test_size=len(np.unique(label_list)),
                                            random_state=RandomState(),
-                                           stratify=list_label)
+                                           stratify=label_list)
         else:
             train, test = train_test_split(audio_filenames,
-                                           test_size=len(np.unique(list_label)),
+                                           test_size=len(np.unique(label_list)),
                                            random_state=42,
-                                           stratify=list_label)
+                                           stratify=label_list)
 
         # it is a fix, because if n_test < n_classes raise an error
         audio_filenames = train + test
-    elif is_random_list:
+    elif randomize:
         shuffle(audio_filenames)
     else:
         audio_filenames.sort()

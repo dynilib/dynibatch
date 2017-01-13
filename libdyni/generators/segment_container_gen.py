@@ -19,8 +19,8 @@ class SegmentContainerGenerator:
                  dataset=None,
                  seg_duration=0.5,
                  seg_overlap=0.9,
-                 is_random_order=False,
-                 is_stratify=False):
+                 randomize=False,
+                 stratify=False):
 
         self._audio_root = audio_root
         self._label_parser = label_parser
@@ -28,8 +28,8 @@ class SegmentContainerGenerator:
         self._dataset = dataset
         self._seg_duration = seg_duration
         self._seg_overlap = seg_overlap
-        self._is_random_order = is_random_order
-        if is_stratify:
+        self._randomize = randomize
+        if stratify:
             self._stratification = self._label_parser
         else:
             self._stratification = None
@@ -43,7 +43,7 @@ class SegmentContainerGenerator:
         
         self._sc_gen = create_segment_containers_from_audio_files(
             self._audio_root,
-            self._is_random_order,
+            self._randomize,
             label_parser=self._stratification,
             seg_duration=self._seg_duration,
             seg_overlap=self._seg_overlap)
