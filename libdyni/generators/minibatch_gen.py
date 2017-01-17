@@ -120,8 +120,8 @@ class MiniBatchGen:
                 label_parser=label_parser,
                 seg_duration=seg_config["seg_duration"],
                 seg_overlap=seg_config["seg_overlap"],
-                is_random_order=config["random_batch"],
-                is_stratify=config["random_batch"])
+                randomize=config["random_batch"],
+                stratify=config["random_batch"])
         else:
             # else create one per set in the datasplit
             datasplit = joblib.load(datasplit_path)
@@ -133,8 +133,8 @@ class MiniBatchGen:
                     dataset=datasplit["sets"][set_name],
                     seg_duration=seg_config["seg_duration"],
                     seg_overlap=seg_config["seg_overlap"],
-                    is_random_order=config["random_batch"],
-                    is_stratify=config["random_batch"])
+                    randomize=config["random_batch"],
+                    stratify=config["random_batch"])
 
         mb_gen_dict = {}
         for set_name, sc_gen in sc_gen_dict.items():
