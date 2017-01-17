@@ -138,12 +138,12 @@ def create_segment_containers_from_audio_files(audio_root,
             audio_root,
             os.path.relpath(filename, audio_root))
 
-        yield create_segment_containers_from_audio_file(
+        yield create_segment_container_from_audio_file(
             audio_path_tuple,
             **kwargs)
 
 
-def create_segment_containers_from_audio_file(audio_path_tuple, **kwargs):
+def create_segment_container_from_audio_file(audio_path_tuple, **kwargs):
     """
     Args:
         audio_path_tuple: audio file path as a tuple (<audio root>, <audio file
@@ -206,7 +206,7 @@ def create_segment_containers_from_seg_files(seg_file_root,
                 seg_file_separator)
 
 
-def create_segment_containers_from_seg_file(seg_file_path_tuple,
+def create_segment_container_from_seg_file(seg_file_path_tuple,
                                             audio_file_ext=".wav",
                                             seg_file_ext=".seg",
                                             seg_file_separator="\t"):
