@@ -100,6 +100,13 @@ class TestAudioChunkExtractor:
             ac_ext = AudioChunkExtractor(TEST_AUDIO_PATH_TUPLE[0], sample_rate)
             ac_ext.execute(sc)
 
+    def test_wrong_sample_rate(self):
+        with pytest.raises(Exception) as e:
+            _, sample_rate = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE))
+            sc = SegmentContainer(TEST_AUDIO_PATH_TUPLE[1])
+            sc.segments.append(Segment(0, 0.5))
+            ac_ext = AudioChunkExtractor(TEST_AUDIO_PATH_TUPLE[0], 2 * sample_rate)
+            ac_ext.execute(sc)
 
 class TestEnergyExtractor:
 

@@ -58,6 +58,12 @@ class AudioFrameGen:
         # make sure the file is mono
         if sf.info(path).channels != 1:
             raise Exception("Please use only mono files")
+        
+        # make sure the actual sample rate is the same as specified in the init
+        if sf.info(path).samplerate != self._sample_rate:
+            raise Exception("Sample rate mismatch in file {}: ".format(path) +
+                    "{} instead of {}.".format(sf.info(path).samplerate,
+                        self._sample_rate))
 
         for frame in sf.blocks(path,
                                blocksize=self._win_size,

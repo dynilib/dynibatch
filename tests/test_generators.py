@@ -57,6 +57,14 @@ class TestAudioFrameGen:
         data, _ = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
         assert np.all(data[128:128+256] == frame)
 
+    def test_wrong_sample_rate(self):
+        sample_rate = 44100
+        win_size = 256
+        hop_size = 128
+        af_gen = AudioFrameGen(sample_rate, win_size, hop_size, win_type=Window.rect)
+        af_gen_e = af_gen.execute(os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
+        with pytest.raises(Exception) as e_info:
+            next(af_gen_e) # 1st frame
 
 class TestSegmentContainerGenerator:
 

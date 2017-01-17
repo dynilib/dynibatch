@@ -27,6 +27,12 @@ class AudioChunkExtractor(SegmentFeatureExtractor):
             if not f.seekable():
                 raise ValueError("file must be seekable")
 
+            # make sure the actual sample rate is the same as specified in the init
+            if f.samplerate != self._sample_rate:
+                raise Exception("Sample rate mismatch in file {}: ".format(path) +
+                        "{} instead of {}.".format(sf.info(path).samplerate,
+                            self._sample_rate))
+
             for s in segment_container.segments:
 
                 start_time = s.start_time
