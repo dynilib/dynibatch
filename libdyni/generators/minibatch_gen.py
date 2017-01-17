@@ -94,7 +94,9 @@ class MiniBatchGen:
 
         # create a frame feature processor, in charge of computing all short-term features
         ff_pro = FrameFeatureProcessor(
-            AudioFrameGen(win_size=af_config["win_size"],
+            AudioFrameGen(
+                          sample_rate=af_config["sample_rate"],
+                          win_size=af_config["win_size"],
                           hop_size=af_config["hop_size"]),
             frame_feature_extractors,
             feature_container_root=config.get('features_root')

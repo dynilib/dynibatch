@@ -17,8 +17,9 @@ class Window(Enum):
 class AudioFrameGen:
     """Audio frame generator."""
 
-    def __init__(self, win_size, hop_size, win_type=Window.hanning):
+    def __init__(self, sample_rate, win_size, hop_size, win_type=Window.hanning):
 
+        self._sample_rate = sample_rate
         self._win_size = win_size
         self._hop_size = hop_size
         self._win_type = win_type

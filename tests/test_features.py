@@ -253,9 +253,10 @@ class TestFrameFeatureProcessor:
 
     @pytest.fixture(scope="module")
     def af_gen(self):
+        sample_rate = 22050
         win_size = 256
         hop_size = 128
-        return AudioFrameGen(win_size, hop_size)
+        return AudioFrameGen(sample_rate, win_size, hop_size)
 
     @pytest.fixture(scope="module")
     def en_ext(self):

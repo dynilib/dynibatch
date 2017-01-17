@@ -39,16 +39,18 @@ class TestAudioFrameGen:
 
     def test_init(self):
         try:
+            sample_rate = 22050
             win_size = 256
             hop_size = 128
-            AudioFrameGen(win_size, hop_size)
+            AudioFrameGen(sample_rate, win_size, hop_size)
         except Exception as e:
             pytest.fail("Unexpected Error: {}".format(e))
 
     def test_execute(self):
+        sample_rate = 22050
         win_size = 256
         hop_size = 128
-        af_gen = AudioFrameGen(win_size, hop_size, win_type=Window.rect)
+        af_gen = AudioFrameGen(sample_rate, win_size, hop_size, win_type=Window.rect)
         af_gen_e = af_gen.execute(os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
         next(af_gen_e) # 1st frame
         frame = next(af_gen_e) # 2nd frame
@@ -236,7 +238,7 @@ class TestMiniBatch:
         num_features = 64
         num_time_bins = 17
 
-        af_gen = AudioFrameGen(win_size=win_size, hop_size=hop_size)
+        af_gen = AudioFrameGen(sample_rate=sample_rate, win_size=win_size, hop_size=hop_size)
 
         en_ext = EnergyExtractor()
         sf_ext = SpectralFlatnessExtractor()
@@ -323,7 +325,7 @@ class TestMiniBatch:
         num_features = 64
         num_time_bins = 17
 
-        af_gen = AudioFrameGen(win_size=win_size, hop_size=hop_size)
+        af_gen = AudioFrameGen(sample_rate=sample_rate, win_size=win_size, hop_size=hop_size)
 
         en_ext = EnergyExtractor()
         sf_ext = SpectralFlatnessExtractor()
@@ -406,7 +408,7 @@ class TestMiniBatch:
         num_features = 16
         num_time_bins = 17
 
-        af_gen = AudioFrameGen(win_size=win_size, hop_size=hop_size)
+        af_gen = AudioFrameGen(sample_rate=sample_rate, win_size=win_size, hop_size=hop_size)
 
         en_ext = EnergyExtractor()
         sf_ext = SpectralFlatnessExtractor()
@@ -519,7 +521,7 @@ class TestMiniBatchGenFromConfig:
         num_features = 64
         num_time_bins = 34
 
-        af_gen = AudioFrameGen(win_size=win_size, hop_size=hop_size)
+        af_gen = AudioFrameGen(sample_rate=sample_rate, win_size=win_size, hop_size=hop_size)
 
         en_ext = EnergyExtractor()
         sf_ext = SpectralFlatnessExtractor()
