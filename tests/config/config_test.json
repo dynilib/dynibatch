@@ -4,8 +4,8 @@
   "label_file_path": "tests/data/labels.csv",
   "datasplit_path": "",
   "batch_size":50,
-  "random_batch":0,
-  "batch_stratification":0,
+  "randomize_batch":0,
+  "stratify_batch":0,
 
   "segment_config" : {
       "seg_duration": 0.2,
