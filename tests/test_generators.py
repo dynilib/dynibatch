@@ -195,7 +195,7 @@ class TestMiniBatch:
                     start_ind = int(start_time * sample_rate)
                     if chunk_count < id0132_n_chunks:
                         assert f == "ID0132.wav"
-                        assert t == classes["bird_c"]
+                        assert t == classes.index("bird_c")
                         assert np.all(d == id0132_data[start_ind:start_ind+seg_size])
                     elif chunk_count < id0132_n_chunks + id0133_n_chunks:
                         if is_dataset1:
@@ -204,7 +204,7 @@ class TestMiniBatch:
                             start_ind = 0
 
                         assert f == "ID0133.wav"
-                        assert t == classes["bird_c"]
+                        assert t == classes.index("bird_c")
                         assert np.all(d == id0133_data[start_ind:start_ind+seg_size])
                     elif chunk_count < id0132_n_chunks + id0133_n_chunks + id1238_n_chunks:
                         if is_dataset2:
@@ -213,7 +213,7 @@ class TestMiniBatch:
                             start_ind = 0
 
                         assert f == "ID1238.wav"
-                        assert t == classes["bird_d"]
+                        assert t == classes.index("bird_d")
                         assert np.all(d == id1238_data[start_ind:start_ind+seg_size])
                     else:
                         if is_dataset3:
@@ -222,7 +222,7 @@ class TestMiniBatch:
                             start_ind = 0
 
                         assert f == "ID1322.wav"
-                        assert t == classes["bird_d"]
+                        assert t == classes.index("bird_d")
                         assert np.all(d == id1322_data[start_ind:start_ind+seg_size])
 
                     start_time += (1 - seg_overlap) * seg_duration

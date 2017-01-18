@@ -20,4 +20,4 @@ class TestCSVLabelParser:
     def test_get_label(self):
         parser = CSVLabelParser(TEST_CSVLABEL_PATH)
         classes = parser.get_labels()
-        assert parser.get_label("ID0131") == classes["bird_b"]
+        assert parser.get_label("ID0131") == classes.index("bird_b")
