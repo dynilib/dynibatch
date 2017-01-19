@@ -9,7 +9,7 @@ import soundfile as sf
 from libdyni.generators.audio_frame_gen import AudioFrameGen
 from libdyni.generators.audio_frame_gen import Window
 from libdyni.generators.segment_container_gen import SegmentContainerGenerator
-from libdyni.parsers.label_parsers import CSVLabelParser
+from libdyni.parsers.label_parsers import CSVFileLabelParser
 from libdyni.features.segment_feature_processor import SegmentFeatureProcessor
 from libdyni.features.extractors.audio_chunk import AudioChunkExtractor
 from libdyni.generators.minibatch_gen import MiniBatchGen
@@ -75,7 +75,7 @@ class TestSegmentContainerGenerator:
 
     def test_init(self):
         try:
-            parser = CSVLabelParser(TEST_FILE2LABEL_PATH)
+            parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
             sf_pro = SegmentFeatureProcessor([])
             SegmentContainerGenerator("fake_audio_root",
                                       sf_pro,
@@ -85,7 +85,7 @@ class TestSegmentContainerGenerator:
 
     def test_start(self):
         try:
-            parser = CSVLabelParser(TEST_FILE2LABEL_PATH)
+            parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
             sf_pro = SegmentFeatureProcessor([])
             sc_gen = SegmentContainerGenerator("fake_audio_root",
                                                sf_pro,
@@ -100,7 +100,7 @@ class TestSegmentContainerGenerator:
         seg_duration = 0.1
         seg_overlap = 0.5
 
-        parser = CSVLabelParser(TEST_FILE2LABEL_PATH)
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
         sf_pro = SegmentFeatureProcessor([ac_ext])
         sc_gen = SegmentContainerGenerator(TEST_AUDIO_PATH_TUPLE_1[0],
                                            sf_pro,
@@ -141,7 +141,7 @@ class TestMiniBatch:
         seg_overlap = 0.5
         seg_size = int(seg_duration * sample_rate)
 
-        parser = CSVLabelParser(TEST_FILE2LABEL_PATH)
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
         classes = parser.get_labels()
         sf_pro = SegmentFeatureProcessor([ac_ext])
         sc_gen = SegmentContainerGenerator(DATA_PATH,
@@ -269,7 +269,7 @@ class TestMiniBatch:
                                          ff_pro=ff_pro,
                                          audio_root=DATA_PATH)
 
-        parser = CSVLabelParser(TEST_FILE2LABEL_PATH)
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
         sc_gen = SegmentContainerGenerator(DATA_PATH,
                                            sf_pro,
                                            label_parser=parser,
@@ -356,7 +356,7 @@ class TestMiniBatch:
                                          ff_pro=ff_pro,
                                          audio_root=DATA_PATH)
 
-        parser = CSVLabelParser(TEST_FILE2LABEL_PATH)
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
         sc_gen = SegmentContainerGenerator(DATA_PATH,
                                            sf_pro,
                                            label_parser=parser,
@@ -439,7 +439,7 @@ class TestMiniBatch:
                                          ff_pro=ff_pro,
                                          audio_root=DATA_PATH)
 
-        parser = CSVLabelParser(TEST_FILE2LABEL_PATH)
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
         sc_gen = SegmentContainerGenerator(DATA_PATH,
                                            sf_pro,
                                            label_parser=parser,
@@ -549,7 +549,7 @@ class TestMiniBatchGenFromConfig:
                                          ff_pro=ff_pro,
                                          audio_root=DATA_PATH)
 
-        parser = CSVLabelParser(TEST_FILE2LABEL_PATH)
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
         sc_gen = SegmentContainerGenerator(DATA_PATH,
                                            sf_pro,
                                            label_parser=parser,

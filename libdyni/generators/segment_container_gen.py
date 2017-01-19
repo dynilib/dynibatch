@@ -1,6 +1,8 @@
 import logging
 from libdyni.utils.segment_container import \
     create_segment_containers_from_audio_files
+from libdyni.utils.segment import set_segment_labels
+from libdyni.parsers.label_parsers import FileLabelParser, SegmentLabelParser
 from libdyni.utils.exceptions import GeneratorError
 
 
@@ -62,8 +64,12 @@ class SegmentContainerGenerator:
                 continue
 
             if self._label_parser:
-                label = self._label_parser.get_label(sc.audio_path)
-                sc.labels = label
+                if isinstance(self._label_parser, FileLabelParser):
+                    label = self._label_parser.get_label(sc.audio_path)
+                    sc.labels = label
+                elif isinstance(self._label_parser, SegmentLabelParser):
+                    sc_from = self._label_parser.get_segment_container(sc.audio_path)
+                    set_segment_labels(sc_from.segments, sc.segments)
 
             # extract features
             self._sf_pro.execute(sc)

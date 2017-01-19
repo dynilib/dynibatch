@@ -9,6 +9,7 @@ from numpy.random import RandomState
 import soundfile as sf
 
 from libdyni.utils.segment import Segment, CommonLabels
+from libdyni.parsers.label_parsers import FileLabelParser, SegmentLabelParser
 from libdyni.utils import exceptions
 
 
@@ -100,7 +101,8 @@ def create_segment_containers_from_audio_files(audio_root,
     Args:
         audio_root
         random_list
-        label_parser if a label_parser is specify the result will be stratified
+        label_parser if a label_parser is specified and it is a file label
+        parser, the result will be stratified
         (seg_duration
         (seg_overlap)
     Yields: segment container
@@ -113,7 +115,7 @@ def create_segment_containers_from_audio_files(audio_root,
             if extension in ALLOWED_AUDIO_EXT:
                 audio_filenames.append(os.path.join(root, filename))  # only get audio files
 
-    if label_parser:
+    if label_parser and isinstance(label_parser, FileLabelParser): # no stratification for SegmentLabelParser
         label_list = [label_parser.get_label(filename) for filename in audio_filenames]
         if randomize:
             train, test = train_test_split(audio_filenames,
@@ -131,6 +133,8 @@ def create_segment_containers_from_audio_files(audio_root,
     elif randomize:
         shuffle(audio_filenames)
     else:
+        # os.walk does not generate files always in the same order, so we sort
+        # them
         audio_filenames.sort()
 
     for filename in audio_filenames:

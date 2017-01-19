@@ -163,7 +163,7 @@ class TestSegmentContainer:
 
 
     def test_create_stratified_segment_containers(self):
-        label_parser = label_parsers.CSVLabelParser(TEST_FILE2LABEL_PATH)
+        label_parser = label_parsers.CSVFileLabelParser(TEST_FILE2LABEL_PATH)
 
         sc_ref = segment_container.create_segment_containers_from_audio_files(
             DATA_PATH,

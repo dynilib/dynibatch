@@ -11770,14 +11770,14 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">libdyni.utils.segment_container</span> <span class="k">import</span> <span class="n">create_segment_containers_from_audio_files</span>
-<span class="kn">from</span> <span class="nn">libdyni.parsers.label_parsers</span> <span class="k">import</span> <span class="n">CSVLabelParser</span>
+<span class="kn">from</span> <span class="nn">libdyni.parsers.label_parsers</span> <span class="k">import</span> <span class="n">CSVFileLabelParser</span>
 
 
 <span class="c1"># create a segment container generator</span>
 <span class="n">sc_gen</span> <span class="o">=</span> <span class="n">create_segment_containers_from_audio_files</span><span class="p">(</span><span class="s2">&quot;../../tests/data&quot;</span><span class="p">)</span>
 
 <span class="c1"># instanciate the label parser (labels.csv contains the pairs file/label)</span>
-<span class="n">parser</span> <span class="o">=</span> <span class="n">CSVLabelParser</span><span class="p">(</span><span class="s2">&quot;../../tests/data/labels.csv&quot;</span><span class="p">)</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">CSVFileLabelParser</span><span class="p">(</span><span class="s2">&quot;../../tests/data/labels.csv&quot;</span><span class="p">)</span>
 
 <span class="c1"># now for every segment container, set and show the label</span>
 <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">sc_gen</span><span class="p">:</span>
@@ -12587,7 +12587,7 @@ gOtEcW5xAAAAAElFTkSuQmCC
 <span class="c1">##############</span>
 
 <span class="c1"># create a parser to get the labels from the labels.csv file</span>
-<span class="n">parser</span> <span class="o">=</span> <span class="n">label_parsers</span><span class="o">.</span><span class="n">CSVLabelParser</span><span class="p">(</span><span class="s2">&quot;../../tests/data/labels.csv&quot;</span><span class="p">)</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">label_parsers</span><span class="o">.</span><span class="n">CSVFileLabelParser</span><span class="p">(</span><span class="s2">&quot;../../tests/data/labels.csv&quot;</span><span class="p">)</span>
 
 <span class="c1"># create needed short-term (aka frame-based) feature extractors</span>
 <span class="n">en_ext</span> <span class="o">=</span> <span class="n">EnergyExtractor</span><span class="p">()</span> <span class="c1"># needed for the activity detection</span>
