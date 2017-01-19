@@ -8,7 +8,7 @@ import numpy as np
 from numpy.random import RandomState
 import soundfile as sf
 
-from libdyni.utils.segment import Segment
+from libdyni.utils.segment import Segment, CommonLabels
 from libdyni.utils import exceptions
 
 
@@ -173,12 +173,14 @@ def create_segment_container_from_audio_file(audio_path_tuple, **kwargs):
 
 
 def create_segment_containers_from_seg_files(seg_file_root,
+                                             labels,
                                              audio_file_ext=".wav",
                                              seg_file_ext=".seg",
                                              seg_file_separator="\t"):
     """
     Args:
         - seg_file_root
+        - labels: list of label set to be used
         - (audio_file_ext)
         - (seg_file_ext)
         - (seg_file_separator)
@@ -201,12 +203,14 @@ def create_segment_containers_from_seg_files(seg_file_root,
 
             yield create_segment_containers_from_seg_file(
                 seg_file_path_tuple,
+                labels,
                 audio_file_ext,
                 seg_file_ext,
                 seg_file_separator)
 
 
 def create_segment_container_from_seg_file(seg_file_path_tuple,
+                                            labels,
                                             audio_file_ext=".wav",
                                             seg_file_ext=".seg",
                                             seg_file_separator="\t"):
@@ -214,6 +218,7 @@ def create_segment_container_from_seg_file(seg_file_path_tuple,
     Args:
         - seg_file_path_tuple: seg file path as a tuple (<audio root>,
             <audio file relative path>)
+        - labels: list of label set to be used
         - (audio_file_ext)
         - (seg_file_ext)
         - (seg_file_separator)
@@ -237,7 +242,11 @@ def create_segment_container_from_seg_file(seg_file_path_tuple,
         for line in f:
             start_time, end_time, label = _parse_segment_file_line(
                 line, seg_file_separator)
-            sc.segments.append(Segment(start_time, end_time, label))
+            sc.segments.append(
+                    Segment(
+                        start_time,
+                        end_time,
+                        labels.index(label) if label in labels else CommonLabels.unknown))
 
         return sc
 

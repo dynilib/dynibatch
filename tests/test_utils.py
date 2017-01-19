@@ -18,11 +18,13 @@ DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
 TEST_AUDIO_PATH_TUPLE_1 = (DATA_PATH, "ID0132.wav")
 TEST_AUDIO_PATH_TUPLE_2 = (DATA_PATH, "ID1238.wav")
 TEST_SEG_PATH_TUPLE_1 = (DATA_PATH, "ID0132.seg")
+TEST_SEG_PATH_TUPLE_2 = (DATA_PATH, "ID0133.seg")
 TEST_DURATION = 15.45
 TEST_N_SEGMENTS = 4
 TEST_FIRST_SEGMENT_DURATION = 0.79
 SEGMENT_CONTAINER_LISTS_TO_GENERATE = 100
-TEST_CSVLABEL_PATH = os.path.join(DATA_PATH, "labels.csv")
+TEST_FILE2LABEL_PATH = os.path.join(DATA_PATH, "file2label.csv")
+TEST_LABELS_PATH = os.path.join(DATA_PATH, "labels.txt")
 
 class TestSegment:
 
@@ -161,7 +163,7 @@ class TestSegmentContainer:
 
 
     def test_create_stratified_segment_containers(self):
-        label_parser = label_parsers.CSVLabelParser(TEST_CSVLABEL_PATH)
+        label_parser = label_parsers.CSVLabelParser(TEST_FILE2LABEL_PATH)
 
         sc_ref = segment_container.create_segment_containers_from_audio_files(
             DATA_PATH,
@@ -186,7 +188,7 @@ class TestSegmentContainer:
     def test_create_segment_container_from_audio_file_tuple(self):
         with pytest.raises(TypeError):
             segment_container.create_segment_container_from_audio_file(
-                os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
+                    os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
 
     def test_create_segment_container_from_audio_file_n_segment(self):
         sc = segment_container.create_segment_container_from_audio_file(
@@ -199,19 +201,35 @@ class TestSegmentContainer:
         assert np.abs(sc.segments[0].duration - TEST_DURATION) < 1e-03
 
     def test_create_segment_container_from_seg_file_tuple(self):
-        with pytest.raises(TypeError):
-            segment_container.create_segment_container_from_seg_file(
-                os.path.join(*TEST_SEG_PATH_TUPLE_1))
+        with open(TEST_LABELS_PATH, "r") as f:
+            labels = [l.strip() for l in f.readlines() if l.strip()]
+            with pytest.raises(TypeError):
+                segment_container.create_segment_container_from_seg_file(
+                        os.path.join(*TEST_SEG_PATH_TUPLE_1), labels)
 
     def test_create_segment_container_from_seg_file_n_segment(self):
-        sc = segment_container.create_segment_container_from_seg_file(
-            TEST_SEG_PATH_TUPLE_1)
-        assert sc.n_segments == TEST_N_SEGMENTS
+        with open(TEST_LABELS_PATH, "r") as f:
+            labels = [l.strip() for l in f.readlines() if l.strip()]
+            sc = segment_container.create_segment_container_from_seg_file(
+                TEST_SEG_PATH_TUPLE_1, labels)
+            assert sc.n_segments == TEST_N_SEGMENTS
 
     def test_create_segment_container_from_seg_file_segment_duration(self):
-        sc = segment_container.create_segment_container_from_seg_file(
-            TEST_SEG_PATH_TUPLE_1)
-        assert np.abs(sc.segments[0].duration - TEST_FIRST_SEGMENT_DURATION) < 1e-03
+        with open(TEST_LABELS_PATH, "r") as f:
+            labels = [l.strip() for l in f.readlines() if l.strip()]
+            sc = segment_container.create_segment_container_from_seg_file(
+                TEST_SEG_PATH_TUPLE_1, labels)
+            assert np.abs(sc.segments[0].duration - TEST_FIRST_SEGMENT_DURATION) < 1e-03
+    
+    def test_create_segment_container_from_seg_file_labels(self):
+        with open(TEST_LABELS_PATH, "r") as f:
+            labels = [l.strip() for l in f.readlines() if l.strip()]
+            sc_1 = segment_container.create_segment_container_from_seg_file(
+                TEST_SEG_PATH_TUPLE_1, labels)
+            sc_2 = segment_container.create_segment_container_from_seg_file(
+                TEST_SEG_PATH_TUPLE_2, labels)
+            assert sc_1.segments[0].label == segment.CommonLabels.unknown
+            assert sc_2.segments[0].label == labels.index("bird_c")
 
     def test_create_fixed_duration_segments_duration(self):
         file_duration = 12.5
