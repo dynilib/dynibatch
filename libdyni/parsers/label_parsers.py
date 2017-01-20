@@ -3,7 +3,7 @@
 """
 
 from os.path import basename, splitext
-from libdyni.utils import segment
+from libdyni.utils import segment, segment_container
 
 
 class FileLabelParser:
@@ -79,9 +79,9 @@ class CSVSegmentLabelParser(SegmentLabelParser):
 
     def get_segment_container(self, audio_path):
 
-        seg_file_path_tuple = (self._label_root, audio_path.replace(self._audio_file_extension, self._seg_file_extension))
+        seg_file_path_tuple = (self._seg2label_files_root, audio_path.replace(self._audio_file_extension, self._seg_file_extension))
 
-        return segment_container.create_segment_containers_from_seg_file(seg_file_path_tuple,
+        return segment_container.create_segment_container_from_seg_file(seg_file_path_tuple,
             self._label_list,
             audio_file_ext=self._audio_file_extension,
             seg_file_ext=self._seg_file_extension,
