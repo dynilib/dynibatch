@@ -15,6 +15,7 @@ from libdyni.features import extractors
 from libdyni.features import activity_detection
 # utils
 from libdyni.parsers import label_parsers
+from libdyni.utils.segment import CommonLabels
 
 
 logger = logging.getLogger(__name__)
@@ -167,6 +168,7 @@ class MiniBatchGen:
 
     def execute(self,
                 active_segments_only=False,
+                known_labels_only=False,
                 with_targets=False,
                 with_filenames=False):
         """
@@ -174,6 +176,7 @@ class MiniBatchGen:
 
             Args:
                 active_segments_only: return only segments with "activity" attribute set to True
+                known_labels_only: return only segments with label not set to segment.CommonLabels.unknown
                 with_targets: return labels associated to the data
                 with_filenames: return filenames where the data were taken
             Return: tuple(data, targets (if with_targets), filenames (if with_filenames))
@@ -197,7 +200,9 @@ class MiniBatchGen:
             for s in sc.segments:
                 if self.feature_name not in s.features:
                     break
-                if not active_segments_only or (hasattr(s, 'activity') and s.activity):
+                if ((not active_segments_only or (hasattr(s, 'activity')) and
+                    s.activity) and (not known_labels_only or s.label !=
+                        CommonLabels.unknown)):
                     if self.n_features == 1:
                         minibatch[count, 0, :] = s.features[self.feature_name].T
                     else:
