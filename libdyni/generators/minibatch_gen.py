@@ -65,16 +65,18 @@ class MiniBatchGen:
         batch_size = config["batch_size"]
         num_frames_per_seg = int(seg_config["seg_duration"] *
                                  af_config["sample_rate"] / af_config["hop_size"])
-        
+
         # Create a label parser.
         # Because FileLabelParser is set with a file path and SegmentLabelParser
         # with a root path, two different keys are used
         if "file2label_filename" in config:
             label_parser = label_parsers.CSVFileLabelParser(config["file2label_filename"],
                     label_file=config.get("label_file"))
-        elif "seg2label_root":
+        elif "seg2label_root" in config:
             label_parser = label_parsers.CSVSegmentLabelParser(config["seg2label_root"],
                     config["label_file"])
+        else:
+            label_parser = None
 
         # get activity detection
         if "activity_detection" in config:
