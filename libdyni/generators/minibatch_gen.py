@@ -176,7 +176,7 @@ class MiniBatchGen:
 
             Args:
                 active_segments_only: return only segments with "activity" attribute set to True
-                known_labels_only: return only segments with label not set to segment.CommonLabels.unknown
+                known_labels_only: return only segments with label not set to segment.CommonLabels.unknown.value
                 with_targets: return labels associated to the data
                 with_filenames: return filenames where the data were taken
             Return: tuple(data, targets (if with_targets), filenames (if with_filenames))
@@ -202,7 +202,7 @@ class MiniBatchGen:
                     break
                 if ((not active_segments_only or (hasattr(s, 'activity')) and
                     s.activity) and (not known_labels_only or s.label !=
-                        CommonLabels.unknown)):
+                        CommonLabels.unknown.value)):
                     if self.n_features == 1:
                         minibatch[count, 0, :] = s.features[self.feature_name].T
                     else:

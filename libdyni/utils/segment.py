@@ -17,7 +17,7 @@ class Segment:
         1 segment = 1 observation.
     """
 
-    def __init__(self, start_time, end_time, label=CommonLabels.unknown):
+    def __init__(self, start_time, end_time, label=CommonLabels.unknown.value):
 
         if start_time < 0 or end_time <= start_time:
             raise ParameterError(
@@ -95,7 +95,7 @@ def set_segment_labels(segments_from, segments_to, overlap_ratio=0.5):
                 s_to.label = k
                 continue
 
-        s_to.label = CommonLabels.unknown
+        s_to.label = CommonLabels.unknown.value
 
 
 def _get_overlap(start1, end1, start2, end2):

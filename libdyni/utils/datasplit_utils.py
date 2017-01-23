@@ -52,9 +52,9 @@ def create_random_datasplit(segment_containers,
         classes |= sc.labels
 
     # remove segment.CommonLabels
-    classes.discard(CommonLabels.garbage)
-    classes.discard(CommonLabels.no_activity)
-    classes.discard(CommonLabels.unknown)
+    classes.discard(CommonLabels.garbage.value)
+    classes.discard(CommonLabels.no_activity.value)
+    classes.discard(CommonLabels.unknown.value)
 
     # for every label, get audio_path set and split
     for c in classes:

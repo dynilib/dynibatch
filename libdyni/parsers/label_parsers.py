@@ -36,7 +36,7 @@ class CSVFileLabelParser(FileLabelParser):
             ...
 
     If this argument is set, all files with a label which is not in the list specified in
-    label_file will have their label set to segment.CommonLabels.unknown.
+    label_file will have their label set to segment.CommonLabels.unknown.value.
     """
 
     def __init__(self, *file2label_files, separator=",", label_file=None):
@@ -71,7 +71,7 @@ class CSVFileLabelParser(FileLabelParser):
                     if line:
                         sline = line.split(separator)
                         label = sline[1].strip()
-                        self._file2label_dict[sline[0].strip()] = self._label_list.index(label) if label in self._label_list else segment.CommonLabels.unknown
+                        self._file2label_dict[sline[0].strip()] = self._label_list.index(label) if label in self._label_list else segment.CommonLabels.unknown.value
 
     def get_label(self, audio_path):
         """Returns the label of audio_path
@@ -112,7 +112,7 @@ class CSVSegmentLabelParser(SegmentLabelParser):
             ...
 
     All segments with a label which is not in the list specified in label_file
-    will have their label set to segment.CommonLabels.unknown.
+    will have their label set to segment.CommonLabels.unknown.value.
     """
 
     def __init__(self,

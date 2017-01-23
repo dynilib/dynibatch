@@ -63,7 +63,7 @@ class TestSegment:
         assert(segment_to_list[0].label == "a" and
                segment_to_list[1].label == "a" and
                segment_to_list[2].label == "b" and
-               segment_to_list[3].label == segment.CommonLabels.unknown)
+               segment_to_list[3].label == segment.CommonLabels.unknown.value)
 
     def test_set_segment_labels_overlap(self):
         segment_from_list = []
@@ -75,7 +75,7 @@ class TestSegment:
                                    segment_to_list,
                                    overlap_ratio=0.5)
         assert(segment_to_list[0].label == "a" and
-               segment_to_list[1].label == segment.CommonLabels.unknown)
+               segment_to_list[1].label == segment.CommonLabels.unknown.value)
 
 
 class TestSegmentContainer:
@@ -129,7 +129,7 @@ class TestSegmentContainer:
         n_segments = 5
         for i in range(n_segments):
             sc.segments.append(segment.Segment(i * 1, (i + 1) * 1))
-        assert sc.n_segments_with_label(segment.CommonLabels.unknown) == n_segments
+        assert sc.n_segments_with_label(segment.CommonLabels.unknown.value) == n_segments
 
     def test_n_active_segments_w_labels(self):
         sc = segment_container.SegmentContainer("fake_audio_path")
@@ -139,7 +139,7 @@ class TestSegmentContainer:
             sc.segments.append(segment.Segment(i * 1, (i + 1) * 1))
             if i in active_segment_ind:
                 sc.segments[-1].activity = True
-        assert sc.n_active_segments_with_label(segment.CommonLabels.unknown) == len(active_segment_ind)
+        assert sc.n_active_segments_with_label(segment.CommonLabels.unknown.value) == len(active_segment_ind)
 
     def test_create_random_segment_containers(self):
         sc_ref = segment_container.create_segment_containers_from_audio_files(
@@ -228,7 +228,7 @@ class TestSegmentContainer:
                 TEST_SEG_PATH_TUPLE_1, labels)
             sc_2 = segment_container.create_segment_container_from_seg_file(
                 TEST_SEG_PATH_TUPLE_2, labels)
-            assert sc_1.segments[0].label == segment.CommonLabels.unknown
+            assert sc_1.segments[0].label == segment.CommonLabels.unknown.value
             assert sc_2.segments[0].label == labels.index("bird_c")
 
     def test_create_fixed_duration_segments_duration(self):

@@ -250,7 +250,7 @@ def create_segment_container_from_seg_file(seg_file_path_tuple,
                     Segment(
                         start_time,
                         end_time,
-                        labels.index(label) if label in labels else CommonLabels.unknown))
+                        labels.index(label) if label in labels else CommonLabels.unknown.value))
 
         return sc
 
