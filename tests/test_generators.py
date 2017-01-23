@@ -27,10 +27,10 @@ from libdyni.utils import utils
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
 
-TEST_AUDIO_PATH_TUPLE_1 = (DATA_PATH, "ID0132.wav")
-TEST_AUDIO_PATH_TUPLE_2 = (DATA_PATH, "ID0133.wav")
-TEST_AUDIO_PATH_TUPLE_3 = (DATA_PATH, "ID1238.wav")
-TEST_AUDIO_PATH_TUPLE_4 = (DATA_PATH, "ID1322.wav")
+TEST_AUDIO_PATH_TUPLE_1 = (DATA_PATH, "dataset1/ID0132.wav")
+TEST_AUDIO_PATH_TUPLE_2 = (DATA_PATH, "dataset1/ID0133.wav")
+TEST_AUDIO_PATH_TUPLE_3 = (DATA_PATH, "dataset2/ID1238.wav")
+TEST_AUDIO_PATH_TUPLE_4 = (DATA_PATH, "dataset2/ID1322.wav")
 TEST_FILE2LABEL_PATH = os.path.join(DATA_PATH, "file2label.csv")
 
 FEATURE_ROOT = os.path.join(DATA_PATH, "feature_root")
@@ -194,7 +194,7 @@ class TestMiniBatch:
                 for d, t, f in zip(data, targets, filenames):
                     start_ind = int(start_time * sample_rate)
                     if chunk_count < id0132_n_chunks:
-                        assert f == "ID0132.wav"
+                        assert f == "dataset1/ID0132.wav"
                         assert t == classes.index("bird_c")
                         assert np.all(d == id0132_data[start_ind:start_ind+seg_size])
                     elif chunk_count < id0132_n_chunks + id0133_n_chunks:
@@ -203,7 +203,7 @@ class TestMiniBatch:
                             start_time = 0.0
                             start_ind = 0
 
-                        assert f == "ID0133.wav"
+                        assert f == "dataset1/ID0133.wav"
                         assert t == classes.index("bird_c")
                         assert np.all(d == id0133_data[start_ind:start_ind+seg_size])
                     elif chunk_count < id0132_n_chunks + id0133_n_chunks + id1238_n_chunks:
@@ -212,7 +212,7 @@ class TestMiniBatch:
                             start_time = 0.0
                             start_ind = 0
 
-                        assert f == "ID1238.wav"
+                        assert f == "dataset2/ID1238.wav"
                         assert t == classes.index("bird_d")
                         assert np.all(d == id1238_data[start_ind:start_ind+seg_size])
                     else:
@@ -221,7 +221,7 @@ class TestMiniBatch:
                             start_time = 0.0
                             start_ind = 0
 
-                        assert f == "ID1322.wav"
+                        assert f == "dataset2/ID1322.wav"
                         assert t == classes.index("bird_d")
                         assert np.all(d == id1322_data[start_ind:start_ind+seg_size])
 
@@ -257,7 +257,7 @@ class TestMiniBatch:
                                        max_freq=sample_rate/2)
         ff_pro = FrameFeatureProcessor(af_gen,
                                        [en_ext, sf_ext, mel_ext],
-                                       DATA_PATH)
+                                       feature_container_root=FEATURE_ROOT)
 
         pca = None
         scaler = None
@@ -285,7 +285,7 @@ class TestMiniBatch:
 
         # compare data in segment and corresponding data in feature container
         for sc in sc_gen_e:
-            fc_path = os.path.join(DATA_PATH, sc.audio_path.replace(".wav", ".fc.jl"))
+            fc_path = os.path.join(FEATURE_ROOT, sc.audio_path.replace(".wav", ".fc.jl"))
             fc = feature_container.FeatureContainer.load(fc_path)
             for s in sc.segments:
                 if hasattr(s, 'activity') and s.activity:
@@ -344,7 +344,7 @@ class TestMiniBatch:
                                        max_freq=sample_rate/2)
         ff_pro = FrameFeatureProcessor(af_gen,
                                        [en_ext, sf_ext, mel_ext],
-                                       DATA_PATH)
+                                       feature_container_root=FEATURE_ROOT)
 
         pca = None
         scaler = joblib.load(os.path.join(DATA_PATH, "transform/mel64_norm/scaler.jl"))
@@ -371,7 +371,7 @@ class TestMiniBatch:
 
         # compare data in segment and corresponding data in feature container
         for sc in sc_gen_e:
-            fc_path = os.path.join(DATA_PATH, sc.audio_path.replace(".wav", ".fc.jl"))
+            fc_path = os.path.join(FEATURE_ROOT, sc.audio_path.replace(".wav", ".fc.jl"))
             fc = feature_container.FeatureContainer.load(fc_path)
             for s in sc.segments:
                 if hasattr(s, 'activity') and s.activity:
@@ -427,7 +427,7 @@ class TestMiniBatch:
                                        max_freq=sample_rate/2)
         ff_pro = FrameFeatureProcessor(af_gen,
                                        [en_ext, sf_ext, mel_ext],
-                                       DATA_PATH)
+                                       feature_container_root=FEATURE_ROOT)
 
         pca = joblib.load(os.path.join(DATA_PATH, "transform/mel64_pca16_norm/pca.jl"))
         scaler = joblib.load(os.path.join(DATA_PATH, "transform/mel64_pca16_norm/scaler.jl"))
@@ -454,7 +454,7 @@ class TestMiniBatch:
 
         # compare data in segment and corresponding data in feature container
         for sc in sc_gen_e:
-            fc_path = os.path.join(DATA_PATH, sc.audio_path.replace(".wav", ".fc.jl"))
+            fc_path = os.path.join(FEATURE_ROOT, sc.audio_path.replace(".wav", ".fc.jl"))
             fc = feature_container.FeatureContainer.load(fc_path)
             for s in sc.segments:
                 if hasattr(s, 'activity') and s.activity:
@@ -540,7 +540,7 @@ class TestMiniBatchGenFromConfig:
                                        max_freq=sample_rate/2)
         ff_pro = FrameFeatureProcessor(af_gen,
                                        [en_ext, sf_ext, mel_ext],
-                                       DATA_PATH)
+                                       feature_container_root=FEATURE_ROOT)
 
         ffc_ext = FrameFeatureChunkExtractor("mel_spectrum")
         act_det = Simple(energy_threshold=energy_threshold,

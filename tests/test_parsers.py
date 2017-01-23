@@ -22,7 +22,7 @@ class TestCSVFileLabelParser:
     def test_get_label(self):
         parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
         classes = parser.get_labels()
-        assert parser.get_label("ID0131.wav") == classes.index("bird_b")
+        assert parser.get_label("dataset1/ID0131.wav") == classes.index("bird_b")
     
     def test_get_labels(self):
         parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
@@ -48,5 +48,5 @@ class TestCSVSegmentLabelParser:
         parser = CSVSegmentLabelParser(DATA_PATH, TEST_LABEL_PATH,
                 seg_file_separator="\t")
         classes = parser.get_labels()
-        assert list(parser.get_segment_container("ID0132.wav").labels)[0] == CommonLabels.unknown.value
-        assert list(parser.get_segment_container("ID0133.wav").labels)[0] == classes.index("bird_c")
+        assert list(parser.get_segment_container("dataset1/ID0132.wav").labels)[0] == CommonLabels.unknown.value
+        assert list(parser.get_segment_container("dataset1/ID0133.wav").labels)[0] == classes.index("bird_c")

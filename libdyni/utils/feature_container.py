@@ -43,12 +43,9 @@ class FeatureContainer:
             return None
 
     def save(self, path, compress=0):
-        joblib.dump(self,
-                    os.path.join(path,
-                                 os.path.splitext(
-                                     os.path.basename(
-                                         self.audio_path))[0] + FC_EXTENSION),
-                    compress=compress)
+        filename =  os.path.join(path, os.path.splitext(self.audio_path)[0] + FC_EXTENSION)
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        joblib.dump(self, filename, compress=compress)
 
     def time_to_frame_ind(self, time):
         return int(time * self.sample_rate / self.hop_size)

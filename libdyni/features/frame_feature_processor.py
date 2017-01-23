@@ -75,7 +75,7 @@ class FrameFeatureProcessor(object):
         if self.feature_container_root:
             feature_container_path = os.path.join(
                 self.feature_container_root,
-                os.path.splitext(os.path.basename(audio_path[1]))[0] +
+                os.path.splitext(audio_path[1])[0] +
                 feature_container.FC_EXTENSION)
             fc = feature_container.FeatureContainer.load(feature_container_path)
             if fc:
