@@ -113,7 +113,8 @@ def create_segment_containers_from_audio_files(audio_root,
         for filename in filenames:
             _, extension = os.path.splitext(filename)
             if extension in ALLOWED_AUDIO_EXT:
-                audio_filenames.append(os.path.join(root, filename))  # only get audio files
+                audio_filenames.append(os.path.relpath(os.path.join(root,
+                    filename), audio_root))  # only get audio files
 
     if label_parser and isinstance(label_parser, label_parsers.FileLabelParser): # no stratification for SegmentLabelParser
         label_list = [label_parser.get_label(filename) for filename in audio_filenames]
@@ -138,12 +139,8 @@ def create_segment_containers_from_audio_files(audio_root,
         audio_filenames.sort()
 
     for filename in audio_filenames:
-        audio_path_tuple = (
-            audio_root,
-            os.path.relpath(filename, audio_root))
-
         yield create_segment_container_from_audio_file(
-            audio_path_tuple,
+            (audio_root, filename),
             **kwargs)
 
 

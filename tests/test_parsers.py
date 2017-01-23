@@ -22,7 +22,7 @@ class TestCSVFileLabelParser:
     def test_get_label(self):
         parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
         classes = parser.get_labels()
-        assert parser.get_label("ID0131") == classes.index("bird_b")
+        assert parser.get_label("ID0131.wav") == classes.index("bird_b")
     
     def test_get_labels(self):
         parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)

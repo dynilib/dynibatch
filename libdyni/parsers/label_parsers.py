@@ -79,7 +79,7 @@ class CSVFileLabelParser(FileLabelParser):
         Args:
             audio_path: (relative) audio path
         """
-        return self._file2label_dict[splitext(basename(audio_path))[0]]
+        return self._file2label_dict[audio_path]
 
     def get_labels(self):
         """Returns the list of labels"""
