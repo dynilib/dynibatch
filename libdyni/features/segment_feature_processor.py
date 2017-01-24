@@ -30,10 +30,10 @@ class SegmentFeatureProcessor:
         if not all(isinstance(fe, SegmentFeatureExtractor) for fe in feature_extractors):
             raise TypeError(
                 "All feature extractors must be instances of SegmentFeatureExtractor.")
-        self.__feature_extractors = feature_extractors
+        self._feature_extractors = feature_extractors
 
         if "ff_pro" in kwargs:
-            self.__frame_feature_pro = kwargs.get("ff_pro")
+            self._frame_feature_pro = kwargs.get("ff_pro")
         if "audio_root" in kwargs:
             self._audio_root = kwargs.get("audio_root")
 
@@ -49,7 +49,7 @@ class SegmentFeatureProcessor:
 
         # check if segment container already has all wanted features
         has_features = segment_container.has_features(
-            [fe.name for fe in self.__feature_extractors])
+            [fe.name for fe in self._feature_extractors])
         if all(has_features):
             logger.debug("Segment container has all requested features")
             return
@@ -57,13 +57,13 @@ class SegmentFeatureProcessor:
         # get feature container if needed
         if any(isinstance(fe,
                           SegmentFrameBasedFeatureExtractor) for fe in compress(
-                              self.__feature_extractors, [not hf for hf in has_features])):
-            fc, created = self.__frame_feature_pro.execute(
+                              self._feature_extractors, [not hf for hf in has_features])):
+            fc, created = self._frame_feature_pro.execute(
                 (self._audio_root, segment_container.audio_path))
             if created:
                 logger.debug("Feature container created")
 
-        for fe in compress(self.__feature_extractors,
+        for fe in compress(self._feature_extractors,
                            [not hf for hf in has_features]):
             if isinstance(fe, AudioChunkExtractor):
                 fe.execute(segment_container)

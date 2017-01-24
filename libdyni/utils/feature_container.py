@@ -9,10 +9,10 @@ FC_EXTENSION = ".fc.jl"
 class FeatureContainer:
     def __init__(self, audio_path, sample_rate, win_size, hop_size):
 
-        self.audio_path = audio_path  # relative to some root data path
-        self.sample_rate = sample_rate
-        self.win_size = win_size
-        self.hop_size = hop_size
+        self._audio_path = audio_path  # relative to some root data path
+        self._sample_rate = sample_rate
+        self._win_size = win_size
+        self._hop_size = hop_size
         self.features = defaultdict(dict)
 
     def has_features(self, features):
@@ -43,9 +43,9 @@ class FeatureContainer:
             return None
 
     def save(self, path, compress=0):
-        filename =  os.path.join(path, os.path.splitext(self.audio_path)[0] + FC_EXTENSION)
+        filename =  os.path.join(path, os.path.splitext(self._audio_path)[0] + FC_EXTENSION)
         os.makedirs(os.path.dirname(filename), exist_ok=True)
         joblib.dump(self, filename, compress=compress)
 
     def time_to_frame_ind(self, time):
-        return int(time * self.sample_rate / self.hop_size)
+        return int(time * self._sample_rate / self._hop_size)

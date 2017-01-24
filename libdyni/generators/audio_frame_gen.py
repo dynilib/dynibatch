@@ -30,21 +30,9 @@ class AudioFrameGen:
         # Create window
         if self._win_type == Window.hanning:
             # use asymetric window (https://en.wikipedia.org/wiki/Window_function#Symmetry)
-            self._window = hann(self.win_size, sym=False)
+            self._window = hann(self._win_size, sym=False)
         elif self._win_type == Window.rect:
             pass  # no windowing
-
-    @property
-    def win_size(self):
-        return self._win_size
-
-    @property
-    def hop_size(self):
-        return self._hop_size
-
-    @property
-    def win_type(self):
-        return self._win_type
 
     @property
     def config(self):

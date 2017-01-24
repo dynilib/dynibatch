@@ -29,12 +29,12 @@ class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
 
         super().__init__()
 
-        self.sample_rate = sample_rate
-        self.fft_size = fft_size
-        self.n_mels = n_mels
-        self.min_freq = min_freq
-        self.max_freq = max_freq
-        self.log_amp = log_amp
+        self._sample_rate = sample_rate
+        self._fft_size = fft_size
+        self._n_mels = n_mels
+        self._min_freq = min_freq
+        self._max_freq = max_freq
+        self._log_amp = log_amp
         self._mel_basis = librosa.filters.mel(
             sr=sample_rate,
             n_fft=fft_size,
@@ -57,16 +57,16 @@ class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
 
     @property
     def size(self):
-        return self.n_mels
+        return self._n_mels
 
     @property
     def config(self):
-        return {'sample_rate': self.sample_rate,
-                'fft_size': self.fft_size,
-                'n_mels': self.n_mels,
-                'min_freq': self.min_freq,
-                'max_freq': self.max_freq,
-                'log_amp': self.log_amp}
+        return {'sample_rate': self._sample_rate,
+                'fft_size': self._fft_size,
+                'n_mels': self._n_mels,
+                'min_freq': self._min_freq,
+                'max_freq': self._max_freq,
+                'log_amp': self._log_amp}
 
     def execute(self, data):
         """Computes the mel spectrum.
@@ -77,7 +77,7 @@ class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
         Returns the mel spectrum as a numpy array
         """
 
-        if self.log_amp:
+        if self._log_amp:
             return librosa.logamplitude(
                 np.dot(self._mel_basis, data),
                 top_db=None)

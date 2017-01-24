@@ -31,11 +31,11 @@ class MiniBatchGen:
                  n_features,
                  n_time_bins):
 
-        self.segment_container_gen = segment_container_gen
-        self.feature_name = feature_name
-        self.batch_size = batch_size
-        self.n_features = n_features
-        self.n_time_bins = n_time_bins
+        self._segment_container_gen = segment_container_gen
+        self._feature_name = feature_name
+        self._batch_size = batch_size
+        self._n_features = n_features
+        self._n_time_bins = n_time_bins
 
     @classmethod
     def from_json_config_file(cls, config_path):
@@ -162,11 +162,11 @@ class MiniBatchGen:
 
     def start(self):
         """ start MiniBatchGen for generating minibatches """
-        self.segment_container_gen.start()
+        self._segment_container_gen.start()
 
     def reset(self):
         """ reset MiniBatchGen for regenerating minibatches """
-        self.segment_container_gen.reset()
+        self._segment_container_gen.reset()
 
     def execute(self,
                 active_segments_only=False,
@@ -184,53 +184,53 @@ class MiniBatchGen:
             Return: tuple(data, targets (if with_targets), filenames (if with_filenames))
         """
 
-        if self.n_features == 1:
-            minibatch = np.empty((self.batch_size, 1, self.n_time_bins),
+        if self._n_features == 1:
+            minibatch = np.empty((self._batch_size, 1, self._n_time_bins),
                                  dtype=np.float32)
         else:
-            minibatch = np.empty((self.batch_size, 1, self.n_features, self.n_time_bins),
+            minibatch = np.empty((self._batch_size, 1, self._n_features, self._n_time_bins),
                                  dtype=np.float32)
 
         if with_filenames:
-            filenames = np.empty((self.batch_size), dtype="|U200")
+            filenames = np.empty((self._batch_size), dtype="|U200")
         if with_targets:
-            targets = np.empty((self.batch_size), dtype=np.int16)
+            targets = np.empty((self._batch_size), dtype=np.int16)
 
         count = 0
-        for sc in self.segment_container_gen.execute():
+        for sc in self._segment_container_gen.execute():
             logger.debug("iterate_minibatch: %s", sc.audio_path)
             for s in sc.segments:
-                if self.feature_name not in s.features:
+                if self._feature_name not in s.features:
                     break
                 if ((not active_segments_only or (hasattr(s, 'activity')) and
                     s.activity) and (not known_labels_only or s.label !=
                         CommonLabels.unknown.value)):
-                    if self.n_features == 1:
-                        minibatch[count, 0, :] = s.features[self.feature_name].T
+                    if self._n_features == 1:
+                        minibatch[count, 0, :] = s.features[self._feature_name].T
                     else:
-                        minibatch[count, 0, :, :] = s.features[self.feature_name].T
+                        minibatch[count, 0, :, :] = s.features[self._feature_name].T
                     if with_filenames:
                         filenames[count] = sc.audio_path
                     if with_targets:
                         targets[count] = s.label
 
                     count += 1
-                    if count == self.batch_size:
+                    if count == self._batch_size:
                         count = 0
                         data = [minibatch]
 
                         # create new arrays (alternatively, arrays could be copied when yielded)
-                        if self.n_features == 1:
-                            minibatch = np.empty((self.batch_size, 1, self.n_time_bins),
+                        if self._n_features == 1:
+                            minibatch = np.empty((self._batch_size, 1, self._n_time_bins),
                                                  dtype=np.float32)
                         else:
-                            minibatch = np.empty((self.batch_size, 1, self.n_features, self.n_time_bins),
+                            minibatch = np.empty((self._batch_size, 1, self._n_features, self._n_time_bins),
                                                  dtype=np.float32)
 
                         if with_targets:
                             data.append(targets)
-                            targets = np.empty((self.batch_size), dtype=np.int16)
+                            targets = np.empty((self._batch_size), dtype=np.int16)
                         if with_filenames:
                             data.append(filenames)
-                            filenames = np.empty((self.batch_size), dtype="|U200")
+                            filenames = np.empty((self._batch_size), dtype="|U200")
                         yield tuple(data)
