@@ -7,7 +7,7 @@ import numpy as np
 import soundfile as sf
 
 from libdyni.generators.audio_frame_gen import AudioFrameGen
-from libdyni.generators.audio_frame_gen import Window
+from libdyni.generators.audio_frame_gen import WindowType
 from libdyni.generators.segment_container_gen import SegmentContainerGenerator
 from libdyni.parsers.label_parsers import CSVFileLabelParser
 from libdyni.features.segment_feature_processor import SegmentFeatureProcessor
@@ -50,7 +50,8 @@ class TestAudioFrameGen:
         sample_rate = 22050
         win_size = 256
         hop_size = 128
-        af_gen = AudioFrameGen(sample_rate, win_size, hop_size, win_type=Window.rect)
+        af_gen = AudioFrameGen(sample_rate, win_size, hop_size,
+                win_type=WindowType.rect)
         af_gen_e = af_gen.execute(os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
         next(af_gen_e) # 1st frame
         frame = next(af_gen_e) # 2nd frame
@@ -61,7 +62,8 @@ class TestAudioFrameGen:
         sample_rate = 44100
         win_size = 256
         hop_size = 128
-        af_gen = AudioFrameGen(sample_rate, win_size, hop_size, win_type=Window.rect)
+        af_gen = AudioFrameGen(sample_rate, win_size, hop_size,
+                win_type=WindowType.rect)
         af_gen_e = af_gen.execute(os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
         with pytest.raises(Exception) as e_info:
             next(af_gen_e) # 1st frame
