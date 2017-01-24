@@ -33,23 +33,21 @@ class AudioFrameGen:
     def execute(self, path):
         """ Yields the windowed frames"""
 
+        audio, sr = sf.read(path)
+
         # make sure the file is mono
-        if sf.info(path).channels != 1:
+        if len(audio.shape) != 1:
             raise Exception("Please use only mono files")
         
         # make sure the actual sample rate is the same as specified in the init
-        if sf.info(path).samplerate != self._sample_rate:
+        if sr != self._sample_rate:
             raise Exception("Sample rate mismatch in file {}: ".format(path) +
-                    "{} instead of {}.".format(sf.info(path).samplerate,
-                        self._sample_rate))
+                    "{} instead of {}.".format(sr, self._sample_rate))
 
-        for frame in sf.blocks(path,
-                               blocksize=self._win_size,
-                               overlap=self._win_size-self._hop_size,
-                               dtype="float32"):
-            if len(frame) < self._win_size:
-                break # last frame
+        i = 0
+        while i + self._win_size < audio.shape[0]:
             if self._win_type != WindowType.rect:
-                yield self._window * frame
+                yield self._window * audio[i:i+self._win_size]
             else:
-                yield frame
+                yield audio[i:i+self._win_size]
+            i += self._hop_size
