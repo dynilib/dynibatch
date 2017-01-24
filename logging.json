@@ -17,7 +17,7 @@
         "console": {
             "class": "logging.StreamHandler",
             "level": "DEBUG",
-            "formatter": "simple",
+            "formatter": "simple"
         },
 
         "file": {
