@@ -3,6 +3,7 @@
 import logging
 from scipy.signal import hann
 import soundfile as sf
+from libdyni.utils.exceptions import LibdyniError
 
 from libdyni.utils.windows import WindowType, window
 
@@ -37,12 +38,12 @@ class AudioFrameGen:
 
         # make sure the file is mono
         if len(audio.shape) != 1:
-            raise Exception("Please use only mono files")
-        
+            raise LibdyniError("Please use only mono files")
+
         # make sure the actual sample rate is the same as specified in the init
         if sr != self._sample_rate:
-            raise Exception("Sample rate mismatch in file {}: ".format(path) +
-                    "{} instead of {}.".format(sr, self._sample_rate))
+            raise LibdyniError("Sample rate mismatch in file {}: ".format(path) +
+                               "{} instead of {}.".format(sr, self._sample_rate))
 
         i = 0
         while i + self._win_size < audio.shape[0]:
