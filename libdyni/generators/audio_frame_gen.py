@@ -11,9 +11,19 @@ logger = logging.getLogger(__name__)
 
 
 class AudioFrameGen:
-    """Audio frame generator."""
+    """Audio frame generator.
+    
+    Generates windowed audio frames.
+    """
 
     def __init__(self, sample_rate, win_size, hop_size, win_type=WindowType.hanning):
+        """Initializes audio frame generator.
+
+        Args:
+            sample rate (int): sample rate in Hz
+            win_size (int): frame size in samples
+            hop_size (int): hop size in samples
+        """
 
         self._sample_rate = sample_rate
         self._win_size = win_size
@@ -31,7 +41,14 @@ class AudioFrameGen:
                 "win_type": self._win_type.value}
 
     def execute(self, path):
-        """ Yields the windowed frames"""
+        """Executes the frame generator.
+        
+        Args:
+            path (str): path of the audio file
+
+        Yields:
+            Audio frames as numpy arrays
+        """
 
         audio, sr = sf.read(path)
 

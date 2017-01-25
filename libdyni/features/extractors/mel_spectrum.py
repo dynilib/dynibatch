@@ -5,17 +5,7 @@ from libdyni.features.extractors.frame_feature import PowerSpectrumFrameFeatureE
 
 
 class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
-    """Computes the mel spectrum.
-
-    Attribute:
-        sample_rate (int)
-        fft_size (int)
-        n_mels(int)
-        min_freq (int)
-        max_freq (int)
-        log_amp (boolean): whether or not to compute the log of the mel
-        spectrum.
-    """
+    """Computes the mel spectrum."""
 
     #TODO (jul) add top_db for logamplitude
 
@@ -26,6 +16,17 @@ class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
                  min_freq=0,
                  max_freq=22050,
                  log_amp=True):
+        """Initializes mel filters.
+
+        Args:
+            sample_rate (int)
+            fft_size (int)
+            n_mels(int)
+            min_freq (int)
+            max_freq (int)
+            log_amp (boolean): whether or not to compute the log of the mel
+                spectrum.
+        """
 
         super().__init__()
 
@@ -74,7 +75,8 @@ class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
         Args:
             data (numpy array): power spectrum
 
-        Returns the mel spectrum as a numpy array
+        Returns:
+            the mel spectrum as a numpy array
         """
 
         if self._log_amp:

@@ -7,18 +7,21 @@ logger = logging.getLogger(__name__)
 
 
 class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
-    """Extracts chunks of frame-based features.
+    """Extracts chunks of frame-based features."""
 
-    Attributes:
-        name (str): name of the frame-based feature.
-        pca (sklearn.decomposition.PCA) (optional): Principal component analysis
-        (PCA)
-        scaler (sklearn.preprocessing.StandardScaler) (optional): standardize
-            features by removing the mean and scaling to unit variance.
-    Note: if both scaler and pca are set, the pca is performed first
-
-    """
     def __init__(self, name, pca=None, scaler=None):
+        """Initializes frame feature chunk extractor.
+
+        Args:
+            name (str): name of the frame-based feature.
+            pca (sklearn.decomposition.PCA) (optional): Principal component analysis
+                (PCA)
+            scaler (sklearn.preprocessing.StandardScaler) (optional): standardize
+                features by removing the mean and scaling to unit variance.
+
+        Note: if both scaler and pca are set, the pca is performed first
+        """
+
         super().__init__()
         self._name = name
         self._scaler = scaler
@@ -30,13 +33,13 @@ class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
 
     def execute(self, segment_container, feature_container):
         """Gets chunk of features from a feature container and sets it to every
-        segments in a segment container.
+        segment in a segment container.
 
         Args:
             segment_container (SegmentContainer): segment container to set the
-            chunk of data to.
+                chunk of data to.
             feature_container (FeatureContainer): feature container to get the
-            chunk of data from.
+                chunk of data from.
 
         Sets the chunks of features to every segment in segment_container.
         """

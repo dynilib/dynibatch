@@ -1,7 +1,3 @@
-"""
-    Module containing parsers of label files
-"""
-
 from os.path import basename, splitext
 from libdyni.utils import segment, segment_container
 
@@ -44,10 +40,10 @@ class CSVFileLabelParser(FileLabelParser):
         filename.
 
         Args:
-            file2label_files: one or several file2label file.
-            separator (optional): character used as a separator in the
+            file2label_files (*str): one or several file2label file.
+            separator (str): character used as a separator in the
                 file2label file
-            label_file (optional): file containing the list of labels to be
+            label_file (str): file containing the list of labels to be
             used.
          """
 
@@ -124,14 +120,14 @@ class CSVSegmentLabelParser(SegmentLabelParser):
         """Create a label list.
 
         Args:
-            seg2label_files_root: root path of the seg2label files.
-            separator (optional): character used as a separator in the
+            seg2label_files_root (str): root path of the seg2label files.
+            separator (str): character used as a separator in the
                 seg2label files
             label_file: file containing the list of labels to be
                 used.
-            audio_file_extension (optional)
-            seg_file_extension (optional)
-            seg_file_separator (optional)
+            audio_file_extension (str)
+            seg_file_extension (str)
+            seg_file_separator (str)
          """
 
         self._seg2label_files_root = seg2label_files_root
@@ -153,6 +149,9 @@ class CSVSegmentLabelParser(SegmentLabelParser):
         
         Args:
             audio_path
+
+        Returns:
+            SegmentContainer
         """
 
         seg_file_path_tuple = (self._seg2label_files_root, audio_path.replace(self._audio_file_extension, self._seg_file_extension))

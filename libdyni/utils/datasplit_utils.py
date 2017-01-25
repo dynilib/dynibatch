@@ -12,7 +12,52 @@ from libdyni.utils.exceptions import ParameterError
 logger = logging.getLogger(__name__)
 
 
+"""
+A datasplit is dict containing an id and three datasets (train. valid, test),
+each represented by a set of audio file paths. Audio file paths must be given
+relatively to some common audio root path.
+
+It allows to keep track and share a dataset split to replicate some experiments.
+
+Example:
+
+    somedatasplit = {
+                        "id": "someid",
+                        "sets":
+                            {
+                                "train": set([
+                                    "some/path/file1.wav",
+                                    "some/path/file3.wav",
+                                    "some/path/file4.wav",
+                                    "some/path/file10.wav"]),
+                                "valid": set([
+                                    "some/path/file2.wav",
+                                    "some/path/file9.wav"]),
+                                "test": set([
+                                    "some/path/file5.wav",
+                                    "some/path/file6.wav",
+                                    "some/path/file7.wav",
+                                    "some/path/file8.wav"])
+                            }
+                    }
+
+"""
+
+
 def create_datasplit(train_set, validation_set, test_set, name=None):
+    """Create a datasplit dict from user-defined data sets
+
+    Args:
+        train_set (set): set of audio file paths
+        valid_set (set): set of audio file paths
+        test_set (set): set of audio file paths
+        name (str): name of the datasplit (set to unix timestamp if not
+            specified)
+    
+    Returns:
+        a dict with train_set, validation_set and test_set, as sets of
+        audio file paths
+    """
     if not name:
         name = int(time.time())
     return {"id": "{}".format(name),
@@ -26,16 +71,18 @@ def create_random_datasplit(segment_containers,
                             train_ratio=0.65,
                             validation_ratio=0.0,
                             test_ratio=0.35):
-    """
-    Stratified shuffle split.
-    Splits the dataset in training, validation and testing data sets.
-    The split is done for every classes except those in segment.
+    """Create a stratified data split. Only allowed for datasets having a single
+    label per file.
+
     Args:
-        segment_containers: list of Segment instances,
+        segment_containers: list of SegmentContainer instances,
         train_ratio: ratio of files in training set
         validation_ratio: ratio of files in validation set
         test_ratio: ratio of files in test set
-    Returns a dictionary with train_set, validation_set and test_set, as lists of audio_path
+    
+    Returns:
+        a dict with train_set, validation_set and test_set, as sets of
+        audio file paths
     """
 
     if train_ratio + validation_ratio + test_ratio != 1:
@@ -97,12 +144,16 @@ def create_random_datasplit(segment_containers,
     return create_datasplit(train_set, validation_set, test_set)
 
 def write_datasplit(datasplit, path, compress=0):
-    """
-    Writes datasplit to joblib pickles.
+    """Writes datasplit to joblib pickle
+
     Args:
-        datasplit: dictionary including the train, validation and test sets as list of file
-        path: path in which to write the file
-        compress: compression coefficient
+        datasplit (dict): datasplit dict, as defined in the description of this
+            module.
+        path (str): write path
+        compress (int from 0 to 9): compression level
+
+    Writes:
+        A joblib dump.
     """
 
     joblib.dump(datasplit,
@@ -111,8 +162,16 @@ def write_datasplit(datasplit, path, compress=0):
 
 
 def get_datasplit_stats(segment_containers, datasplit):
-    """
-    Get string describing basic statistics on dataset
+    """Compute basic statistics on dataset.
+
+    Args:
+        segment_containers (SegmentContainer iterator): segment containers
+            containing the data
+        datasplit (dict): datasplit dict, as defined in the description of this
+            module.
+
+    Returns:
+        A string containing basic statistics on the dataset.
     """
 
     train_set = [sc for sc in segment_containers if

@@ -9,8 +9,17 @@ logger = logging.getLogger(__name__)
 
 
 class AudioChunkExtractor(SegmentFeatureExtractor):
+    """Extracts the audio chunk corresponding to every segment in a segment
+    container."""
 
     def __init__(self, audio_root, sample_rate):
+        """Initializes audio chunk extractor.
+
+        Args:
+            audio_root (str): audio files root path
+            sample_rate (int): sample rate of all audio files in audio_root (they
+            must all have the same sample rate)
+        """
         super().__init__()
         self._audio_root = audio_root
         self._sample_rate = sample_rate
@@ -20,6 +29,11 @@ class AudioChunkExtractor(SegmentFeatureExtractor):
         return self.__module__.split('.')[-1]
 
     def execute(self, segment_container):
+        """Executes the audio chunk extractor.
+
+        Args:
+            segment_container (SegmentContainer)
+        """
 
         with SoundFile(join(self._audio_root,
                             segment_container.audio_path)) as f:

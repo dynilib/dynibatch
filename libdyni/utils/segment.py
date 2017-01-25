@@ -13,11 +13,25 @@ class CommonLabels(Enum):
 
 class Segment:
     """
-        Segments are the base elements to be fed to the learning algorithm:
-        1 segment = 1 observation.
+    Segments are the base elements to be fed to the learning algorithm: 1
+    segment = 1 observation.
+
+    Audio files are split into overlapping fixed-length segments, stored in
+    segment containers.
+
+    Every segment, along with its parent segment container, contains all the
+    data needed to feed a mini-batch (label, features, whether it contains
+            activity or not).
     """
 
     def __init__(self, start_time, end_time, label=CommonLabels.unknown.value):
+        """Initializes segment.
+
+        Args:
+            start_time (float): start time in second
+            end_time (float): end time in second
+            label (int): label index
+        """
 
         if start_time < 0 or end_time <= start_time:
             raise ParameterError(
@@ -70,8 +84,13 @@ def set_segment_labels(segments_from, segments_to, overlap_ratio=0.5):
     Map label from segments_from to segments_to such as a given segment s
     in segments_to has the label with more overlap in segment_from, only if this
     overlap is >= (s duration) * overlap_ratio.
-    Args::
-        - overlap_ratio: min overlap ratio, in [0, 1]
+
+    Args:
+        segments_from (Segment iterator): Segment objects from which the
+            labels are extracted
+        segments_to (Segment iterator): Segment objects to which the labels are
+            set
+        overlap_ratio (float in [0, 1]): min overlap ratio
     """
 
     for s_to in segments_to:
@@ -99,7 +118,12 @@ def set_segment_labels(segments_from, segments_to, overlap_ratio=0.5):
 
 
 def _get_overlap(start1, end1, start2, end2):
-    """
-    Get overlap between the intervals [start1, end1] and [start2, end2]
+    """Get overlap between the intervals [start1, end1] and [start2, end2].
+
+    Args:
+        start1 (float)
+        end1 (float)
+        start2 (float)
+        end2 (float)
     """
     return max(0, min(end1, end2) - max(start1, start2))

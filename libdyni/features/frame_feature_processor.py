@@ -21,20 +21,22 @@ class FrameFeatureProcessor(object):
     If feature_container_root is set, an existing feature container with the
     requested features is searched for before executing the feature extractors.
     If it is not found, a new one is created and written.
-
-    Attributes:
-        audio_frame_gen (AudioFrameGen): object yielding audio frame to feed the
-            feature extractors.
-        feature_extractors (list of FrameFeatureExtractor): list of feature
-            extractors to be executed.
-        feature_container_root (str) (optional): path where the feature
-            containers are loaded/saved (some kind of cache).
     """
 
     def __init__(self,
                  audio_frame_gen,
                  feature_extractors,
                  feature_container_root=None):
+        """Initializes frame feature processor.
+
+        Args:
+            audio_frame_gen (AudioFrameGen): object yielding audio frame to feed the
+                feature extractors.
+            feature_extractors (list of FrameFeatureExtractor): list of feature
+                extractors to be executed.
+            feature_container_root (str) (optional): path where the feature
+                containers are loaded/saved (some kind of cache).
+        """
 
         # TODO (jul) use Python abc (Abstract Base Classes)?
         if not all(isinstance(fe, ffe.FrameFeatureExtractor)

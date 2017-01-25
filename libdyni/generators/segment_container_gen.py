@@ -10,8 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 class SegmentContainerGenerator:
-    """ Segment container generator
-        Segments contain labels and all required features
+    """Segment container generator
+
+    The segment container generator yields SegmentContainer objects with
+    segments containing all the features specified in segment_feature_processor
+    and labels as specified by label_parser.
     """
 
     def __init__(self,
@@ -23,6 +26,20 @@ class SegmentContainerGenerator:
                  seg_overlap=0.9,
                  randomize=False,
                  stratify=False):
+        """Initializes segment container generator.
+
+        Args:
+            audio_root (str): rooth path to the audio files
+            segment_feature_processor (SegmentFeatureProcessor)
+            label_parser (FileLabelParser or SegmentLabelParser)
+            dataset (list of str): list of audio files to process. If set to None,
+                all the audio files in audio_root are processed.
+            seg_duration (float): segment duration in seconds
+            seg_overlap (float): segment overlap ratio. Segments overlap by
+                seg_duration * seg_overlap seconds
+            randomize (bool): randomize the SegmentContainer objects
+            stratify (bool): TOREMOVE
+        """
 
         self._audio_root = audio_root
         self._label_parser = label_parser
@@ -39,10 +56,8 @@ class SegmentContainerGenerator:
         self._sc_gen = None
 
     def start(self):
-        """
-            create segment container with fixed-length segments
-        """
         
+        # create segment container with fixed-length segments
         self._sc_gen = create_segment_containers_from_audio_files(
             self._audio_root,
             self._randomize,

@@ -4,6 +4,11 @@ from libdyni.features.extractors.frame_feature import SpectrumFrameFeatureExtrac
 
 
 class SpectralFlatnessExtractor(SpectrumFrameFeatureExtractor):
+    """Spectral flatness extractor.
+
+    The spectral flatness is calculated by dividing the geometric mean of the
+    power spectrum by the arithmetic mean of the power spectrum.
+    """
 
     def __init__(self):
         super().__init__()
@@ -25,6 +30,15 @@ class SpectralFlatnessExtractor(SpectrumFrameFeatureExtractor):
         return {}
 
     def execute(self, data):
+        """Computes the spectral flatness.
+
+        Args:
+            data (numpy array): power spectrum
+
+        Returns:
+            float: spectral flatness
+        """
+
         data = np.where(data == 0, float_info.epsilon, data) # replace 0s by epsilon to avoid log(0)
         sum_mag_bins = np.sum(data)
         return np.exp(np.sum(np.log(data)) / len(data)) / (sum_mag_bins / len(data))

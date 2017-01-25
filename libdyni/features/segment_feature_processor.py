@@ -15,16 +15,18 @@ logger = logging.getLogger(__name__)
 class SegmentFeatureProcessor:
     # TODO (jul) change name to SegmentFeatureExtractor and replace current
     # SegmentFeatureExtractor by something else.
-    """Class holding all objects needed to run segment-based feature extractors.
-
-    Attributes:
-        feature_extractors (list of SegmentFeatureExtractor): list of feature
-            extractors to be executed.
-        feature_container_root (str) (optional): path where the feature
-            containers are loaded/saved (some kind of cache).
-    """
+    """Class holding all objects needed to run segment-based feature extractors."""
 
     def __init__(self, feature_extractors, **kwargs):
+        """Initializes segment feature processor.
+
+        Args:
+            feature_extractors (list of SegmentFeatureExtractor): list of feature
+                extractors to be executed.
+            **kwarg:
+                ff_pro (FrameFeatureProcessor)
+                audio_root (str): audio root path
+        """
 
         # TODO use Python abc (Abstract Base Classes)?
         if not all(isinstance(fe, SegmentFeatureExtractor) for fe in feature_extractors):
@@ -41,7 +43,9 @@ class SegmentFeatureProcessor:
         """
         Args:
             segment_container
-        Returns tuple (segment_container, segment_container_has_features)
+        
+        Fills the segment containers with the features specified in
+            feature_extractors
         """
 
         logger.debug("Processing %s segment container",

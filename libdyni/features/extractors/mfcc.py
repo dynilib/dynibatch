@@ -6,18 +6,7 @@ from libdyni.features.extractors.frame_feature \
 
 
 class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
-    """Computes the MFCC.
-
-    Attribute:
-        sample_rate (int)
-        fft_size (int)
-        n_mels(int)
-        n_mfcc (int)
-        min_freq (int)
-        max_freq (int)
-        top_db (float): threshold log amplitude at top_db below the peak:
-            max(log(S)) - top_db
-    """
+    """Computes the MFCC."""
 
     def __init__(self,
                  sample_rate=44100,
@@ -27,6 +16,19 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
                  min_freq=0,
                  max_freq=22050,
                  top_db=None):
+        """Initializes MFCC filters
+
+        Args:
+            sample_rate (int)
+            fft_size (int)
+            n_mels(int)
+            n_mfcc (int)
+            min_freq (int)
+            max_freq (int)
+            top_db (float): threshold log amplitude at top_db below the peak:
+                max(log(S)) - top_db
+        """
+
 
         super().__init__()
 
@@ -78,7 +80,8 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
         Args:
             data (numpy array): power spectrum
 
-        Returns the mfcc as a numpy array
+        Returns:
+            the mfcc as a numpy array
         """
         data = librosa.logamplitude(np.dot(self._mel_basis, data),
                                     top_db=self._top_db)

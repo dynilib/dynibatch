@@ -22,7 +22,11 @@ logger = logging.getLogger(__name__)
 
 
 class MiniBatchGen:
-    """Generates batches of segments from segment container generator"""
+    """Generates minibatches of features.
+    
+    Features are pulled from segments in the SegmentContainer objects yielded by
+    a SegmentContainerGenerator.
+    """
 
     def __init__(self,
                  segment_container_gen,
@@ -30,6 +34,16 @@ class MiniBatchGen:
                  batch_size,
                  n_features,
                  n_time_bins):
+        """Initializes minibatch generator.
+
+        Args:
+            segment_container_gen (SegmentContainerGenerator)
+            feature_name (str): name of the feature to pull from segments
+            batch_size (int): minibatch size in number of segments
+            n_features (int): number of features, as returned by the size property
+                of the feature extractor
+            n_time_bins (int): number of time bins of the feature in a segment    
+        """
 
         self._segment_container_gen = segment_container_gen
         self._feature_name = feature_name
@@ -39,12 +53,18 @@ class MiniBatchGen:
 
     @classmethod
     def from_json_config_file(cls, config_path):
-        """
-            Create a dict of minibatch generators from JSON file
-            (one per set if a datasplit is present in the config file)
-            Args:
-                config_path: path to the JSON config file
-            Returns a minibatch generator
+        """Creates a dict of minibatch generators from a config file
+
+        One minibatch generator is created for every set defined in the
+        datasplit, if specified in the config file. Otherwise, only one is
+        created.
+        
+        Args:
+            config_path: path to the config file (a json file)
+        Returns:
+            A dict with one item per set defined in the datasplit, such as
+            out_dict["<set_name>"] = <minibatch generator for this set>. If no
+            datasplit is defined, the set is named "default".
         """
 
         # list of frame feature names and config required to compute segment
@@ -173,15 +193,15 @@ class MiniBatchGen:
                 known_labels_only=False,
                 with_targets=False,
                 with_filenames=False):
-        """
-            Produce a minibatch generator
+        """Executes the minibatch generator
 
-            Args:
-                active_segments_only: return only segments with "activity" attribute set to True
-                known_labels_only: return only segments with label not set to segment.CommonLabels.unknown.value
-                with_targets: return labels associated to the data
-                with_filenames: return filenames where the data were taken
-            Return: tuple(data, targets (if with_targets), filenames (if with_filenames))
+        Args:
+            active_segments_only (bool): returns only segments with "activity" attribute set to True
+            known_labels_only (bool): returns only segments with label not set to segment.CommonLabels.unknown.value
+            with_targets (bool): returns labels associated to the data
+            with_filenames (bool): returns filenames where the data were taken
+        Returns:
+            tuple(data, targets (if with_targets), filenames (if with_filenames))
         """
 
         if self._n_features == 1:

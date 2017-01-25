@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class Simple(sfe.SegmentFrameBasedFeatureExtractor):
-    """simple bird activity detection, based on signal energy and voiceness
+    """Simple bird activity detection, based on signal energy and voiceness
 
     The activity detection is executed on all segments of a segment container.
     Activity is detected when the mean frame-based energy of the segment is
@@ -18,16 +18,18 @@ class Simple(sfe.SegmentFrameBasedFeatureExtractor):
     flatness is lower than spectral_flatness_threshold.
 
     It creates an attribute 'activity', set to a boolean.
-
-    Attributes:
-        energy_threshold (float): see class description above.
-        spectral_flatness_threshold (float): see class description above.
-
     """
 
     def __init__(self,
                  energy_threshold=0.2,
                  spectral_flatness_threshold=0.3):
+        """Initializes activity detector.
+
+        Args:
+            energy_threshold (float): see class description above.
+            spectral_flatness_threshold (float): see class description above.
+        """
+
         super().__init__()
 
         self.frame_feature_config = [
