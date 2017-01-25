@@ -6,7 +6,7 @@ import joblib
 
 from libdyni.utils.segment import CommonLabels
 from libdyni.utils.stats import get_stats
-from libdyni.utils.exceptions import ParameterError
+from libdyni.utils.exceptions import ParameterError, LibdyniError
 
 
 logger = logging.getLogger(__name__)
@@ -123,7 +123,7 @@ def get_datasplit_stats(segment_containers, datasplit):
                 sc.audio_path in datasplit["sets"]['test']]
 
     if not train_set:
-        raise Exception("No train set")
+        raise LibdyniError("No train set")
     train_stats = get_stats(train_set)
     if validation_set:
         validation_stats = get_stats(validation_set)

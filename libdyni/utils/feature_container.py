@@ -1,6 +1,7 @@
 import os
 from collections import defaultdict
 import joblib
+from libdyni.utils import exceptions
 
 
 FC_EXTENSION = ".fc.jl"
@@ -35,7 +36,7 @@ class FeatureContainer:
         try:
             fc = joblib.load(path)
             if not isinstance(fc, FeatureContainer):
-                raise Exception(
+                raise exceptions.ParsingError(
                     "Object in {} is not an instance of FeatureContainer".format(
                         path))
             return fc

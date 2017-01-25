@@ -7,6 +7,7 @@ import numpy as np
 from libdyni.features.extractors import frame_feature as ffe
 from libdyni.utils import audio
 from libdyni.utils import feature_container
+from libdyni.utils import exceptions
 
 __all__ = ['FrameFeatureProcessor']
 
@@ -62,8 +63,8 @@ class FrameFeatureProcessor(object):
         """
 
         if not isinstance(audio_path, tuple):
-            raise Exception('The first argument must be a tuple' +
-                            '<audio path root>, <audio relative path>)')
+            raise exceptions.ParameterError('The first argument must be a tuple' +
+                                            '<audio path root>, <audio relative path>)')
 
         fc = None
         has_features = [False for fe in self._feature_extractors]
