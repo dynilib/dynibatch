@@ -30,8 +30,11 @@ class SegmentFeatureProcessor:
 
         # TODO use Python abc (Abstract Base Classes)?
         if not all(isinstance(fe, SegmentFeatureExtractor) for fe in feature_extractors):
+            feature_extractors_types = ",".join([str(type(fe)) for fe in feature_extractors])
             raise TypeError(
-                "All feature extractors must be instances of SegmentFeatureExtractor.")
+                "All feature extractors must be instances of SegmentFeatureExtractor.\n" +
+                "Types in the actual given list:\n" +
+                feature_extractors_types)
         self._feature_extractors = feature_extractors
 
         if "ff_pro" in kwargs:

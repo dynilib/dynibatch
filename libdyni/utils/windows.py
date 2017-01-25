@@ -1,5 +1,6 @@
 from enum import Enum
 from scipy.signal import hann
+from libdyni.utils.exceptions import LibdyniError
 
 
 class WindowType(Enum):
@@ -13,7 +14,4 @@ def window(win_type, size):
         # use asymetric window (https://en.wikipedia.org/wiki/Window_function#Symmetry)
         return hann(size, sym=False)
     else:
-        raise Exception("Window type {} is not defined")
-
-
-
+        raise LibdyniError("Window type {} is not defined".format(win_type))
