@@ -117,7 +117,7 @@ class MiniBatchGen:
 
         # create a segment feature processor, in charge of computing all segment-based features
         sf_pro = SegmentFeatureProcessor(
-            [act_det, ffc_ext],
+            [act_det, ffc_ext] if act_det else [ffc_ext],
             ff_pro=ff_pro,
             audio_root=config["audio_root"])
 
