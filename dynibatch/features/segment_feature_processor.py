@@ -1,11 +1,11 @@
 import logging
 from itertools import compress
 
-from libdyni.features.extractors.segment_feature import SegmentFeatureExtractor
-from libdyni.features.extractors.segment_feature \
+from dynibatch.features.extractors.segment_feature import SegmentFeatureExtractor
+from dynibatch.features.extractors.segment_feature \
     import SegmentFrameBasedFeatureExtractor
-from libdyni.features.extractors.audio_chunk import AudioChunkExtractor
-from libdyni.features.extractors.chirplets_chunk import ChirpletsChunkExtractor
+from dynibatch.features.extractors.audio_chunk import AudioChunkExtractor
+from dynibatch.features.extractors.chirplets_chunk import ChirpletsChunkExtractor
 
 __all__ = ['SegmentFeatureProcessor']
 

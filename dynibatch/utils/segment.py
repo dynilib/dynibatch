@@ -2,7 +2,7 @@ from collections import defaultdict
 from enum import Enum
 import joblib
 
-from libdyni.utils.exceptions import ParameterError
+from dynibatch.utils.exceptions import ParameterError
 
 
 class CommonLabels(Enum):

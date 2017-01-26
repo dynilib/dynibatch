@@ -2,8 +2,8 @@ import logging
 
 import numpy as np
 
-from libdyni.features.extractors import segment_feature as sfe
-from libdyni.utils.exceptions import LibdyniError
+from dynibatch.features.extractors import segment_feature as sfe
+from dynibatch.utils.exceptions import DynibatchError
 
 
 logger = logging.getLogger(__name__)
@@ -75,7 +75,7 @@ class Simple(sfe.SegmentFrameBasedFeatureExtractor):
                                   95)
         if energy95p == 0:
             # TODO (jul) just warn
-            raise LibdyniError("The file {} is silent".format(segment_container.audio_path))
+            raise DynibatchError("The file {} is silent".format(segment_container.audio_path))
 
         for s in segment_container.segments:
 

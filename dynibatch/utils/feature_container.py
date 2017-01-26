@@ -1,7 +1,7 @@
 import os
 from collections import defaultdict
 import joblib
-from libdyni.utils import exceptions
+from dynibatch.utils import exceptions
 
 
 

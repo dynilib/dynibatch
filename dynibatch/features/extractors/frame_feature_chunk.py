@@ -1,6 +1,6 @@
 import logging
 
-from libdyni.features.extractors.segment_feature import SegmentFrameBasedFeatureExtractor
+from dynibatch.features.extractors.segment_feature import SegmentFrameBasedFeatureExtractor
 
 
 logger = logging.getLogger(__name__)

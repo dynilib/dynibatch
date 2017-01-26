@@ -1,7 +1,7 @@
 import logging
 from os.path import join, splitext
-from sklearn.externals import joblib
-from libdyni.features.extractors.segment_feature import SegmentFeatureExtractor
+import joblib
+from dynibatch.features.extractors.segment_feature import SegmentFeatureExtractor
 
 
 logger = logging.getLogger(__name__)
@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class ChirpletsChunkExtractor(SegmentFeatureExtractor):
     """Ugly chirplets-specific chunk extractor.
-    Waiting for chirplets code to be integrated to libdyni.
+    Waiting for chirplets code to be integrated to dynibatch.
 
     Attributes:
         sample_rate (int): sample rate in Hz
@@ -37,13 +37,13 @@ class ChirpletsChunkExtractor(SegmentFeatureExtractor):
         return "chirplets"
 
     def time_to_frame_ind(self, time):
-        """Hardcoded as long as chirplets code is not integrated into libdyni"""
+        """Hardcoded as long as chirplets code is not integrated into dynibatch"""
         return int(self._sample_rate * time / 100.)
 
     def execute(self, segment_container):
 
         chirplets = joblib.load(join(self._chirplets_root, splitext(
-            segment_container.audio_path)[0] + ".0.jl")).T
+            segment_container.audio_path)[0] + ".pkl")).T
 
         for s in segment_container.segments:
 

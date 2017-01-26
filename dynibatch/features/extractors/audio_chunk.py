@@ -2,7 +2,7 @@ import logging
 from os.path import join
 from soundfile import SoundFile
 import numpy as np
-from libdyni.features.extractors.segment_feature import SegmentFeatureExtractor
+from dynibatch.features.extractors.segment_feature import SegmentFeatureExtractor
 
 
 logger = logging.getLogger(__name__)

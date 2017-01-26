@@ -1,7 +1,7 @@
 import inspect
 import importlib
 
-from libdyni.utils import exceptions
+from dynibatch.utils import exceptions
 
 
 def factory(name, audio_frame_config={}, feature_config={}):
@@ -24,7 +24,7 @@ def factory(name, audio_frame_config={}, feature_config={}):
     clsmembers = [cls for name, cls in inspect.getmembers(module,
         inspect.isclass) if cls.__module__ == module.__name__]
     if not len(clsmembers) == 1:
-        raise exceptions.LibdyniError("Extractor module {} must contain \
+        raise exceptions.DynibatchError("Extractor module {} must contain \
                 exactly one class.".format(module))
 
     # configure extractor and return

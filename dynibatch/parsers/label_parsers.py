@@ -1,5 +1,5 @@
 from os.path import basename, splitext
-from libdyni.utils import segment, segment_container
+from dynibatch.utils import segment, segment_container
 
 
 class FileLabelParser:

@@ -4,10 +4,10 @@ from itertools import compress
 
 import numpy as np
 
-from libdyni.features.extractors import frame_feature as ffe
-from libdyni.utils import audio
-from libdyni.utils import feature_container
-from libdyni.utils import exceptions
+from dynibatch.features.extractors import frame_feature as ffe
+from dynibatch.utils import audio
+from dynibatch.utils import feature_container
+from dynibatch.utils import exceptions
 
 __all__ = ['FrameFeatureProcessor']
 

@@ -1,9 +1,9 @@
 import logging
-from libdyni.utils.segment_container import \
+from dynibatch.utils.segment_container import \
     create_segment_containers_from_audio_files
-from libdyni.utils.segment import set_segment_labels
-from libdyni.parsers.label_parsers import FileLabelParser, SegmentLabelParser
-from libdyni.utils.exceptions import GeneratorError
+from dynibatch.utils.segment import set_segment_labels
+from dynibatch.parsers.label_parsers import FileLabelParser, SegmentLabelParser
+from dynibatch.utils.exceptions import GeneratorError
 
 
 logger = logging.getLogger(__name__)

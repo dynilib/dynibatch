@@ -7,9 +7,9 @@ import numpy as np
 from numpy.random import RandomState
 import soundfile as sf
 
-from libdyni.utils.segment import Segment, CommonLabels
-from libdyni.parsers import label_parsers
-from libdyni.utils import exceptions
+from dynibatch.utils.segment import Segment, CommonLabels
+from dynibatch.parsers import label_parsers
+from dynibatch.utils import exceptions
 
 
 SC_EXTENSION = ".sc.jl"

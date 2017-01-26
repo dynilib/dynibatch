@@ -3,9 +3,9 @@
 import logging
 from scipy.signal import hann
 import soundfile as sf
-from libdyni.utils.exceptions import LibdyniError
+from dynibatch.utils.exceptions import DynibatchError
 
-from libdyni.utils.windows import WindowType, window
+from dynibatch.utils.windows import WindowType, window
 
 
 logger = logging.getLogger(__name__)
@@ -55,11 +55,11 @@ class AudioFrameGen:
 
         # make sure the file is mono
         if len(audio.shape) != 1:
-            raise LibdyniError("Please use only mono files")
+            raise DynibatchError("Please use only mono files")
 
         # make sure the actual sample rate is the same as specified in the init
         if sr != self._sample_rate:
-            raise LibdyniError("Sample rate mismatch in file {}: ".format(path) +
+            raise DynibatchError("Sample rate mismatch in file {}: ".format(path) +
                                "{} instead of {}.".format(sr, self._sample_rate))
 
         i = 0

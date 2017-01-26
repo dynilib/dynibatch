@@ -4,18 +4,18 @@ import numpy as np
 import joblib
 
 # generators
-from libdyni.generators.audio_frame_gen import AudioFrameGen
-from libdyni.generators.segment_container_gen import SegmentContainerGenerator
+from dynibatch.generators.audio_frame_gen import AudioFrameGen
+from dynibatch.generators.segment_container_gen import SegmentContainerGenerator
 # features
-from libdyni.features.frame_feature_processor import FrameFeatureProcessor
-from libdyni.features.extractors.frame_feature_chunk import FrameFeatureChunkExtractor
-from libdyni.features.segment_feature_processor import SegmentFeatureProcessor
-from libdyni.features import extractors
+from dynibatch.features.frame_feature_processor import FrameFeatureProcessor
+from dynibatch.features.extractors.frame_feature_chunk import FrameFeatureChunkExtractor
+from dynibatch.features.segment_feature_processor import SegmentFeatureProcessor
+from dynibatch.features import extractors
 # activity detection
-from libdyni.features import activity_detection
+from dynibatch.features import activity_detection
 # utils
-from libdyni.parsers import label_parsers
-from libdyni.utils.segment import CommonLabels
+from dynibatch.parsers import label_parsers
+from dynibatch.utils.segment import CommonLabels
 
 
 logger = logging.getLogger(__name__)
