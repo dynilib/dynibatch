@@ -1,3 +1,5 @@
+#The MIT License
+#
 #Copyright (c) 2017 DYNI machine learning & bioacoustics team - Univ. Toulon
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy of
