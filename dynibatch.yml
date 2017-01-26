@@ -1,0 +1,37 @@
+name: dynibatch
+channels:
+- defaults
+dependencies:
+- libgfortran=3.0.0=1
+- mkl=2017.0.1=0
+- numpy=1.11.3=py35_0
+- openssl=1.0.2j=0
+- pip=9.0.1=py35_1
+- py=1.4.32=py35_0
+- pytest=3.0.5=py35_0
+- python=3.5.2=0
+- readline=6.2=2
+- scikit-learn=0.18.1=np111py35_1
+- scipy=0.18.1=np111py35_1
+- setuptools=27.2.0=py35_0
+- sqlite=3.13.0=0
+- tk=8.5.18=0
+- wheel=0.29.0=py35_0
+- xz=5.2.2=1
+- zlib=1.2.8=3
+- pip:
+  - audioread==2.1.4
+  - cffi==1.9.1
+  - cycler==0.10.0
+  - cython==0.25.2
+  - decorator==4.0.11
+  - joblib==0.10.3
+  - librosa==0.4.3
+  - matplotlib==2.0.0
+  - pycparser==2.17
+  - pyparsing==2.1.10
+  - pysoundfile==0.8.1
+  - python-dateutil==2.6.0
+  - pytz==2016.10
+  - resampy==0.1.4
+  - six==1.10.0
