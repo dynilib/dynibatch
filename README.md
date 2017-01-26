@@ -1,6 +1,6 @@
-# Libdyni
+# Dynibatch
 
-Libdyni is a library, written in Python, dedicated to audio data processing for machine learning tasks. One of its main objective is to ease the creation of minibatches (data + targets) to be fed to some machine learning algorithm.
+Dynibatch is a library, written in Python, dedicated to audio data processing for machine learning tasks. One of its main objective is to ease the creation of minibatches (data + targets) to be fed to some machine learning algorithm.
 
 ## Install
 
@@ -11,29 +11,29 @@ These instructions have been tested on Ubuntu 14.04.
 Install Miniconda (a subset of Anaconda) with Python 3.5 following the instructions given in  
 http://conda.pydata.org/miniconda.html.
 
-### Get libdyni source
+### Get Dynibatch source
 
 ```
-$ git clone https://<yourusername>@bitbucket.org/jul_dyni/libdyni.git
+$ git clone https://<yourusername>@bitbucket.org/jul_dyni/dynibatch.git
 ```
 
 ### Create conda environment
 
 ```
-$ cd libdyni
-$ conda env create -f libdyni.yml
+$ cd dynibatch
+$ conda env create -f dynibatch.yml
 ```
 
 ### Activate conda environment
 
 ```
-$ source activate libdyni
+$ source activate dynibatch
 ```
 
-### Add libdyni to your PYTHONPATH
+### Add dynibatch to your PYTHONPATH
 
 ```
-$ export PYTHONPATH=$PYTHONPATH:<path to libdyni>
+$ export PYTHONPATH=$PYTHONPATH:<path to dynibatch>
 ```
 
 ### Test
@@ -50,7 +50,7 @@ TODO
 
 ## Dependencies
 
-The list of dependencies is provided as information only, since they should all be installed during the creation of the libdyni conda environment. 
+The list of dependencies is provided as information only, since they should all be installed during the creation of the dynibatch conda environment. 
 * [NumPy](http://www.numpy.org/)
 * [SciPy](https://www.scipy.org/)
 * [scikit-learn](http://scikit-learn.org)
