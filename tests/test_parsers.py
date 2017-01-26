@@ -1,8 +1,8 @@
 import os
 import pytest
 
-from libdyni.parsers.label_parsers import CSVFileLabelParser, CSVSegmentLabelParser
-from libdyni.utils.segment import CommonLabels
+from dynibatch.parsers.label_parsers import CSVFileLabelParser, CSVSegmentLabelParser
+from dynibatch.utils.segment import CommonLabels
 
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")

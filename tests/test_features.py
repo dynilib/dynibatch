@@ -9,19 +9,19 @@ from librosa.feature.spectral import melspectrogram
 from librosa.feature.spectral import mfcc as lr_mfcc
 from librosa import logamplitude
 
-from libdyni.features.activity_detection.simple import Simple
-from libdyni.utils.feature_container import FeatureContainer
-from libdyni.utils.segment import Segment
-from libdyni.utils.segment_container import SegmentContainer
-from libdyni.features.frame_feature_processor import FrameFeatureProcessor
-from libdyni.features.segment_feature_processor import SegmentFeatureProcessor
-from libdyni.features.extractors.audio_chunk import AudioChunkExtractor
-from libdyni.features.extractors.energy import EnergyExtractor
-from libdyni.features.extractors.frame_feature_chunk import FrameFeatureChunkExtractor
-from libdyni.features.extractors.mel_spectrum import MelSpectrumExtractor
-from libdyni.features.extractors.mfcc import MFCCExtractor
-from libdyni.features.extractors.spectral_flatness import SpectralFlatnessExtractor
-from libdyni.generators.audio_frame_gen import AudioFrameGen
+from dynibatch.features.activity_detection.simple import Simple
+from dynibatch.utils.feature_container import FeatureContainer
+from dynibatch.utils.segment import Segment
+from dynibatch.utils.segment_container import SegmentContainer
+from dynibatch.features.frame_feature_processor import FrameFeatureProcessor
+from dynibatch.features.segment_feature_processor import SegmentFeatureProcessor
+from dynibatch.features.extractors.audio_chunk import AudioChunkExtractor
+from dynibatch.features.extractors.energy import EnergyExtractor
+from dynibatch.features.extractors.frame_feature_chunk import FrameFeatureChunkExtractor
+from dynibatch.features.extractors.mel_spectrum import MelSpectrumExtractor
+from dynibatch.features.extractors.mfcc import MFCCExtractor
+from dynibatch.features.extractors.spectral_flatness import SpectralFlatnessExtractor
+from dynibatch.generators.audio_frame_gen import AudioFrameGen
 
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")

@@ -6,23 +6,23 @@ import joblib
 import numpy as np
 import soundfile as sf
 
-from libdyni.generators.audio_frame_gen import AudioFrameGen
-from libdyni.generators.audio_frame_gen import WindowType
-from libdyni.generators.segment_container_gen import SegmentContainerGenerator
-from libdyni.parsers.label_parsers import CSVFileLabelParser
-from libdyni.features.segment_feature_processor import SegmentFeatureProcessor
-from libdyni.features.extractors.audio_chunk import AudioChunkExtractor
-from libdyni.generators.minibatch_gen import MiniBatchGen
+from dynibatch.generators.audio_frame_gen import AudioFrameGen
+from dynibatch.generators.audio_frame_gen import WindowType
+from dynibatch.generators.segment_container_gen import SegmentContainerGenerator
+from dynibatch.parsers.label_parsers import CSVFileLabelParser
+from dynibatch.features.segment_feature_processor import SegmentFeatureProcessor
+from dynibatch.features.extractors.audio_chunk import AudioChunkExtractor
+from dynibatch.generators.minibatch_gen import MiniBatchGen
 
-from libdyni.features.extractors.energy import EnergyExtractor
-from libdyni.features.extractors.spectral_flatness import SpectralFlatnessExtractor
-from libdyni.features.extractors.mel_spectrum import MelSpectrumExtractor
-from libdyni.features.extractors.frame_feature_chunk import FrameFeatureChunkExtractor
-from libdyni.features.activity_detection.simple import Simple
-from libdyni.features.frame_feature_processor import FrameFeatureProcessor
+from dynibatch.features.extractors.energy import EnergyExtractor
+from dynibatch.features.extractors.spectral_flatness import SpectralFlatnessExtractor
+from dynibatch.features.extractors.mel_spectrum import MelSpectrumExtractor
+from dynibatch.features.extractors.frame_feature_chunk import FrameFeatureChunkExtractor
+from dynibatch.features.activity_detection.simple import Simple
+from dynibatch.features.frame_feature_processor import FrameFeatureProcessor
 
-from libdyni.utils import feature_container
-from libdyni.utils import utils
+from dynibatch.utils import feature_container
+from dynibatch.utils import utils
 
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")

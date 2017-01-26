@@ -4,13 +4,13 @@ import pytest
 
 import numpy as np
 
-from libdyni.utils.exceptions import ParameterError
-from libdyni.utils import segment
-from libdyni.utils import segment_container
-from libdyni.utils import feature_container
-from libdyni.utils import datasplit_utils
-from libdyni.utils import utils
-from libdyni.parsers import label_parsers
+from dynibatch.utils.exceptions import ParameterError
+from dynibatch.utils import segment
+from dynibatch.utils import segment_container
+from dynibatch.utils import feature_container
+from dynibatch.utils import datasplit_utils
+from dynibatch.utils import utils
+from dynibatch.parsers import label_parsers
 
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
