@@ -161,30 +161,6 @@ class TestSegmentContainer:
 
         assert list_equals < SEGMENT_CONTAINER_LISTS_TO_GENERATE
 
-
-    def test_create_stratified_segment_containers(self):
-        label_parser = label_parsers.CSVFileLabelParser(TEST_FILE2LABEL_PATH)
-
-        sc_ref = segment_container.create_segment_containers_from_audio_files(
-            DATA_PATH,
-            randomize=False,
-            label_parser=label_parser)
-
-        sc_generated = []
-        for _ in range(SEGMENT_CONTAINER_LISTS_TO_GENERATE):
-            sc_generated.append(segment_container.create_segment_containers_from_audio_files(
-                DATA_PATH,
-                randomize=False,
-                label_parser=label_parser))
-
-        sc_ref = list(sc_ref)
-        list_equals = 0
-        for sc_try in sc_generated:
-            list_equals += sc_ref == list(sc_try)
-
-        assert list_equals == SEGMENT_CONTAINER_LISTS_TO_GENERATE
-
-
     def test_create_segment_container_from_audio_file_tuple(self):
         with pytest.raises(TypeError):
             segment_container.create_segment_container_from_audio_file(

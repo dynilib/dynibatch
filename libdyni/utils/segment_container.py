@@ -3,7 +3,6 @@ import re
 from random import shuffle
 import joblib
 
-from sklearn.model_selection import train_test_split
 import numpy as np
 from numpy.random import RandomState
 import soundfile as sf
@@ -95,14 +94,11 @@ class SegmentContainer:
 
 def create_segment_containers_from_audio_files(audio_root,
                                                randomize=False,
-                                               label_parser=None,
                                                **kwargs):
     """
     Args:
         audio_root
         random_list
-        label_parser if a label_parser is specified and it is a file label
-        parser, the result will be stratified
         (seg_duration
         (seg_overlap)
     Yields: segment container
@@ -116,22 +112,7 @@ def create_segment_containers_from_audio_files(audio_root,
                 audio_filenames.append(os.path.relpath(os.path.join(root,
                     filename), audio_root))  # only get audio files
 
-    if label_parser and isinstance(label_parser, label_parsers.FileLabelParser): # no stratification for SegmentLabelParser
-        label_list = [label_parser.get_label(filename) for filename in audio_filenames]
-        if randomize:
-            train, test = train_test_split(audio_filenames,
-                                           test_size=len(np.unique(label_list)),
-                                           random_state=RandomState(),
-                                           stratify=label_list)
-        else:
-            train, test = train_test_split(audio_filenames,
-                                           test_size=len(np.unique(label_list)),
-                                           random_state=42,
-                                           stratify=label_list)
-
-        # it is a fix, because if n_test < n_classes raise an error
-        audio_filenames = train + test
-    elif randomize:
+    if randomize:
         shuffle(audio_filenames)
     else:
         # os.walk does not generate files always in the same order, so we sort

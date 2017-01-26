@@ -24,8 +24,7 @@ class SegmentContainerGenerator:
                  dataset=None,
                  seg_duration=0.5,
                  seg_overlap=0.9,
-                 randomize=False,
-                 stratify=False):
+                 randomize=False):
         """Initializes segment container generator.
 
         Args:
@@ -38,7 +37,6 @@ class SegmentContainerGenerator:
             seg_overlap (float): segment overlap ratio. Segments overlap by
                 seg_duration * seg_overlap seconds
             randomize (bool): randomize the SegmentContainer objects
-            stratify (bool): TOREMOVE
         """
 
         self._audio_root = audio_root
@@ -48,10 +46,6 @@ class SegmentContainerGenerator:
         self._seg_duration = seg_duration
         self._seg_overlap = seg_overlap
         self._randomize = randomize
-        if stratify:
-            self._stratification = self._label_parser
-        else:
-            self._stratification = None
 
         self._sc_gen = None
 
@@ -61,7 +55,6 @@ class SegmentContainerGenerator:
         self._sc_gen = create_segment_containers_from_audio_files(
             self._audio_root,
             self._randomize,
-            label_parser=self._stratification,
             seg_duration=self._seg_duration,
             seg_overlap=self._seg_overlap)
 
