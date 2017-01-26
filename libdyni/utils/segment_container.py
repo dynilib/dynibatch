@@ -17,6 +17,9 @@ ALLOWED_AUDIO_EXT = [".wav"]
 
 
 class SegmentContainer:
+    """
+    A segment container contains the list of segments related to an audio file.
+    """
 
     def __init__(self, audio_path):
         self._audio_path = audio_path  # relative to some root data path
