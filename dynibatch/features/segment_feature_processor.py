@@ -27,7 +27,7 @@ from dynibatch.features.extractors.segment_feature import SegmentFeatureExtracto
 from dynibatch.features.extractors.segment_feature \
     import SegmentFrameBasedFeatureExtractor
 from dynibatch.features.extractors.audio_chunk import AudioChunkExtractor
-from dynibatch.features.extractors.chirplets_chunk import ChirpletsChunkExtractor
+from dynibatch.features.extractors.generic_feature_chunk import GenericChunkExtractor
 
 __all__ = ['SegmentFeatureProcessor']
 
@@ -94,12 +94,10 @@ class SegmentFeatureProcessor:
 
         for fe in compress(self._feature_extractors,
                            [not hf for hf in has_features]):
-            if isinstance(fe, AudioChunkExtractor):
+            if isinstance(fe, AudioChunkExtractor) or isinstance(fe, GenericChunkExtractor):
                 fe.execute(segment_container)
             elif isinstance(fe, SegmentFrameBasedFeatureExtractor):
                 fe.execute(segment_container, fc)
-            elif isinstance(fe, ChirpletsChunkExtractor):
-                fe.execute(segment_container)
             else:
                 raise TypeError(
                     "Segment feature extractor {} not implemented".format(fe.name))
