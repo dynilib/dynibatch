@@ -86,7 +86,8 @@ See tutorial.
 
 ## Dependencies
 
-The list of dependencies is provided as information only, since they should all be installed during the creation of the dynibatch conda environment. 
+The list of dependencies is provided as information only, since they should all be installed during the creation of the dynibatch conda environment.
+
 * [NumPy](http://www.numpy.org/)
 * [SciPy](https://www.scipy.org/)
 * [scikit-learn](http://scikit-learn.org)
