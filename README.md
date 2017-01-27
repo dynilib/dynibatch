@@ -45,12 +45,7 @@ See examples in the tutorial.
 
 ## Install
 
-The instructions below have been tested on Ubuntu 16.04.
-
-### Miniconda
-
-Install Miniconda (a subset of Anaconda) with Python 3.5 following the instructions given in  
-http://conda.pydata.org/miniconda.html.
+The instructions below have been tested on Ubuntu 16.04 and [Miniconda](http://conda.pydata.org/miniconda.html) + Python 3.5.
 
 ### Get Dynibatch source
 
@@ -87,7 +82,7 @@ $ py.test tests
 
 ## Examples
 
-TODO
+See tutorial.
 
 ## Dependencies
 
@@ -98,6 +93,10 @@ The list of dependencies is provided as information only, since they should all 
 * [librosa](https://github.com/librosa/librosa)
 * [PySoundFile](https://github.com/bastibe/PySoundFile)
 
-## License
+## Contact
 
-TODO
+Julien Ricard
+
+Vincent Roger
+
+dyni.contact@gmail.com
