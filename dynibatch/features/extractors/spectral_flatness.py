@@ -28,8 +28,7 @@ from dynibatch.features.extractors.frame_feature import SpectrumFrameFeatureExtr
 class SpectralFlatnessExtractor(SpectrumFrameFeatureExtractor):
     """Spectral flatness extractor.
 
-    The spectral flatness is calculated by dividing the geometric mean of the
-    power spectrum by the arithmetic mean of the power spectrum.
+    The spectral flatness is defined by the ratio between the geometric mean and the arithmetic mean.
     """
 
     def __init__(self):
@@ -55,7 +54,7 @@ class SpectralFlatnessExtractor(SpectrumFrameFeatureExtractor):
         """Computes the spectral flatness.
 
         Args:
-            data (numpy array): power spectrum
+            data (numpy array)
 
         Returns:
             float: spectral flatness
