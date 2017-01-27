@@ -99,4 +99,4 @@ Julien Ricard
 
 Vincent Roger
 
-dyni.contact@gmail.com
+dyni<dot>contact<at>gmail.com
