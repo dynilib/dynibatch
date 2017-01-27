@@ -95,8 +95,9 @@ The list of dependencies is provided as information only, since they should all 
 
 ## Contact
 
-Julien Ricard
-
-Vincent Roger
+Julien Ricard  
+Vincent Roger  
+Hervé Glotin  
+DYNI, LSIS, University of Toulon, France
 
 dyni<dot>contact<at>gmail.com
