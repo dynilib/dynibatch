@@ -1,6 +1,6 @@
 {
-  "audio_root": "../../tests/data",
-  "file2label_filename": "../../tests/data/file2label.csv",
+  "audio_root": "../tests/data",
+  "file2label_filename": "../tests/data/file2label.csv",
   "batch_size":10,
   "randomize_batch":0,
   "stratify_batch":0,
