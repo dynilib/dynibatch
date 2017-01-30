@@ -23,7 +23,9 @@
 import logging
 from os.path import join
 from soundfile import SoundFile
+from soundfile import info
 import numpy as np
+from dynibatch.utils.exceptions import DynibatchError
 from dynibatch.features.extractors.segment_feature import SegmentFeatureExtractor
 
 
@@ -57,34 +59,34 @@ class AudioChunkExtractor(SegmentFeatureExtractor):
             segment_container (SegmentContainer)
         """
 
-        with SoundFile(join(self._audio_root,
-                            segment_container.audio_path)) as f:
+        audio_path = join(self._audio_root, segment_container.audio_path)
+        with SoundFile(audio_path) as audio_file:
 
-            if not f.seekable():
+            if not audio_file.seekable():
                 raise ValueError("file must be seekable")
 
             # make sure the actual sample rate is the same as specified in the init
-            if f.samplerate != self._sample_rate:
-                raise Exception("Sample rate mismatch in file {}: ".format(path) +
-                        "{} instead of {}.".format(sf.info(path).samplerate,
-                            self._sample_rate))
+            if audio_file.samplerate != self._sample_rate:
+                raise DynibatchError("Sample rate mismatch in file {}: ".format(audio_path) +
+                                     "{} instead of {}.".format(info(audio_path).samplerate,
+                                                                self._sample_rate))
 
-            for s in segment_container.segments:
+            for segment in segment_container.segments:
 
-                start_time = s.start_time
-                end_time = s.end_time
+                start_time = segment.start_time
+                end_time = segment.end_time
 
                 n_samples = int(np.rint(
                     (end_time - start_time) * self._sample_rate))
 
                 start_ind = int(start_time * self._sample_rate)
 
-                if start_ind + n_samples > len(f):
+                if start_ind + n_samples > len(audio_file):
                     # TODO (jul) use specific exception or, maybe better, just remove it
                     # because an exception might already be raised in f.read below
                     raise ValueError(
                         "Segments {0}-{1} exceeds file {2} duration".format(
                             start_time, end_time, segment_container.audio_path))
 
-                f.seek(start_ind)
-                s.features[self.name] = f.read(n_samples, dtype="float32")
+                audio_file.seek(start_ind)
+                segment.features[self.name] = audio_file.read(n_samples, dtype="float32")
