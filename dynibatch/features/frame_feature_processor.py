@@ -126,18 +126,18 @@ class FrameFeatureProcessor(object):
         compute_spectrum = False
         compute_power_spectrum = False
 
-        for feature_extractor in self._feature_extractors:
+        for feat_extract in self._feature_extractors:
             # allocate memory for features
             # TODO move to FeatureContainer constructor?
-            feature_container.features[feature_extractor.name]["data"] = \
-                np.empty((n_samples, feature_extractor.size),
+            feature_container.features[feat_extract.name]["data"] = \
+                np.empty((n_samples, feat_extract.size),
                          dtype="float32")
-            feature_container.features[feature_extractor.name]["config"] = feature_extractor.config
+            feature_container.features[feat_extract.name]["config"] = feat_extract.config
 
             # check what to compute
-            if isinstance(feature_extractor, ffe.SpectrumFrameFeatureExtractor):
+            if isinstance(feat_extract, ffe.SpectrumFrameFeatureExtractor):
                 compute_spectrum = True
-            elif isinstance(feature_extractor, ffe.PowerSpectrumFrameFeatureExtractor):
+            elif isinstance(feat_extract, ffe.PowerSpectrumFrameFeatureExtractor):
                 compute_spectrum = True
                 compute_power_spectrum = True
 
@@ -149,17 +149,17 @@ class FrameFeatureProcessor(object):
                 power_spectrum = spectrum ** 2
 
             # TODO (jul) run every feature extractor in a different process
-            for feature_extractor in compress(
+            for feat_extract in compress(
                     self._feature_extractors, [not hf for hf in has_features]):
-                if isinstance(feature_extractor, ffe.AudioFrameFeatureExtractor):
-                    feature_container.features[feature_extractor.name]["data"][i] = \
-                        feature_extractor.execute(frame)
-                elif isinstance(feature_extractor, ffe.SpectrumFrameFeatureExtractor):
-                    feature_container.features[feature_extractor.name]["data"][i] = \
-                        feature_extractor.execute(spectrum)
-                elif isinstance(feature_extractor, ffe.PowerSpectrumFrameFeatureExtractor):
-                    feature_container.features[feature_extractor.name]["data"][i] = \
-                        feature_extractor.execute(power_spectrum)
+                if isinstance(feat_extract, ffe.AudioFrameFeatureExtractor):
+                    feature_container.features[feat_extract.name]["data"][i] = \
+                        feat_extract.execute(frame)
+                elif isinstance(feat_extract, ffe.SpectrumFrameFeatureExtractor):
+                    feature_container.features[feat_extract.name]["data"][i] = \
+                        feat_extract.execute(spectrum)
+                elif isinstance(feat_extract, ffe.PowerSpectrumFrameFeatureExtractor):
+                    feature_container.features[feat_extract.name]["data"][i] = \
+                        feat_extract.execute(power_spectrum)
 
         # if feature_container_root is set, write feature container
         if self._feature_container_root:
