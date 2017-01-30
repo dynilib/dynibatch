@@ -20,7 +20,6 @@
 #CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-from os.path import basename, splitext
 from dynibatch.utils import segment, segment_container
 
 
@@ -36,7 +35,7 @@ class CSVFileLabelParser(FileLabelParser):
     """File-based label file parser (1 audio file = 1 label).
 
     This object parses a CSV file (aka "file2label" file) written in the following format:
-    
+
             <file_path><separator><label>
             <file_path><separator><label>
             <file_path><separator><label>
@@ -71,12 +70,14 @@ class CSVFileLabelParser(FileLabelParser):
 
         # get label set
         if label_file:
-            with open(label_file, "r") as f:
-                self._label_list = set([l.strip() for l in f.readlines() if l.strip()])
+            with open(label_file, "r") as label_file:
+                self._label_list = set(
+                    [l.strip() for l in label_file.readlines() if l.strip()])
         else:
             for file2label_file in file2label_files:
-                with open(file2label_file, "r") as f:
-                    self._label_list = set([l.split(separator)[1].strip() for l in f.readlines() if l.strip()])
+                with open(file2label_file, "r") as label_file:
+                    self._label_list = set(
+                        [l.split(separator)[1].strip() for l in label_file.readlines() if l.strip()])
 
         # sort labels
         self._label_list = sorted(list(self._label_list))
@@ -84,8 +85,8 @@ class CSVFileLabelParser(FileLabelParser):
         # create file2label dict
         self._file2label_dict = {}
         for file2label_file in file2label_files:
-            with open(file2label_file, "r") as f:
-                for line in f:
+            with open(file2label_file, "r") as label_file:
+                for line in label_file:
                     if line:
                         sline = line.split(separator)
                         label = sline[1].strip()
@@ -108,7 +109,7 @@ class CSVSegmentLabelParser(SegmentLabelParser):
     """Segment-based label file parser (1 segment = 1 label).
 
     This object parses CSV files (aka "seg2label" file) written in the following format:
-    
+
             <start_time><separator><end_time><separator><label>
             <start_time><separator><end_time><separator><label>
             <start_time><separator><end_time><separator><label>
@@ -134,11 +135,11 @@ class CSVSegmentLabelParser(SegmentLabelParser):
     """
 
     def __init__(self,
-            seg2label_files_root,
-            label_file,
-            audio_file_extension=".wav",
-            seg_file_extension=".seg",
-            seg_file_separator=","):
+                 seg2label_files_root,
+                 label_file,
+                 audio_file_extension=".wav",
+                 seg_file_extension=".seg",
+                 seg_file_separator=","):
         """Create a label list.
 
         Args:
@@ -157,10 +158,11 @@ class CSVSegmentLabelParser(SegmentLabelParser):
         self._audio_file_extension = audio_file_extension
         self._seg_file_extension = seg_file_extension
         self._seg_file_separator = seg_file_separator
-        
+
         # get label set
-        with open(label_file, "r") as f:
-            self._label_list = set([l.strip() for l in f.readlines() if l.strip()])
+        with open(label_file, "r") as label_set_file:
+            self._label_list = set(
+                [l.strip() for l in label_set_file.readlines() if l.strip()])
 
         # sort labels
         self._label_list = sorted(list(self._label_list))
@@ -168,7 +170,7 @@ class CSVSegmentLabelParser(SegmentLabelParser):
     def get_segment_container(self, audio_path):
         """Returns a segment container with all the segments set to the labels
         specified in the seg2label files
-        
+
         Args:
             audio_path
 
@@ -176,14 +178,17 @@ class CSVSegmentLabelParser(SegmentLabelParser):
             SegmentContainer
         """
 
-        seg_file_path_tuple = (self._seg2label_files_root, audio_path.replace(self._audio_file_extension, self._seg_file_extension))
+        seg_file_path_tuple = (self._seg2label_files_root,
+                               audio_path.replace(self._audio_file_extension,
+                                                  self._seg_file_extension))
 
-        return segment_container.create_segment_container_from_seg_file(seg_file_path_tuple,
+        return segment_container.create_segment_container_from_seg_file(
+            seg_file_path_tuple,
             self._label_list,
             audio_file_ext=self._audio_file_extension,
             seg_file_ext=self._seg_file_extension,
             seg_file_separator=self._seg_file_separator)
-    
+
     def get_labels(self):
         """Returns the list of labels"""
         return self._label_list

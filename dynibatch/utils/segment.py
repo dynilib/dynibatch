@@ -94,11 +94,11 @@ class Segment:
 
     @staticmethod
     def load(path):
-        s = joblib.load(path)
-        if not isinstance(s, Segment):
+        segment = joblib.load(path)
+        if not isinstance(segment, Segment):
             raise ParameterError(
                 "Object in {} is not an instance of Segment".format(path))
-        return s
+        return segment
 
 
 def set_segment_labels(segments_from, segments_to, overlap_ratio=0.5):
@@ -129,10 +129,10 @@ def set_segment_labels(segments_from, segments_to, overlap_ratio=0.5):
             # get key and value for max value
             # TODO manage several labels with max values
             k = max(labels, key=labels.get)
-            v = labels[k]
+            max_value = labels[k]
 
             # check overlap ratio
-            if v >= (s_to.end_time-s_to.start_time) * overlap_ratio:
+            if max_value >= (s_to.end_time-s_to.start_time) * overlap_ratio:
                 s_to.label = k
                 continue
 

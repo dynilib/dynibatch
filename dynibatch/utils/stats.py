@@ -34,7 +34,7 @@ def get_file_durations(path):
                 # the number of frame is not returned by sf.info
                 frames = sf.SoundFile(filepath)._info.frames
                 yield float(frames) / sample_rate
-            except:
+            except IOError:
                 pass  # not an audio file
 
 
@@ -55,21 +55,21 @@ def get_stats(segment_containers):
 
     classes = sorted(list(set(
         label for sc in segment_containers for label in sc.labels)))
-    for c in classes:
+    for label in classes:
 
         stats_per_class = {}
 
-        sc_subset = [sc for sc in segment_containers if c in sc.labels]
+        sc_subset = [sc for sc in segment_containers if label in sc.labels]
         sc_active_subset = [sc for sc in sc_subset if sc.n_active_segments > 0]
 
         stats_per_class['num_segments'] = sum(
-            sc.n_segments_with_label(c) for sc in sc_subset)
+            sc.n_segments_with_label(label) for sc in sc_subset)
         stats_per_class['num_active_segments'] = sum(
-            sc.n_active_segments_with_label(c) for sc in sc_active_subset)
+            sc.n_active_segments_with_label(label) for sc in sc_active_subset)
         stats_per_class['num_files'] = len(sc_subset)
         stats_per_class['num_active_files'] = len(sc_active_subset)
 
-        stats['per_class'][c] = stats_per_class
+        stats['per_class'][label] = stats_per_class
 
     # global stats
 

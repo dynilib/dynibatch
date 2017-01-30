@@ -21,7 +21,7 @@
 
 
 class DynibatchError(Exception):
-    '''The root libdyni exception class'''
+    '''The root dynibatch exception class'''
     pass
 
 
