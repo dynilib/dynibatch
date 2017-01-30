@@ -31,6 +31,14 @@ class WindowType(Enum):
 
 
 def window(win_type, size):
+    """Return a precalculated window with a defined size and type
+
+        Args:
+            win_type (WindowType): type of the window wanted
+            size (int): size of the window
+        Returns:
+            a precalculated (win_type) window with (size) as size
+    """
 
     if win_type == WindowType.hanning:
         # use asymetric window (https://en.wikipedia.org/wiki/Window_function#Symmetry)
