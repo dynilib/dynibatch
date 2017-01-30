@@ -24,5 +24,5 @@ import soundfile as sf
 
 
 def info(path):
-    with sf.SoundFile(path) as f:
-        return f._info
+    with sf.SoundFile(path) as audio_file:
+        return audio_file._info
