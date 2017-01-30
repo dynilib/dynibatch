@@ -186,7 +186,7 @@ class TestSegmentContainer:
     def test_create_segment_container_from_audio_file_tuple(self):
         with pytest.raises(TypeError):
             segment_container.create_segment_container_from_audio_file(
-                    os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
+                os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
 
     def test_create_segment_container_from_audio_file_n_segment(self):
         sc = segment_container.create_segment_container_from_audio_file(
@@ -203,7 +203,7 @@ class TestSegmentContainer:
             labels = [l.strip() for l in f.readlines() if l.strip()]
             with pytest.raises(TypeError):
                 segment_container.create_segment_container_from_seg_file(
-                        os.path.join(*TEST_SEG_PATH_TUPLE_1), labels)
+                    os.path.join(*TEST_SEG_PATH_TUPLE_1), labels)
 
     def test_create_segment_container_from_seg_file_n_segment(self):
         with open(TEST_LABELS_PATH, "r") as f:
@@ -218,7 +218,7 @@ class TestSegmentContainer:
             sc = segment_container.create_segment_container_from_seg_file(
                 TEST_SEG_PATH_TUPLE_1, labels)
             assert np.abs(sc.segments[0].duration - TEST_FIRST_SEGMENT_DURATION) < 1e-03
-    
+
     def test_create_segment_container_from_seg_file_labels(self):
         with open(TEST_LABELS_PATH, "r") as f:
             labels = [l.strip() for l in f.readlines() if l.strip()]

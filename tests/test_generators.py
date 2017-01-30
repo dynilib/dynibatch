@@ -22,9 +22,9 @@
 
 import os
 import shutil
+import json
 import pytest
 import joblib
-import json
 
 import numpy as np
 import soundfile as sf
@@ -76,7 +76,7 @@ class TestAudioFrameGen:
         win_size = 256
         hop_size = 128
         af_gen = AudioFrameGen(sample_rate, win_size, hop_size,
-                win_type=WindowType.rect)
+                               win_type=WindowType.rect)
         af_gen_e = af_gen.execute(os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
         next(af_gen_e) # 1st frame
         frame = next(af_gen_e) # 2nd frame
@@ -88,7 +88,7 @@ class TestAudioFrameGen:
         win_size = 256
         hop_size = 128
         af_gen = AudioFrameGen(sample_rate, win_size, hop_size,
-                win_type=WindowType.rect)
+                               win_type=WindowType.rect)
         af_gen_e = af_gen.execute(os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
         with pytest.raises(Exception) as e_info:
             next(af_gen_e) # 1st frame
@@ -625,7 +625,7 @@ class TestMiniBatchGenFromConfig:
 
         finally:
             shutil.rmtree(FEATURE_ROOT)
-    
+
     def test_audio_data(self):
         """
         Compare data from "manual" constructor to config file-based constructor,
