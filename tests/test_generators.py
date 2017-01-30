@@ -593,8 +593,6 @@ class TestMiniBatchGenFromConfig:
                                 num_features,
                                 num_time_bins)
 
-
-
         # parse json file
         with open(CONFIG_PATH) as config_file:
             config = json.loads(config_file.read())
@@ -627,3 +625,72 @@ class TestMiniBatchGenFromConfig:
 
         finally:
             shutil.rmtree(FEATURE_ROOT)
+    
+    def test_audio_data(self):
+        """
+        Compare data from "manual" constructor to config file-based constructor,
+        with raw audio feature.
+        """
+
+        # construct minibatch generator "manually"
+
+        sample_rate = 22050
+        seg_duration = 0.2
+        seg_overlap = 0.5
+
+        batch_size = 50
+        num_features = 1
+        num_time_bins = 4410
+
+        ac_ext = AudioChunkExtractor(DATA_PATH, sample_rate)
+        sf_pro = SegmentFeatureProcessor([ac_ext],
+                                         ff_pro=None,
+                                         audio_root=DATA_PATH)
+
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
+        sc_gen = SegmentContainerGenerator(DATA_PATH,
+                                           sf_pro,
+                                           label_parser=parser,
+                                           seg_duration=seg_duration,
+                                           seg_overlap=seg_overlap)
+
+        mb_gen_1 = MiniBatchGen(sc_gen,
+                                "audio_chunk",
+                                batch_size,
+                                num_features,
+                                num_time_bins)
+
+
+        # parse json file
+        with open(CONFIG_PATH) as config_file:
+            config = json.loads(config_file.read())
+
+        # replace feature by audio_chunk and remove activity detection
+        config["feature"] = {
+            "name": "audio_chunk",
+            "config": {}
+        }
+        config.pop("activity_detection")
+
+        # construct minibatch generator from config
+        mb_gen_dict = MiniBatchGen.from_config(config)
+        mb_gen_2 = mb_gen_dict["default"]
+
+        # execute and compare
+        try:
+            mb_gen_1.start()
+            mb_gen_1_e = mb_gen_1.execute(active_segments_only=False,
+                                          with_targets=True,
+                                          with_filenames=False)
+
+            mb_gen_2.start()
+            mb_gen_2_e = mb_gen_2.execute(active_segments_only=False,
+                                          with_targets=True,
+                                          with_filenames=False)
+
+            for mb1, mb2 in zip(mb_gen_1_e, mb_gen_2_e):
+                assert np.all(mb1[0] == mb2[0])
+                assert np.all(mb1[1] == mb2[1])
+
+        except Exception as e:
+            pytest.fail("Unexpected Error: {}".format(e))

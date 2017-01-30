@@ -21,7 +21,6 @@
 
 
 import logging
-import json
 import numpy as np
 import joblib
 
@@ -31,6 +30,7 @@ from dynibatch.generators.segment_container_gen import SegmentContainerGenerator
 # features
 from dynibatch.features.frame_feature_processor import FrameFeatureProcessor
 from dynibatch.features.extractors.frame_feature_chunk import FrameFeatureChunkExtractor
+from dynibatch.features.extractors.audio_chunk import AudioChunkExtractor
 from dynibatch.features.segment_feature_processor import SegmentFeatureProcessor
 from dynibatch.features import extractors
 # activity detection
@@ -105,10 +105,6 @@ class MiniBatchGen:
         # segment config
         seg_config = config["segment_config"]
 
-        # compute number of frames per segment
-        num_frames_per_seg = int(seg_config["seg_duration"] *
-                                 af_config["sample_rate"] / af_config["hop_size"])
-
         # Create a label parser.
         # Because FileLabelParser is set with a file path and SegmentLabelParser
         # with a root path, two different keys are used
@@ -134,7 +130,8 @@ class MiniBatchGen:
             act_det = None
 
         # get feature that will feed the minibatch
-        frame_feature_config_list.append(config["feature"])
+        if config["feature"]["name"] != "audio_chunk":
+            frame_feature_config_list.append(config["feature"])
 
         # instanciate all frame feature extractors
         # TODO check for redundancy
@@ -156,11 +153,14 @@ class MiniBatchGen:
         )
 
         # create needed segment-based feature extractors
-        ffc_ext = FrameFeatureChunkExtractor(config['feature']['name'])
+        if config['feature']['name'] == "audio_chunk":
+            sfe_ext = AudioChunkExtractor(dp_config['audio_root'], af_config['sample_rate'])
+        else:
+            sfe_ext = FrameFeatureChunkExtractor(config['feature']['name'])
 
         # create a segment feature processor, in charge of computing all segment-based features
         sf_pro = SegmentFeatureProcessor(
-            [act_det, ffc_ext] if act_det else [ffc_ext],
+            [act_det, sfe_ext] if act_det else [sfe_ext],
             ff_pro=ff_pro,
             audio_root=dp_config["audio_root"])
 
@@ -189,14 +189,23 @@ class MiniBatchGen:
                     seg_overlap=seg_config["seg_overlap"],
                     randomize=mb_config["randomize_batch"])
 
+
+        if config['feature']['name'] == "audio_chunk":
+            feature_size = 1
+            num_time_bins = int(af_config["sample_rate"] * seg_config["seg_duration"])
+        else:
+            feature_size = frame_feature_extractors[-1].size
+            num_time_bins = int(seg_config["seg_duration"] *
+                                af_config["sample_rate"] / af_config["hop_size"])
+
         mb_gen_dict = {}
         for set_name, sc_gen in sc_gen_dict.items():
             mb_gen_dict[set_name] = MiniBatchGen(
                 sc_gen,
                 config['feature']['name'],
                 mb_config["batch_size"],
-                frame_feature_extractors[-1].size, # it is the last added
-                num_frames_per_seg)
+                feature_size,    
+                num_time_bins)
 
         return mb_gen_dict
 
