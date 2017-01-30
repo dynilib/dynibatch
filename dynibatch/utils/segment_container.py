@@ -25,12 +25,9 @@ import re
 from random import shuffle
 import joblib
 
-import numpy as np
-from numpy.random import RandomState
 import soundfile as sf
 
 from dynibatch.utils.segment import Segment, CommonLabels
-from dynibatch.parsers import label_parsers
 from dynibatch.utils import exceptions
 
 
@@ -64,12 +61,12 @@ class SegmentContainer:
 
     @staticmethod
     def load(path):
-        sc = joblib.load(path)
-        if not isinstance(sc, SegmentContainer):
+        segment_container = joblib.load(path)
+        if not isinstance(segment_container, SegmentContainer):
             raise TypeError(
                 "Object in {} is not an instance of SegmentContainer".format(
                     path))
-        return sc
+        return segment_container
 
     @property
     def labels(self):
@@ -80,8 +77,8 @@ class SegmentContainer:
     def labels(self, label):
         # set label to all segments
         # TODO: maybe create a specific method for that, not a property setter?
-        for s in self._segments:
-            s.label = label
+        for segment in self._segments:
+            segment.label = label
 
     @property
     def n_segments(self):
@@ -134,8 +131,9 @@ def create_segment_containers_from_audio_files(audio_root,
         for filename in filenames:
             _, extension = os.path.splitext(filename)
             if extension in ALLOWED_AUDIO_EXT:
-                audio_filenames.append(os.path.relpath(os.path.join(root,
-                    filename), audio_root))  # only get audio files
+                audio_filenames.append(
+                    os.path.relpath(os.path.join(root, filename),
+                                    audio_root))  # only get audio files
 
     if randomize:
         shuffle(audio_filenames)
@@ -165,18 +163,18 @@ def create_segment_container_from_audio_file(audio_path_tuple, **kwargs):
     if not isinstance(audio_path_tuple, tuple):
         raise TypeError("audio_path_tuple must be a tuple")
 
-    with sf.SoundFile(os.path.join(*audio_path_tuple)) as f:
-        sc = SegmentContainer(audio_path_tuple[1])
-        n_samples = len(f)
-        sample_rate = f._info.samplerate
+    with sf.SoundFile(os.path.join(*audio_path_tuple)) as audio_file:
+        segment_container = SegmentContainer(audio_path_tuple[1])
+        n_samples = len(audio_file)
+        sample_rate = audio_file._info.samplerate
         duration = float(n_samples) / sample_rate
 
         if "seg_duration" in kwargs and kwargs["seg_duration"]:
-            sc.segments = create_fixed_duration_segments(duration, **kwargs)
+            segment_container.segments = create_fixed_duration_segments(duration, **kwargs)
         else:
-            sc.segments.append(Segment(0, duration))
+            segment_container.segments.append(Segment(0, duration))
 
-        return sc
+        return segment_container
 
 
 def create_segment_containers_from_seg_files(seg_file_root,
@@ -217,10 +215,10 @@ def create_segment_containers_from_seg_files(seg_file_root,
 
 
 def create_segment_container_from_seg_file(seg_file_path_tuple,
-                                            labels,
-                                            audio_file_ext=".wav",
-                                            seg_file_ext=".seg",
-                                            seg_file_separator="\t"):
+                                           labels,
+                                           audio_file_ext=".wav",
+                                           seg_file_ext=".seg",
+                                           seg_file_separator="\t"):
     """
     Args:
         - seg_file_path_tuple: seg file path as a tuple (<audio root>,
@@ -241,21 +239,20 @@ def create_segment_container_from_seg_file(seg_file_path_tuple,
         raise exceptions.ParameterError(
             "{} is not an allowed audio file extension")
 
-    with open(os.path.join(*seg_file_path_tuple), "r") as f:
+    with open(os.path.join(*seg_file_path_tuple), "r") as audio_file:
 
-        sc = SegmentContainer(
+        segment_container = SegmentContainer(
             seg_file_path_tuple[1].replace(seg_file_ext,
                                            audio_file_ext))
-        for line in f:
+        for line in audio_file:
             start_time, end_time, label = _parse_segment_file_line(
                 line, seg_file_separator)
-            sc.segments.append(
-                    Segment(
-                        start_time,
+            segment_container.segments.append(
+                Segment(start_time,
                         end_time,
                         labels.index(label) if label in labels else CommonLabels.unknown.value))
 
-        return sc
+        return segment_container
 
 
 def load_segment_containers_from_dir(path):
