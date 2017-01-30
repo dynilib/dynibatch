@@ -64,7 +64,7 @@ class MiniBatchGen:
             batch_size (int): minibatch size in number of segments
             n_features (int): number of features, as returned by the size property
                 of the feature extractor
-            n_time_bins (int): number of time bins of the feature in a segment 
+            n_time_bins (int): number of time bins of the feature in a segment
         """
 
         self._segment_container_gen = segment_container_gen
