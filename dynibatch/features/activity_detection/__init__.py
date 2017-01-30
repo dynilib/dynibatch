@@ -27,8 +27,16 @@ from dynibatch.utils import exceptions
 
 
 def factory(name, audio_frame_config={}, feature_config={}):
-    """Create an instance of the activity detector,
-    as defined by its name and configured by audio_frame_config and config"""
+    """Activity detector factory.
+
+    Args:
+        audio_frame_config (dict): AudioFrameGen config 
+        feature_config (dict): feature config
+
+    Returns:
+        an instance of the activity detector, as defined by its name and configured
+        by audio_frame_config and feature_config.
+    """
 
     # get module from name
     module = importlib.import_module("." + name, package=str(__package__))

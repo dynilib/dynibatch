@@ -71,6 +71,8 @@ class Simple(sfe.SegmentFrameBasedFeatureExtractor):
 
     @classmethod
     def from_config_dict(cls, audio_frame_config, feature_config):
+        """Class method required by all activity detectors (even though some arguments
+        are not used."""
         return cls(
             feature_config["energy_threshold"],
             feature_config["spectral_flatness_threshold"])
