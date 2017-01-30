@@ -71,7 +71,7 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
     
     @classmethod
     def from_config_dict(cls, audio_frame_config, feature_config):
-        """Class method required by all feature extractors (even though some arguments
+        """Class method required by all frame-feature extractors (even though some arguments
         are not used."""
 
         return cls(
