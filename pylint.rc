@@ -1,4 +1,3 @@
-
 [MASTER]
 
 # A comma-separated list of package or module names from where C extensions may
@@ -18,3 +17,12 @@ ignored-modules=numpy
 # (useful for classes with attributes dynamically set). This supports can work
 # with qualified names.
 ignored-classes=numpy
+
+[FORMAT]
+
+# Maximum number of characters on a single line.
+# max-line-length=100
+
+# String used as indentation unit. This is usually " " (4 spaces) or "\t" (1
+# tab).
+indent-string='    '
