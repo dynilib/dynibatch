@@ -206,7 +206,7 @@ def create_segment_containers_from_seg_files(seg_file_root,
                     os.path.join(root, filename.replace(seg_file_ext, audio_file_ext)),
                     seg_file_root))
 
-            yield create_segment_containers_from_seg_file(
+            yield create_segment_container_from_seg_file(
                 seg_file_path_tuple,
                 labels,
                 audio_file_ext,
