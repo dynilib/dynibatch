@@ -97,26 +97,31 @@ class MiniBatchGen:
         with open(config_path) as config_file:
             config = json.loads(config_file.read())
 
+        # data path config
+        dp_config = config["data_path_config"]
+
+        # minibatch config
+        mb_config = config["minibatch_config"]
+
         # audio frame config
         af_config = config["audio_frame_config"]
 
         # segment config
         seg_config = config["segment_config"]
 
-        # minibatch config
-        batch_size = config["batch_size"]
+        # compute number of frames per segment
         num_frames_per_seg = int(seg_config["seg_duration"] *
                                  af_config["sample_rate"] / af_config["hop_size"])
 
         # Create a label parser.
         # Because FileLabelParser is set with a file path and SegmentLabelParser
         # with a root path, two different keys are used
-        if "file2label_filename" in config:
-            label_parser = label_parsers.CSVFileLabelParser(config["file2label_filename"],
-                    label_file=config.get("label_file"))
-        elif "seg2label_root" in config:
-            label_parser = label_parsers.CSVSegmentLabelParser(config["seg2label_root"],
-                    config["label_file"])
+        if "file2label_filename" in dp_config:
+            label_parser = label_parsers.CSVFileLabelParser(dp_config["file2label_filename"],
+                    label_file=dp_config.get("label_file"))
+        elif "seg2label_root" in dp_config:
+            label_parser = label_parsers.CSVSegmentLabelParser(dp_config["seg2label_root"],
+                    dp_config["label_file"])
         else:
             label_parser = None
 
@@ -151,7 +156,7 @@ class MiniBatchGen:
                           win_size=af_config["win_size"],
                           hop_size=af_config["hop_size"]),
             frame_feature_extractors,
-            feature_container_root=config.get('features_root')
+            feature_container_root=dp_config.get('features_root')
         )
 
         # create needed segment-based feature extractors
@@ -161,39 +166,39 @@ class MiniBatchGen:
         sf_pro = SegmentFeatureProcessor(
             [act_det, ffc_ext] if act_det else [ffc_ext],
             ff_pro=ff_pro,
-            audio_root=config["audio_root"])
+            audio_root=dp_config["audio_root"])
 
-        datasplit_path = config.get("datasplit_path")
+        datasplit_path = dp_config.get("datasplit_path")
         sc_gen_dict = {}
         if not datasplit_path:
             # if no datasplit is present in the config file,
             # create one segment container generator
             sc_gen_dict["default"] = SegmentContainerGenerator(
-                config["audio_root"],
+                dp_config["audio_root"],
                 sf_pro,
                 label_parser=label_parser,
                 seg_duration=seg_config["seg_duration"],
                 seg_overlap=seg_config["seg_overlap"],
-                randomize=config["randomize_batch"])
+                randomize=mb_config["randomize_batch"])
         else:
             # else create one per set in the datasplit
             datasplit = joblib.load(datasplit_path)
             for set_name, _ in datasplit["sets"].items():
                 sc_gen_dict[set_name] = SegmentContainerGenerator(
-                    config["audio_root"],
+                    dp_config["audio_root"],
                     sf_pro,
                     label_parser=label_parser,
                     dataset=datasplit["sets"][set_name],
                     seg_duration=seg_config["seg_duration"],
                     seg_overlap=seg_config["seg_overlap"],
-                    randomize=config["randomize_batch"])
+                    randomize=mb_config["randomize_batch"])
 
         mb_gen_dict = {}
         for set_name, sc_gen in sc_gen_dict.items():
             mb_gen_dict[set_name] = MiniBatchGen(
                 sc_gen,
                 config['feature']['name'],
-                batch_size,
+                mb_config["batch_size"],
                 frame_feature_extractors[-1].size, # it is the last added
                 num_frames_per_seg)
 
