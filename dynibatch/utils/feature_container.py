@@ -81,12 +81,12 @@ class FeatureContainer:
         """
 
         try:
-            fc = joblib.load(path)
-            if not isinstance(fc, FeatureContainer):
+            feature_container = joblib.load(path)
+            if not isinstance(feature_container, FeatureContainer):
                 raise exceptions.ParsingError(
                     "Object in {} is not an instance of FeatureContainer".format(
                         path))
-            return fc
+            return feature_container
         except FileNotFoundError:
             return None
 
@@ -98,13 +98,13 @@ class FeatureContainer:
             compress (int between 0 and 9): compression level
         """
 
-        filename =  os.path.join(path, os.path.splitext(self._audio_path)[0] + FC_EXTENSION)
+        filename = os.path.join(path, os.path.splitext(self._audio_path)[0] + FC_EXTENSION)
         os.makedirs(os.path.dirname(filename), exist_ok=True)
         joblib.dump(self, filename, compress=compress)
 
     def time_to_frame_ind(self, time):
         """Computes the frame index from a time
-        
+
         Args:
             time (float): time in second
         """
