@@ -26,8 +26,6 @@ import joblib
 from dynibatch.utils import exceptions
 
 
-
-
 FC_EXTENSION = ".fc.jl"
 
 

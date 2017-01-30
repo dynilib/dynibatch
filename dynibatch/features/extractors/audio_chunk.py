@@ -71,10 +71,10 @@ class AudioChunkExtractor(SegmentFeatureExtractor):
                                      "{} instead of {}.".format(info(audio_path).samplerate,
                                                                 self._sample_rate))
 
-            for segment in segment_container.segments:
+            for seg in segment_container.segments:
 
-                start_time = segment.start_time
-                end_time = segment.end_time
+                start_time = seg.start_time
+                end_time = seg.end_time
 
                 n_samples = int(np.rint(
                     (end_time - start_time) * self._sample_rate))
@@ -82,11 +82,9 @@ class AudioChunkExtractor(SegmentFeatureExtractor):
                 start_ind = int(start_time * self._sample_rate)
 
                 if start_ind + n_samples > len(audio_file):
-                    # TODO (jul) use specific exception or, maybe better, just remove it
-                    # because an exception might already be raised in f.read below
                     raise ValueError(
                         "Segments {0}-{1} exceeds file {2} duration".format(
                             start_time, end_time, segment_container.audio_path))
 
                 audio_file.seek(start_ind)
-                segment.features[self.name] = audio_file.read(n_samples, dtype="float32")
+                seg.features[self.name] = audio_file.read(n_samples, dtype="float32")

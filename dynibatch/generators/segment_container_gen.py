@@ -72,7 +72,6 @@ class SegmentContainerGenerator:
         self._sc_gen = None
 
     def start(self):
-        
         # create segment container with fixed-length segments
         self._sc_gen = create_segment_containers_from_audio_files(
             self._audio_root,

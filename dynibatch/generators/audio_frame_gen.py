@@ -23,7 +23,6 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from scipy.signal import hann
 import soundfile as sf
 from dynibatch.utils.exceptions import DynibatchError
 
@@ -54,7 +53,7 @@ class AudioFrameGen:
         self._win_type = win_type
 
         # Create window
-        if not win_type == WindowType.rect:
+        if win_type != WindowType.rect:
             self._window = window(win_type, win_size)
 
     @property
@@ -82,7 +81,7 @@ class AudioFrameGen:
         # make sure the actual sample rate is the same as specified in the init
         if sr != self._sample_rate:
             raise DynibatchError("Sample rate mismatch in file {}: ".format(path) +
-                               "{} instead of {}.".format(sr, self._sample_rate))
+                                 "{} instead of {}.".format(sr, self._sample_rate))
 
         i = 0
         while i + self._win_size < audio.shape[0]:

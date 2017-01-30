@@ -75,12 +75,12 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
         are not used."""
 
         return cls(
-                sample_rate=audio_frame_config["sample_rate"],
-                fft_size=audio_frame_config["win_size"],
-                n_mels=feature_config["n_mels"],
-                n_mfcc=feature_config["n_mfcc"],
-                min_freq=feature_config["min_freq"],
-                max_freq=feature_config["max_freq"])
+            sample_rate=audio_frame_config["sample_rate"],
+            fft_size=audio_frame_config["win_size"],
+            n_mels=feature_config["n_mels"],
+            n_mfcc=feature_config["n_mfcc"],
+            min_freq=feature_config["min_freq"],
+            max_freq=feature_config["max_freq"])
 
     @property
     def name(self):

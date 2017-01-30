@@ -76,7 +76,6 @@ class SegmentContainer:
     @labels.setter
     def labels(self, label):
         # set label to all segments
-        # TODO: maybe create a specific method for that, not a property setter?
         for segment in self._segments:
             segment.label = label
 

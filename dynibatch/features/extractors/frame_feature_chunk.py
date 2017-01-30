@@ -66,16 +66,16 @@ class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
         Sets the chunks of features to every segment in segment_container.
         """
 
-        for s in segment_container.segments:
-            start_ind = feature_container.time_to_frame_ind(s.start_time)
-            end_ind = start_ind + feature_container.time_to_frame_ind(s.duration)
+        for seg in segment_container.segments:
+            start_ind = feature_container.time_to_frame_ind(seg.start_time)
+            end_ind = start_ind + feature_container.time_to_frame_ind(seg.duration)
 
             if end_ind > len(feature_container.features[self.name]["data"]):
                 # that can happen if the end time of the latest analysis frame
                 # is earlier than the end time of the segment
                 logger.debug("Segment {0:.3f}-{1:.3f} from {2} end time".format(
-                    s.start_time,
-                    s.end_time,
+                    seg.start_time,
+                    seg.end_time,
                     segment_container.audio_path) +
                              " exceed feature container size for feature {}.".format(self.name))
                 break
@@ -85,4 +85,4 @@ class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
                 data = self._pca.transform(data)
             if self._scaler:
                 data = self._scaler.transform(data)
-            s.features[self.name] = data
+            seg.features[self.name] = data

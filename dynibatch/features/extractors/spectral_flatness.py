@@ -28,7 +28,8 @@ from dynibatch.features.extractors.frame_feature import SpectrumFrameFeatureExtr
 class SpectralFlatnessExtractor(SpectrumFrameFeatureExtractor):
     """Spectral flatness extractor.
 
-    The spectral flatness is defined by the ratio between the geometric mean and the arithmetic mean.
+    The spectral flatness is defined by the ratio between the geometric mean and the arithmetic
+    mean.
     """
 
     def __init__(self):

@@ -93,19 +93,16 @@ class Simple(sfe.SegmentFrameBasedFeatureExtractor):
             segment_container.
         """
 
-        # TODO (jul) make sure sc has required frame features
-
         energy95p = np.percentile(feature_container.features["energy"]["data"],
                                   95)
         if energy95p == 0:
-            # TODO (jul) just warn
             raise DynibatchError("The file {} is silent".format(segment_container.audio_path))
 
-        for s in segment_container.segments:
+        for seg in segment_container.segments:
 
-            start_ind = feature_container.time_to_frame_ind(s.start_time)
+            start_ind = feature_container.time_to_frame_ind(seg.start_time)
             end_ind = start_ind + feature_container.time_to_frame_ind(
-                s.duration)
+                seg.duration)
 
             if (end_ind > len(feature_container.features["energy"]["data"]) or
                     end_ind > len(feature_container.features["spectral_flatness"]["data"])):
@@ -113,8 +110,8 @@ class Simple(sfe.SegmentFrameBasedFeatureExtractor):
                 # is earlier than the end time of the segment
                 logger.debug(
                     "Segment {0:.3f}-{1:.3f} from {2} end time".format(
-                        s.start_time,
-                        s.end_time,
+                        seg.start_time,
+                        seg.end_time,
                         segment_container.audio_path) +
                     " exceed feature container size for extractor {}.".format(self.name))
                 break
@@ -128,5 +125,5 @@ class Simple(sfe.SegmentFrameBasedFeatureExtractor):
             spectral_flatness_w_mean = np.average(sf,
                                                   weights=en) if mean_en > 0 else 0.0
 
-            s.activity = energy_ratio > self.energy_threshold and \
+            seg.activity = energy_ratio > self.energy_threshold and \
                          spectral_flatness_w_mean < self.spectral_flatness_threshold

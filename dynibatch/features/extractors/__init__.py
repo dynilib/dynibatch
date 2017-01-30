@@ -30,7 +30,7 @@ def factory(name, audio_frame_config={}, feature_config={}):
     """Frame-based feature extractor factory.
 
     Args:
-        audio_frame_config (dict): AudioFrameGen config 
+        audio_frame_config (dict): AudioFrameGen config
         feature_config (dict): feature config
 
     Returns:
@@ -43,8 +43,8 @@ def factory(name, audio_frame_config={}, feature_config={}):
 
     # get extractor class, making sure there is only one (because we
     # pick the first one)
-    clsmembers = [cls for name, cls in inspect.getmembers(module,
-        inspect.isclass) if cls.__module__ == module.__name__]
+    clsmembers = [cls for name, cls in inspect.getmembers(module, inspect.isclass) \
+                  if cls.__module__ == module.__name__]
     if not len(clsmembers) == 1:
         raise exceptions.DynibatchError("Extractor module {} must contain \
                 exactly one class.".format(module))

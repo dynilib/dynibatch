@@ -73,10 +73,10 @@ class GenericChunkExtractor(SegmentFeatureExtractor):
         features = joblib.load(join(self._generic_feature_root, splitext(
             segment_container.audio_path)[0] + self._extension)).T
 
-        for s in segment_container.segments:
+        for seg in segment_container.segments:
 
-            start_ind = int(s.start_time * self._sample_rate)
-            end_ind = int(start_ind + s.duration * self._sample_rate)
+            start_ind = int(seg.start_time * self._sample_rate)
+            end_ind = int(start_ind + seg.duration * self._sample_rate)
 
             # If features might not be computed over the whole file,
             # not all segments will have data.
@@ -88,5 +88,4 @@ class GenericChunkExtractor(SegmentFeatureExtractor):
                 data = self._pca.transform(data)
             if self._scaler:
                 data = self._scaler.transform(data)
-            s.features[self.name] = data
-
+            seg.features[self.name] = data

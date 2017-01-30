@@ -37,8 +37,6 @@ logger = logging.getLogger(__name__)
 
 
 class FrameFeatureProcessor(object):
-    # TODO (jul) change name to FrameFeatureExtractor and replace current
-    # FrameFeatureExtractor by something else.
     """Class holding all objects needed to run frame-based feature extractors.
 
     If feature_container_root is set, an existing feature container with the
@@ -61,14 +59,11 @@ class FrameFeatureProcessor(object):
                 containers are loaded/saved (some kind of cache).
         """
 
-        # TODO (jul) use Python abc (Abstract Base Classes)?
         if not all(isinstance(fe, ffe.FrameFeatureExtractor)
                    for fe in feature_extractors):
             raise TypeError('All feature extractors must be instances of ' +
                             'FrameFeatureExtractor.')
 
-        # TODO (jul): convert some attributes to properties to make them
-        # immutable?
         self._audio_frame_gen = audio_frame_gen
         self._feature_extractors = feature_extractors
         self._feature_container_root = feature_container_root
@@ -93,16 +88,14 @@ class FrameFeatureProcessor(object):
         fc = None
         has_features = [False for fe in self._feature_extractors]
 
-        # check if feature container exists and has all required features
-        # TODO (jul) move to FeatureContainer?
-        # TODO (jul) create some real cache functions
-        # (check https://github.com/dnouri/nolearn/blob/master/nolearn/cache.py)
         if self._feature_container_root:
             feature_container_path = os.path.join(
                 self._feature_container_root,
                 os.path.splitext(audio_path[1])[0] +
                 feature_container.FC_EXTENSION)
             fc = feature_container.FeatureContainer.load(feature_container_path)
+
+            # check if feature container exists and has all required features
             if fc:
                 has_features = fc.has_features([(fe.name, fe.config) \
                         for fe in self._feature_extractors])
@@ -111,7 +104,6 @@ class FrameFeatureProcessor(object):
                                  feature_container_path)
                     return fc, False
 
-        # TODO (jul) move to audio_frame_gen module?
         info = audio.info(os.path.join(*audio_path))
         n_samples = int((info.frames - self._audio_frame_gen._win_size) /
                         self._audio_frame_gen._hop_size) + 1
@@ -129,7 +121,6 @@ class FrameFeatureProcessor(object):
 
         for fe in self._feature_extractors:
             # allocate memory for features
-            # TODO move to FeatureContainer constructor?
             fc.features[fe.name]["data"] = np.empty((n_samples, fe.size),
                                                     dtype="float32")
             fc.features[fe.name]["config"] = fe.config
@@ -148,7 +139,6 @@ class FrameFeatureProcessor(object):
             if compute_power_spectrum:
                 power_spectrum = spectrum ** 2
 
-            # TODO (jul) run every feature extractor in a different process
             for fe in compress(
                     self._feature_extractors, [not hf for hf in has_features]):
                 if isinstance(fe, ffe.AudioFrameFeatureExtractor):

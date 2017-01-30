@@ -35,8 +35,6 @@ logger = logging.getLogger(__name__)
 
 
 class SegmentFeatureProcessor:
-    # TODO (jul) change name to SegmentFeatureExtractor and replace current
-    # SegmentFeatureExtractor by something else.
     """Class holding all objects needed to run segment-based feature extractors."""
 
     def __init__(self, feature_extractors, **kwargs):
@@ -50,7 +48,6 @@ class SegmentFeatureProcessor:
                 audio_root (str): audio root path
         """
 
-        # TODO use Python abc (Abstract Base Classes)?
         if not all(isinstance(fe, SegmentFeatureExtractor) for fe in feature_extractors):
             feature_extractors_types = ",".join([str(type(fe)) for fe in feature_extractors])
             raise TypeError(
@@ -94,7 +91,8 @@ class SegmentFeatureProcessor:
 
         for fe in compress(self._feature_extractors,
                            [not hf for hf in has_features]):
-            if isinstance(fe, AudioChunkExtractor) or isinstance(fe, GenericChunkExtractor):
+            if(isinstance(fe, AudioChunkExtractor)
+               or isinstance(fe, GenericChunkExtractor)):
                 fe.execute(segment_container)
             elif isinstance(fe, SegmentFrameBasedFeatureExtractor):
                 fe.execute(segment_container, fc)

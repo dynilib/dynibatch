@@ -147,12 +147,15 @@ def create_random_datasplit(segment_containers,
         test_file_subset = file_set - train_file_subset - validation_file_subset
 
         if len(train_file_subset) < 2:
-            logger.warning("The number of files in the train set for label %s is smaller than 2", label)
+            logger.warning("The number of files in the train set for label %s "
+                           "is smaller than 2", label)
         if validation_ratio > 0 and len(validation_file_subset) < 2:
             logger.warning(
-                "The number of files in the validation set for label %s is smaller than 2", label)
+                "The number of files in the validation set for label %s "
+                "is smaller than 2", label)
         if len(test_file_subset) < 2:
-            logger.warning("The number of files in the test set for label %s is smaller than 2", label)
+            logger.warning("The number of files in the test set for label %s "
+                           "is smaller than 2", label)
 
         train_set |= train_file_subset
         test_set |= test_file_subset
@@ -227,21 +230,30 @@ def get_datasplit_stats(segment_containers, datasplit):
     for label in classes:
         string_of_stats += "{0}{1}{2}{3}{4}\n".format(
             label.center(column_width[0]),
-            "{0}/{1}/{2}".format(
+            "{0}/{1}/{2}" \
+            .format(
                 train_stats['per_class'][label]['num_files'] if train_set else 0,
                 validation_stats['per_class'][label]['num_files'] if validation_set else 0,
-                test_stats['per_class'][label]['num_files'] if test_set else 0).center(column_width[1]),
-            "{0}/{1}/{2}".format(
+                test_stats['per_class'][label]['num_files'] if test_set else 0) \
+            .center(column_width[1]),
+            "{0}/{1}/{2}" \
+            .format(
                 train_stats['per_class'][label]['num_active_files'] if train_set else 0,
                 validation_stats['per_class'][label]['num_active_files'] if validation_set else 0,
-                test_stats['per_class'][label]['num_active_files'] if test_set else 0).center(column_width[2]),
-            "{0}/{1}/{2}".format(
+                test_stats['per_class'][label]['num_active_files'] if test_set else 0) \
+            .center(column_width[2]),
+            "{0}/{1}/{2}" \
+            .format(
                 train_stats['per_class'][label]['num_segments'] if train_set else 0,
                 validation_stats['per_class'][label]['num_segments'] if validation_set else 0,
-                test_stats['per_class'][label]['num_segments'] if test_set else 0).center(column_width[3]),
-            "{0}/{1}/{2}".format(
+                test_stats['per_class'][label]['num_segments'] if test_set else 0) \
+            .center(column_width[3]),
+            "{0}/{1}/{2}" \
+            .format(
                 train_stats['per_class'][label]['num_active_segments'] if train_set else 0,
-                validation_stats['per_class'][label]['num_active_segments'] if validation_set else 0,
-                test_stats['per_class'][label]['num_active_segments'] if test_set else 0).center(column_width[4]))
+                validation_stats['per_class'][label]['num_active_segments'] \
+                if validation_set else 0,
+                test_stats['per_class'][label]['num_active_segments'] if test_set else 0) \
+            .center(column_width[4]))
 
     return string_of_stats

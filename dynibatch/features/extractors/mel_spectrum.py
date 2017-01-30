@@ -29,8 +29,6 @@ from dynibatch.features.extractors.frame_feature import PowerSpectrumFrameFeatur
 class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
     """Computes the mel spectrum."""
 
-    #TODO (jul) add top_db for logamplitude
-
     def __init__(self,
                  sample_rate=44100,
                  fft_size=512,
@@ -70,11 +68,11 @@ class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
         """Class method required by all frame-feature extractors (even though some arguments
         are not used."""
         return cls(
-                sample_rate=audio_frame_config["sample_rate"],
-                fft_size=audio_frame_config["win_size"],
-                n_mels=feature_config["n_mels"],
-                min_freq=feature_config["min_freq"],
-                max_freq=feature_config["max_freq"])
+            sample_rate=audio_frame_config["sample_rate"],
+            fft_size=audio_frame_config["win_size"],
+            n_mels=feature_config["n_mels"],
+            min_freq=feature_config["min_freq"],
+            max_freq=feature_config["max_freq"])
 
     @property
     def name(self):

@@ -64,7 +64,7 @@ class MiniBatchGen:
             batch_size (int): minibatch size in number of segments
             n_features (int): number of features, as returned by the size property
                 of the feature extractor
-            n_time_bins (int): number of time bins of the feature in a segment    
+            n_time_bins (int): number of time bins of the feature in a segment 
         """
 
         self._segment_container_gen = segment_container_gen
@@ -110,10 +110,10 @@ class MiniBatchGen:
         # with a root path, two different keys are used
         if "file2label_filename" in dp_config:
             label_parser = label_parsers.CSVFileLabelParser(dp_config["file2label_filename"],
-                    label_file=dp_config.get("label_file"))
+                                                            label_file=dp_config.get("label_file"))
         elif "seg2label_root" in dp_config:
             label_parser = label_parsers.CSVSegmentLabelParser(dp_config["seg2label_root"],
-                    dp_config["label_file"])
+                                                               dp_config["label_file"])
         else:
             label_parser = None
 
@@ -134,7 +134,6 @@ class MiniBatchGen:
             frame_feature_config_list.append(config["feature"])
 
         # instanciate all frame feature extractors
-        # TODO check for redundancy
         frame_feature_extractors = []
         for ff_cfg in frame_feature_config_list:
             frame_feature_extractors.append(extractors.factory(
@@ -145,9 +144,9 @@ class MiniBatchGen:
         # create a frame feature processor, in charge of computing all short-term features
         ff_pro = FrameFeatureProcessor(
             AudioFrameGen(
-                          sample_rate=af_config["sample_rate"],
-                          win_size=af_config["win_size"],
-                          hop_size=af_config["hop_size"]),
+                sample_rate=af_config["sample_rate"],
+                win_size=af_config["win_size"],
+                hop_size=af_config["hop_size"]),
             frame_feature_extractors,
             feature_container_root=dp_config.get('features_root')
         )
@@ -204,7 +203,7 @@ class MiniBatchGen:
                 sc_gen,
                 config['feature']['name'],
                 mb_config["batch_size"],
-                feature_size,    
+                feature_size,
                 num_time_bins)
 
         return mb_gen_dict
@@ -227,7 +226,8 @@ class MiniBatchGen:
 
         Args:
             active_segments_only (bool): returns only segments with "activity" attribute set to True
-            known_labels_only (bool): returns only segments with label not set to segment.CommonLabels.unknown.value
+            known_labels_only (bool): returns only segments with label not set
+                to segment.CommonLabels.unknown.value
             with_targets (bool): returns labels associated to the data
             with_filenames (bool): returns filenames where the data were taken
         Returns:
@@ -249,20 +249,19 @@ class MiniBatchGen:
         count = 0
         for sc in self._segment_container_gen.execute():
             logger.debug("iterate_minibatch: %s", sc.audio_path)
-            for s in sc.segments:
-                if self._feature_name not in s.features:
+            for seg in sc.segments:
+                if self._feature_name not in seg.features:
                     break
-                if ((not active_segments_only or (hasattr(s, 'activity')) and
-                    s.activity) and (not known_labels_only or s.label !=
-                        CommonLabels.unknown.value)):
+                if ((not active_segments_only or (hasattr(seg, 'activity')) and seg.activity) and
+                        (not known_labels_only or seg.label != CommonLabels.unknown.value)):
                     if self._n_features == 1:
-                        minibatch[count, 0, :] = s.features[self._feature_name].T
+                        minibatch[count, 0, :] = seg.features[self._feature_name].T
                     else:
-                        minibatch[count, 0, :, :] = s.features[self._feature_name].T
+                        minibatch[count, 0, :, :] = seg.features[self._feature_name].T
                     if with_filenames:
                         filenames[count] = sc.audio_path
                     if with_targets:
-                        targets[count] = s.label
+                        targets[count] = seg.label
 
                     count += 1
                     if count == self._batch_size:
@@ -274,8 +273,10 @@ class MiniBatchGen:
                             minibatch = np.empty((self._batch_size, 1, self._n_time_bins),
                                                  dtype=np.float32)
                         else:
-                            minibatch = np.empty((self._batch_size, 1, self._n_features, self._n_time_bins),
-                                                 dtype=np.float32)
+                            minibatch = np.empty(
+                                (self._batch_size, 1, self._n_features, self._n_time_bins),
+                                dtype=np.float32
+                            )
 
                         if with_targets:
                             data.append(targets)
