@@ -142,11 +142,14 @@ class FrameFeatureProcessor(object):
             for fe in compress(
                     self._feature_extractors, [not hf for hf in has_features]):
                 if isinstance(fe, ffe.AudioFrameFeatureExtractor):
-                    fc.features[fe.name]["data"][i] = fe.execute(frame)
+                    fc.features[fe.name]["data"][i] = \
+                        fe.execute(frame)
                 elif isinstance(fe, ffe.SpectrumFrameFeatureExtractor):
-                    fc.features[fe.name]["data"][i] = fe.execute(spectrum)
+                    fc.features[fe.name]["data"][i] = \
+                        fe.execute(spectrum)
                 elif isinstance(fe, ffe.PowerSpectrumFrameFeatureExtractor):
-                    fc.features[fe.name]["data"][i] = fe.execute(power_spectrum)
+                    fc.features[fe.name]["data"][i] = \
+                        fe.execute(power_spectrum)
 
         # if feature_container_root is set, write feature container
         if self._feature_container_root:

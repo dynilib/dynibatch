@@ -65,7 +65,7 @@ class SegmentFeatureProcessor:
         """
         Args:
             segment_container
-        
+
         Fills the segment containers with the features specified in
             feature_extractors
         """
