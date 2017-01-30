@@ -27,7 +27,7 @@ from dynibatch.utils import exceptions
 
 
 def factory(name, audio_frame_config={}, feature_config={}):
-    """Feature extractor factory.
+    """Frame-based feature extractor factory.
 
     Args:
         audio_frame_config (dict): AudioFrameGen config 
@@ -51,4 +51,3 @@ def factory(name, audio_frame_config={}, feature_config={}):
 
     # configure extractor and return
     return clsmembers[0].from_config_dict(audio_frame_config, feature_config)
-

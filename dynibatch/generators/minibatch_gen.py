@@ -74,15 +74,15 @@ class MiniBatchGen:
         self._n_time_bins = n_time_bins
 
     @classmethod
-    def from_json_config_file(cls, config_path):
-        """Creates a dict of minibatch generators from a config file
+    def from_config(cls, config):
+        """Creates a dict of minibatch generators from a config dict
 
         One minibatch generator is created for every set defined in the
         datasplit, if specified in the config file. Otherwise, only one is
         created.
         
         Args:
-            config_path: path to the config file (a json file)
+            config (dict): configuration object
         Returns:
             A dict with one item per set defined in the datasplit, such as
             out_dict["<set_name>"] = <minibatch generator for this set>. If no
@@ -92,10 +92,6 @@ class MiniBatchGen:
         # list of frame feature names and config required to compute segment
         # based features
         frame_feature_config_list = []
-
-        # parse json file
-        with open(config_path) as config_file:
-            config = json.loads(config_file.read())
 
         # data path config
         dp_config = config["data_path_config"]

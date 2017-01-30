@@ -38,7 +38,7 @@ class GenericChunkExtractor(SegmentFeatureExtractor):
     """
 
     def __init__(self, name, sample_rate, generic_feature_root,
-            extension=".pkl", pca=None, scaler=None):
+                 extension=".pkl", pca=None, scaler=None):
         """Initializes frame feature chunk extractor.
 
         Args:
@@ -60,6 +60,7 @@ class GenericChunkExtractor(SegmentFeatureExtractor):
         self._name = name
         self._sample_rate = sample_rate
         self._generic_feature_root = generic_feature_root
+        self._extension = extension
         self._pca = pca
         self._scaler = scaler
 
@@ -70,7 +71,7 @@ class GenericChunkExtractor(SegmentFeatureExtractor):
     def execute(self, segment_container):
 
         features = joblib.load(join(self._generic_feature_root, splitext(
-            segment_container.audio_path)[0] + ".pkl")).T
+            segment_container.audio_path)[0] + self._extension)).T
 
         for s in segment_container.segments:
 
@@ -88,3 +89,4 @@ class GenericChunkExtractor(SegmentFeatureExtractor):
             if self._scaler:
                 data = self._scaler.transform(data)
             s.features[self.name] = data
+

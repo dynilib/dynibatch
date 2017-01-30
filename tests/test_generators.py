@@ -24,6 +24,7 @@ import os
 import shutil
 import pytest
 import joblib
+import json
 
 import numpy as np
 import soundfile as sf
@@ -48,6 +49,8 @@ from dynibatch.utils import utils
 
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
+
+CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config/config_test.json")
 
 TEST_AUDIO_PATH_TUPLE_1 = (DATA_PATH, "dataset1/ID0132.wav")
 TEST_AUDIO_PATH_TUPLE_2 = (DATA_PATH, "dataset1/ID0133.wav")
@@ -516,12 +519,16 @@ class TestMiniBatchGenFromConfig:
 
     def test_init(self):
         try:
-            MiniBatchGen.from_json_config_file("tests/config/config_test.json")
+            with open(CONFIG_PATH) as config_file:
+                config = json.loads(config_file.read())
+            MiniBatchGen.from_config(config)
         except Exception as e:
             pytest.fail("Unexpected Error: {}".format(e))
 
     def test_consuming_minibatch(self):
-        mb_gen_dict = MiniBatchGen.from_json_config_file("tests/config/config_test.json")
+        with open(CONFIG_PATH) as config_file:
+            config = json.loads(config_file.read())
+        mb_gen_dict = MiniBatchGen.from_config(config)
         try:
             if not os.path.exists(FEATURE_ROOT):
                 os.makedirs(FEATURE_ROOT)
@@ -587,8 +594,13 @@ class TestMiniBatchGenFromConfig:
                                 num_time_bins)
 
 
-        # construct minibatch generator from config file
-        mb_gen_dict = MiniBatchGen.from_json_config_file("tests/config/config_test.json")
+
+        # parse json file
+        with open(CONFIG_PATH) as config_file:
+            config = json.loads(config_file.read())
+
+        # construct minibatch generator from config
+        mb_gen_dict = MiniBatchGen.from_config(config)
         mb_gen_2 = mb_gen_dict["default"]
 
         # execute and compare
