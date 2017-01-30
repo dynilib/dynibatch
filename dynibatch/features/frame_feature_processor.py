@@ -28,7 +28,7 @@ import numpy as np
 
 from dynibatch.features.extractors import frame_feature as ffe
 from dynibatch.utils import audio
-from dynibatch.utils import feature_container
+from dynibatch.utils.feature_container import FeatureContainer, FC_EXTENSION
 from dynibatch.utils import exceptions
 
 __all__ = ['FrameFeatureProcessor']
@@ -90,7 +90,7 @@ class FrameFeatureProcessor(object):
             raise exceptions.ParameterError('The first argument must be a tuple' +
                                             '<audio path root>, <audio relative path>)')
 
-        fc = None
+        feature_container = None
         has_features = [False for fe in self._feature_extractors]
 
         # check if feature container exists and has all required features
@@ -100,25 +100,24 @@ class FrameFeatureProcessor(object):
         if self._feature_container_root:
             feature_container_path = os.path.join(
                 self._feature_container_root,
-                os.path.splitext(audio_path[1])[0] +
-                feature_container.FC_EXTENSION)
-            fc = feature_container.FeatureContainer.load(feature_container_path)
-            if fc:
-                has_features = fc.has_features([(fe.name, fe.config) \
+                os.path.splitext(audio_path[1])[0] + FC_EXTENSION)
+            feature_container = FeatureContainer.load(feature_container_path)
+            if feature_container:
+                has_features = feature_container.has_features([(fe.name, fe.config) \
                         for fe in self._feature_extractors])
                 if all(has_features):
                     logger.debug('Feature container %s with all required features found!',
                                  feature_container_path)
-                    return fc, False
+                    return feature_container, False
 
         # TODO (jul) move to audio_frame_gen module?
         info = audio.info(os.path.join(*audio_path))
         n_samples = int((info.frames - self._audio_frame_gen._win_size) /
                         self._audio_frame_gen._hop_size) + 1
 
-        if not fc or not any(has_features):
+        if not feature_container or not any(has_features):
             # if fc has none of the desired features, create a new one
-            fc = feature_container.FeatureContainer(
+            feature_container = FeatureContainer(
                 audio_path[1],
                 info.samplerate,
                 self._audio_frame_gen._win_size,
@@ -127,17 +126,18 @@ class FrameFeatureProcessor(object):
         compute_spectrum = False
         compute_power_spectrum = False
 
-        for fe in self._feature_extractors:
+        for feature_extractor in self._feature_extractors:
             # allocate memory for features
             # TODO move to FeatureContainer constructor?
-            fc.features[fe.name]["data"] = np.empty((n_samples, fe.size),
-                                                    dtype="float32")
-            fc.features[fe.name]["config"] = fe.config
+            feature_container.features[feature_extractor.name]["data"] = \
+                np.empty((n_samples, feature_extractor.size),
+                         dtype="float32")
+            feature_container.features[feature_extractor.name]["config"] = feature_extractor.config
 
             # check what to compute
-            if isinstance(fe, ffe.SpectrumFrameFeatureExtractor):
+            if isinstance(feature_extractor, ffe.SpectrumFrameFeatureExtractor):
                 compute_spectrum = True
-            elif isinstance(fe, ffe.PowerSpectrumFrameFeatureExtractor):
+            elif isinstance(feature_extractor, ffe.PowerSpectrumFrameFeatureExtractor):
                 compute_spectrum = True
                 compute_power_spectrum = True
 
@@ -149,17 +149,20 @@ class FrameFeatureProcessor(object):
                 power_spectrum = spectrum ** 2
 
             # TODO (jul) run every feature extractor in a different process
-            for fe in compress(
+            for feature_extractor in compress(
                     self._feature_extractors, [not hf for hf in has_features]):
-                if isinstance(fe, ffe.AudioFrameFeatureExtractor):
-                    fc.features[fe.name]["data"][i] = fe.execute(frame)
-                elif isinstance(fe, ffe.SpectrumFrameFeatureExtractor):
-                    fc.features[fe.name]["data"][i] = fe.execute(spectrum)
-                elif isinstance(fe, ffe.PowerSpectrumFrameFeatureExtractor):
-                    fc.features[fe.name]["data"][i] = fe.execute(power_spectrum)
+                if isinstance(feature_extractor, ffe.AudioFrameFeatureExtractor):
+                    feature_container.features[feature_extractor.name]["data"][i] = \
+                        feature_extractor.execute(frame)
+                elif isinstance(feature_extractor, ffe.SpectrumFrameFeatureExtractor):
+                    feature_container.features[feature_extractor.name]["data"][i] = \
+                        feature_extractor.execute(spectrum)
+                elif isinstance(feature_extractor, ffe.PowerSpectrumFrameFeatureExtractor):
+                    feature_container.features[feature_extractor.name]["data"][i] = \
+                        feature_extractor.execute(power_spectrum)
 
         # if feature_container_root is set, write feature container
         if self._feature_container_root:
-            fc.save(self._feature_container_root)
+            feature_container.save(self._feature_container_root)
 
-        return fc, True
+        return feature_container, True
