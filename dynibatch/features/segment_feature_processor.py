@@ -68,7 +68,7 @@ class SegmentFeatureProcessor:
         """
         Args:
             segment_container
-        
+
         Fills the segment containers with the features specified in
             feature_extractors
         """
@@ -87,17 +87,18 @@ class SegmentFeatureProcessor:
         if any(isinstance(fe,
                           SegmentFrameBasedFeatureExtractor) for fe in compress(
                               self._feature_extractors, [not hf for hf in has_features])):
-            fc, created = self._frame_feature_pro.execute(
+            feature_extractor, created = self._frame_feature_pro.execute(
                 (self._audio_root, segment_container.audio_path))
             if created:
                 logger.debug("Feature container created")
 
-        for fe in compress(self._feature_extractors,
-                           [not hf for hf in has_features]):
-            if isinstance(fe, AudioChunkExtractor) or isinstance(fe, GenericChunkExtractor):
-                fe.execute(segment_container)
-            elif isinstance(fe, SegmentFrameBasedFeatureExtractor):
-                fe.execute(segment_container, fc)
+        for feature_extractor in compress(self._feature_extractors,
+                                          [not hf for hf in has_features]):
+            if isinstance(feature_extractor, AudioChunkExtractor) or \
+                    isinstance(feature_extractor, GenericChunkExtractor):
+                feature_extractor.execute(segment_container)
+            elif isinstance(feature_extractor, SegmentFrameBasedFeatureExtractor):
+                feature_extractor.execute(segment_container, feature_extractor)
             else:
                 raise TypeError(
-                    "Segment feature extractor {} not implemented".format(fe.name))
+                    "Segment feature extractor {} not implemented".format(feature_extractor.name))
