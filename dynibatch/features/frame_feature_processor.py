@@ -149,7 +149,6 @@ class FrameFeatureProcessor(object):
                 power_spectrum = spectrum ** 2
 
             # TODO (jul) run every feature extractor in a different process
-            # TODO (jul) convert loop to matrix computation
             for fe in compress(
                     self._feature_extractors, [not hf for hf in has_features]):
                 if isinstance(fe, ffe.AudioFrameFeatureExtractor):
