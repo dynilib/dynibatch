@@ -12,15 +12,14 @@ It has been designed to deal with the following issues:
 
 * **Usability**: with a given config file, generating mini-batches is as easy as
 
-```
-mb_gen = MiniBatchGen.from_config(config)
-mb_gen.start()
-mb_gen_e = mb_gen.execute(with_targets=True)
+        ```
+        mb_gen = MiniBatchGen.from_config(config)
+        mb_gen.start()
+        mb_gen_e = mb_gen.execute(with_targets=True)
 
-# get the first mini-batch
-data, targets = next(mb)
-
-```
+        # get the first mini-batch
+        data, targets = next(mb)
+        ```
 
 More details and examples can be found in the tutorial. 
 
