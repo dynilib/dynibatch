@@ -208,6 +208,10 @@ class MiniBatchGen:
 
         return mb_gen_dict
 
+    @property
+    def label_parser(self):
+        """Return label_parser associated with the MiniBatchGen"""
+        return self._segment_container_gen._label_parser
 
     def start(self):
         """ start MiniBatchGen for generating minibatches """
