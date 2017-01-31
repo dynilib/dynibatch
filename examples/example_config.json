@@ -1,35 +1,40 @@
 {
-  "audio_root": "../tests/data",
-  "file2label_filename": "../tests/data/file2label.csv",
-  "batch_size":10,
-  "randomize_batch":0,
-  "stratify_batch":0,
+    "data_path_config": {
+        "audio_root": "../tests/data",
+        "file2label_filename": "../tests/data/file2label.csv",
+        "datasplit_path": ""
+    },
 
-  "segment_config" : {
-      "seg_duration": 0.2,
-      "seg_overlap": 0.5
-  },
+    "minibatch_config": {
+        "batch_size":10,
+        "randomize_batch":0
+    },
 
-  "audio_frame_config" : {
-      "sample_rate": 22050,
-      "win_size":256,
-      "hop_size":128
-  },
+    "segment_config" : {
+        "seg_duration": 0.2,
+        "seg_overlap": 0.5
+    },
 
-  "activity_detection" : {
-    "name": "simple",
-    "config":{
-        "energy_threshold":0.2,
-        "spectral_flatness_threshold":0.3
-    }
-  },
+    "audio_frame_config" : {
+        "sample_rate": 22050,
+        "win_size":256,
+        "hop_size":128
+    },
 
-  "feature": {
-      "name": "mel_spectrum",
-      "config": {
-          "n_mels": 64,
-          "min_freq": 0,
-          "max_freq": 11025
-      }
+    "activity_detection" : {
+        "name": "simple",
+        "config":{
+            "energy_threshold":0.2,
+            "spectral_flatness_threshold":0.3
+        }
+    },
+
+    "feature": {
+        "name": "mel_spectrum",
+        "config": {
+            "n_mels": 64,
+            "min_freq": 0,
+            "max_freq": 11025
+        }
     }
 }

@@ -2,46 +2,26 @@
 
 Dynibatch is a Python library dedicated to providing mini-batches of audio data to machine learning algorithms.
 
-Typical audio datasets consist in a set of audio files and their corresponding annotation files. Every annotation file usually contains a list of annotated segments of different sizes, each described by a start time, an end time and a label. For example:
+It has been designed to deal with the following issues:
 
-```
-0.092 0.171 hh
-0.170 0.240 eh
-0.240 0.282 l
-0.282 0.550 ow
-```
+* **Reproducibility**: given a dataset (data + train/valid/test split + labels) and some parameters (e.g. segment size and overlap, audio feature to be used...), an experiment should be easily reproducible. Dynibatch allows to keep all this information in dedicated objects and a configuration file.
 
-Typical machine learning algorithms take as input a batch of N overlapping segments of equal shapes S and their corresponding N labels.
+* **Big data**: because some datasets are huge, Dynibatch keeps a low memory footprint by generating mini-batches on the fly. To avoid recomputing at every epoch the data needed to generate the mini-batches, it can be cached in the disk.
 
-Dynibatch makes it easy to create those batches of constant size segments from variable size segments. With the annotated segment examples given above, a mini-batch size of 5, a segment size S of 0.05 s and a segment overlap of 50%, Dynibatch would create mini-batches defined by the constant-size segments shown below (for a given segment, the label is set to the label in the ground truth having more than 50% overlap with this segment):
+* **Label management**: labels are typically provided either *per file* (i.e. one label for the whole audio file) or *per chunk* (i.e. one label for an audio chunk, delimited by a start time and an end time). In either case, Dynibatch automatically maps the labels provided with the dataset to *one label per segment*, where a segment is one fixed-size observation (see the tutorial for more details TODO add link). Labels are not mandatory, so that unsupervised algorithms can be run.
 
-Mini-batch 1
+* **Usability**: with a given config file, generating mini-batches is as easy as
 
-```
-0.100 0.150 hh
-0.125 0.175 hh
-0.150 0.200 eh 
-0.175 0.225 eh
-0.200 0.250 eh
+        ```
+        mb_gen = MiniBatchGen.from_config(config)
+        mb_gen.start()
+        mb_gen_e = mb_gen.execute(with_targets=True)
 
-```
+        # get the first mini-batch
+        data, targets = next(mb)
+        ```
 
-Mini-batch 2
-```
-0.225 0.275 l
-0.250 0.300 l
-0.275 0.325 ow
-0.300 0.350 ow
-0.325 0.375 ow
-```
-
-...
-
-
-In addition, Dynibatch can fill the mini-batches with audio features (e.g. mel spectra) instead of raw audio, and reject segments with no activity detected in it.
-
-See examples in the tutorial.
-
+More details and examples can be found in the tutorial. 
 
 ## Install
 
