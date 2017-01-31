@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 class AudioFrameGen:
     """Audio frame generator.
-    
+
     Generates windowed audio frames.
     """
 
@@ -64,7 +64,7 @@ class AudioFrameGen:
 
     def execute(self, path):
         """Executes the frame generator.
-        
+
         Args:
             path (str): path of the audio file
 

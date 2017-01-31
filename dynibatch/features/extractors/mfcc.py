@@ -68,7 +68,7 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
                                               fmin=min_freq,
                                               fmax=max_freq)
         self._dct_basis = librosa.filters.dct(n_mfcc, n_mels)
-    
+
     @classmethod
     def from_config_dict(cls, audio_frame_config, feature_config):
         """Class method required by all frame-feature extractors (even though some arguments

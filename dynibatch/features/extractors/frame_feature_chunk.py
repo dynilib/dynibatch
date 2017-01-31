@@ -48,7 +48,7 @@ class FrameFeatureChunkExtractor(SegmentFrameBasedFeatureExtractor):
         self._name = name
         self._scaler = scaler
         self._pca = pca
-    
+
     @property
     def name(self):
         return self._name

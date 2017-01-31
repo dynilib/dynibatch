@@ -37,4 +37,3 @@ class SpectrumFrameFeatureExtractor(FrameFeatureExtractor):
 class PowerSpectrumFrameFeatureExtractor(FrameFeatureExtractor):
     def __init__(self):
         super().__init__()
-

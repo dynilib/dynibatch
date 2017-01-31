@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 
 class MiniBatchGen:
     """Generates minibatches of features.
-    
+
     Features are pulled from segments in the SegmentContainer objects yielded by
     a SegmentContainerGenerator.
     """
@@ -80,7 +80,7 @@ class MiniBatchGen:
         One minibatch generator is created for every set defined in the
         datasplit, if specified in the config file. Otherwise, only one is
         created.
-        
+
         Args:
             config (dict): configuration object
         Returns:

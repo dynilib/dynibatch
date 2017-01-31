@@ -62,7 +62,7 @@ class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
             n_mels=n_mels,
             fmin=min_freq,
             fmax=max_freq)
-    
+
     @classmethod
     def from_config_dict(cls, audio_frame_config, feature_config):
         """Class method required by all frame-feature extractors (even though some arguments
