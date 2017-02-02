@@ -341,7 +341,7 @@ class TestMiniBatch:
         count = 0
         for mb in mb_gen_e:
             for data, target in zip(*mb):
-                assert np.all(data[0].T == active_segments[count].features["mel_spectrum"])
+                assert np.all(data[0] == active_segments[count].features["mel_spectrum"])
                 assert target == labels[count]
                 count += 1
 
@@ -425,7 +425,7 @@ class TestMiniBatch:
         count = 0
         for mb, in mb_gen_e:
             for data in mb:
-                assert np.all(data[0].T == active_segments[count].features["mel_spectrum"])
+                assert np.all(data[0] == active_segments[count].features["mel_spectrum"])
                 count += 1
 
 
@@ -509,7 +509,7 @@ class TestMiniBatch:
         count = 0
         for mb, in mb_gen_e:
             for data in mb:
-                assert np.all(data[0].T == active_segments[count].features["mel_spectrum"])
+                assert np.all(data[0] == active_segments[count].features["mel_spectrum"])
                 count += 1
 
 class TestMiniBatchGenFromConfig:

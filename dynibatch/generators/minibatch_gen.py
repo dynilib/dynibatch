@@ -242,7 +242,7 @@ class MiniBatchGen:
             minibatch = np.empty((self._batch_size, 1, self._n_time_bins),
                                  dtype=np.float32)
         else:
-            minibatch = np.empty((self._batch_size, 1, self._feature_size, self._n_time_bins),
+            minibatch = np.empty((self._batch_size, 1, self._n_time_bins, self._feature_size),
                                  dtype=np.float32)
 
         if with_filenames:
@@ -261,7 +261,7 @@ class MiniBatchGen:
                     if self._feature_size == 1:
                         minibatch[count, 0, :] = seg.features[self._feature_name].T
                     else:
-                        minibatch[count, 0, :, :] = seg.features[self._feature_name].T
+                        minibatch[count, 0, :, :] = seg.features[self._feature_name]
                     if with_filenames:
                         filenames[count] = sc.audio_path
                     if with_targets:
@@ -278,7 +278,7 @@ class MiniBatchGen:
                                                  dtype=np.float32)
                         else:
                             minibatch = np.empty(
-                                (self._batch_size, 1, self._feature_size, self._n_time_bins),
+                                (self._batch_size, 1, self._n_time_bins, self._feature_size),
                                 dtype=np.float32
                             )
 
