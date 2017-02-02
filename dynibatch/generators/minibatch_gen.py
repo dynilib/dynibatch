@@ -54,7 +54,7 @@ class MiniBatchGen:
                  segment_container_gen,
                  feature_name,
                  batch_size,
-                 n_features,
+                 features_size,
                  n_time_bins):
         """Initializes minibatch generator.
 
@@ -62,7 +62,7 @@ class MiniBatchGen:
             segment_container_gen (SegmentContainerGenerator)
             feature_name (str): name of the feature to pull from segments
             batch_size (int): minibatch size in number of segments
-            n_features (int): number of features, as returned by the size property
+            features_size (int): number of features, as returned by the size property
                 of the feature extractor
             n_time_bins (int): number of time bins of the feature in a segment
         """
@@ -70,7 +70,7 @@ class MiniBatchGen:
         self._segment_container_gen = segment_container_gen
         self._feature_name = feature_name
         self._batch_size = batch_size
-        self._n_features = n_features
+        self._features_size = features_size
         self._n_time_bins = n_time_bins
 
     @classmethod
@@ -238,11 +238,11 @@ class MiniBatchGen:
             tuple(data, targets (if with_targets), filenames (if with_filenames))
         """
 
-        if self._n_features == 1:
+        if self._features_size == 1:
             minibatch = np.empty((self._batch_size, 1, self._n_time_bins),
                                  dtype=np.float32)
         else:
-            minibatch = np.empty((self._batch_size, 1, self._n_features, self._n_time_bins),
+            minibatch = np.empty((self._batch_size, 1, self._features_size, self._n_time_bins),
                                  dtype=np.float32)
 
         if with_filenames:
@@ -258,7 +258,7 @@ class MiniBatchGen:
                     break
                 if ((not active_segments_only or (hasattr(seg, 'activity')) and seg.activity) and
                         (not known_labels_only or seg.label != CommonLabels.unknown.value)):
-                    if self._n_features == 1:
+                    if self._features_size == 1:
                         minibatch[count, 0, :] = seg.features[self._feature_name].T
                     else:
                         minibatch[count, 0, :, :] = seg.features[self._feature_name].T
@@ -273,12 +273,12 @@ class MiniBatchGen:
                         data = [minibatch]
 
                         # create new arrays (alternatively, arrays could be copied when yielded)
-                        if self._n_features == 1:
+                        if self._features_size == 1:
                             minibatch = np.empty((self._batch_size, 1, self._n_time_bins),
                                                  dtype=np.float32)
                         else:
                             minibatch = np.empty(
-                                (self._batch_size, 1, self._n_features, self._n_time_bins),
+                                (self._batch_size, 1, self._features_size, self._n_time_bins),
                                 dtype=np.float32
                             )
 
