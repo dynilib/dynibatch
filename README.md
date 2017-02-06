@@ -8,7 +8,7 @@ It has been designed to deal with the following issues:
 
 * **Big data**: because some datasets are huge, Dynibatch keeps a low memory footprint by generating mini-batches on the fly. To avoid recomputing at every epoch the data needed to generate the mini-batches, it can be cached in the disk.
 
-* **Label management**: labels are typically provided either *per file* (i.e. one label for the whole audio file) or *per chunk* (i.e. one label for an audio chunk, delimited by a start time and an end time). In either case, Dynibatch automatically maps the labels provided with the dataset to *one label per segment*, where a segment is one fixed-size observation (see the tutorial for more details TODO add link). Labels are not mandatory, so that unsupervised algorithms can be run.
+* **Label management**: labels are typically provided either *per file* (i.e. one label for the whole audio file) or *per chunk* (i.e. one label for an audio chunk, delimited by a start time and an end time). In either case, Dynibatch automatically maps the labels provided with the dataset to *one label per segment*, where a segment is one fixed-size observation (see [the tutorial](examples/tutorial.ipynb) for more details). Labels are not mandatory, so that unsupervised algorithms can be run.
 
 * **Usability**: with a given config file, generating mini-batches is as easy as
 
@@ -76,7 +76,7 @@ The list of dependencies is provided as information only, since they should all 
 
 Julien Ricard  
 Vincent Roger  
-HervÃ© Glotin  
+Hervé Glotin  
 DYNI, LSIS, University of Toulon, France
 
 dyni<dot>contact<at>gmail.com
