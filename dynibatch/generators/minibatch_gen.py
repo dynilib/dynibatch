@@ -213,6 +213,14 @@ class MiniBatchGen:
         """Return label_parser associated with the MiniBatchGen"""
         return self._segment_container_gen._label_parser
 
+    @property
+    def mb_shape(self):
+        """ """
+        if self._feature_size > 1:
+            return (self._batch_size, 1, self._n_time_bins, self._feature_size)
+        else:
+            return (self._batch_size, 1, self._n_time_bins)
+
     def start(self):
         """ start MiniBatchGen for generating minibatches """
         self._segment_container_gen.start()
