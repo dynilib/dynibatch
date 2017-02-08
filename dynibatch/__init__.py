@@ -31,5 +31,6 @@ try:
         logging.config.dictConfig(json.load(f))
 except IOError:
     logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s",
-                        datefmt="%Y-%m-%d %H:%M")
-    logging.debug('cannot open %s', LOGGING_FILENAME)
+                        datefmt="%Y-%m-%d %H:%M",
+                        level=logging.INFO)
+    logging.warning('cannot open %s', LOGGING_FILENAME)
