@@ -71,20 +71,14 @@ class SegmentContainerGenerator:
 
         self._sc_gen = None
 
-    def start(self):
+
+    def execute(self):
         # create segment container with fixed-length segments
         self._sc_gen = create_segment_containers_from_audio_files(
             self._audio_root,
             self._randomize,
             seg_duration=self._seg_duration,
             seg_overlap=self._seg_overlap)
-
-    def reset(self):
-        self.start()
-
-    def execute(self):
-        if self._sc_gen is None:
-            raise GeneratorError("Generator is not started")
 
         # process
         for sc in self._sc_gen:

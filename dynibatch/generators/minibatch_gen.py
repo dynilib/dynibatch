@@ -221,13 +221,6 @@ class MiniBatchGen:
         else:
             return (self._batch_size, 1, self._n_time_bins)
 
-    def start(self):
-        """ start MiniBatchGen for generating minibatches """
-        self._segment_container_gen.start()
-
-    def reset(self):
-        """ reset MiniBatchGen for regenerating minibatches """
-        self._segment_container_gen.reset()
 
     def execute(self,
                 active_segments_only=False,

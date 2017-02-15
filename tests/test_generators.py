@@ -110,16 +110,6 @@ class TestSegmentContainerGenerator:
         except Exception as e:
             pytest.fail("Unexpected Error: {}".format(e))
 
-    def test_start(self):
-        try:
-            parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
-            sf_pro = SegmentFeatureProcessor([])
-            sc_gen = SegmentContainerGenerator("fake_audio_root",
-                                               sf_pro,
-                                               label_parser=parser)
-            sc_gen.start()
-        except Exception as e:
-            pytest.fail("Unexpected Error: {}".format(e))
 
     def test_execute(self, ac_ext):
 
@@ -134,7 +124,7 @@ class TestSegmentContainerGenerator:
                                            label_parser=parser,
                                            seg_duration=seg_duration,
                                            seg_overlap=seg_overlap)
-        sc_gen.start()
+
         sc_list = [sc for sc in sc_gen.execute()]
 
         id0132_data, _ = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE_1))
@@ -210,7 +200,6 @@ class TestMiniBatch:
                               n_time_bins)
 
         for _ in range(n_epochs):
-            mb_gen.reset()
             mb_gen_e = mb_gen.execute(with_targets=True,
                                       with_filenames=True)
             count = 0
@@ -303,8 +292,6 @@ class TestMiniBatch:
                                            seg_duration=seg_duration,
                                            seg_overlap=seg_overlap)
 
-        sc_gen.reset()
-
         sc_gen_e = sc_gen.execute()
 
         active_segments = []
@@ -331,8 +318,6 @@ class TestMiniBatch:
                               batch_size,
                               num_features,
                               num_time_bins)
-
-        mb_gen.start()
 
         mb_gen_e = mb_gen.execute(active_segments_only=True,
                                   with_targets=True,
@@ -390,8 +375,6 @@ class TestMiniBatch:
                                            seg_duration=seg_duration,
                                            seg_overlap=seg_overlap)
 
-        sc_gen.reset()
-
         sc_gen_e = sc_gen.execute()
 
         active_segments = []
@@ -415,8 +398,6 @@ class TestMiniBatch:
                               batch_size,
                               num_features,
                               num_time_bins)
-
-        mb_gen.start()
 
         mb_gen_e = mb_gen.execute(active_segments_only=True,
                                   with_targets=False,
@@ -473,8 +454,6 @@ class TestMiniBatch:
                                            seg_duration=seg_duration,
                                            seg_overlap=seg_overlap)
 
-        sc_gen.reset()
-
         sc_gen_e = sc_gen.execute()
 
         active_segments = []
@@ -499,8 +478,6 @@ class TestMiniBatch:
                               batch_size,
                               num_features,
                               num_time_bins)
-
-        mb_gen.start()
 
         mb_gen_e = mb_gen.execute(active_segments_only=True,
                                   with_targets=False,
@@ -533,7 +510,6 @@ class TestMiniBatchGenFromConfig:
             if not os.path.exists(FEATURE_ROOT):
                 os.makedirs(FEATURE_ROOT)
             for _, mb_gen in mb_gen_dict.items():
-                mb_gen.start()
                 mb_gen_e = mb_gen.execute()
                 next(mb_gen_e)
         except Exception as e:
@@ -603,12 +579,10 @@ class TestMiniBatchGenFromConfig:
 
         # execute and compare
         try:
-            mb_gen_1.start()
             mb_gen_1_e = mb_gen_1.execute(active_segments_only=True,
                                           with_targets=True,
                                           with_filenames=False)
 
-            mb_gen_2.start()
             mb_gen_2_e = mb_gen_2.execute(active_segments_only=True,
                                           with_targets=True,
                                           with_filenames=False)
@@ -678,12 +652,10 @@ class TestMiniBatchGenFromConfig:
 
         # execute and compare
         try:
-            mb_gen_1.start()
             mb_gen_1_e = mb_gen_1.execute(active_segments_only=False,
                                           with_targets=True,
                                           with_filenames=False)
 
-            mb_gen_2.start()
             mb_gen_2_e = mb_gen_2.execute(active_segments_only=False,
                                           with_targets=True,
                                           with_filenames=False)
