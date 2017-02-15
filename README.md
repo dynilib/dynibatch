@@ -13,13 +13,12 @@ It has been designed to deal with the following issues:
 * **Usability**: with a given config file, generating mini-batches is as easy as
 
         mb_gen = MiniBatchGen.from_config(config)
-        mb_gen.start()
         mb_gen_e = mb_gen.execute(with_targets=True)
 
         # get the first mini-batch
         data, targets = next(mb_gen_e)
 
-More details and examples can be found in the tutorial. 
+More details and examples can be found in the tutorial.
 
 ## Install
 
@@ -76,7 +75,7 @@ The list of dependencies is provided as information only, since they should all 
 
 Julien Ricard  
 Vincent Roger  
-Hervé Glotin  
+Hervï¿½ Glotin  
 DYNI, LSIS, University of Toulon, France
 
 dyni<dot>contact<at>gmail.com
