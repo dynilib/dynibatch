@@ -48,6 +48,12 @@ class MiniBatchGen:
 
     Features are pulled from segments in the SegmentContainer objects yielded by
     a SegmentContainerGenerator.
+
+    The shape of the data in the each generated minibatch is:
+    - (batch_size, 1, feature_size, n_time_bins) when the data is 2D (e.g. mel bands)
+    - (batch_size, 1, n_time_bins) when the data is 1D (e.g. audio)
+    This follow Tensorflow's recommendation to use the NCHW format.
+
     """
 
     def __init__(self,
@@ -221,7 +227,7 @@ class MiniBatchGen:
     def mb_shape(self):
         """ """
         if self._feature_size > 1:
-            return (self._batch_size, 1, self._n_time_bins, self._feature_size)
+            return (self._batch_size, 1, self._feature_size, self._n_time_bins)
         else:
             return (self._batch_size, 1, self._n_time_bins)
 
@@ -243,12 +249,7 @@ class MiniBatchGen:
             tuple(data, targets (if with_targets), filenames (if with_filenames))
         """
 
-        if self._feature_size == 1:
-            minibatch = np.empty((self._batch_size, 1, self._n_time_bins),
-                                 dtype=np.float32)
-        else:
-            minibatch = np.empty((self._batch_size, 1, self._n_time_bins, self._feature_size),
-                                 dtype=np.float32)
+        minibatch = np.empty(self.mb_shape, dtype=np.float32)
 
         if with_filenames:
             filenames = np.empty((self._batch_size), dtype="|U200")
@@ -266,7 +267,7 @@ class MiniBatchGen:
                     if self._feature_size == 1:
                         minibatch[count, 0, :] = seg.features[self._feature_name].T
                     else:
-                        minibatch[count, 0, :, :] = seg.features[self._feature_name]
+                        minibatch[count, 0, :, :] = seg.features[self._feature_name].T
                     if with_filenames:
                         filenames[count] = sc.audio_path
                     if with_targets:
@@ -277,15 +278,8 @@ class MiniBatchGen:
                         count = 0
                         data = [minibatch]
 
-                        # create new arrays (alternatively, arrays could be copied when yielded)
-                        if self._feature_size == 1:
-                            minibatch = np.empty((self._batch_size, 1, self._n_time_bins),
-                                                 dtype=np.float32)
-                        else:
-                            minibatch = np.empty(
-                                (self._batch_size, 1, self._n_time_bins, self._feature_size),
-                                dtype=np.float32
-                            )
+                        # create new array
+                        minibatch = np.empty(self.mb_shape, dtype=np.float32)
 
                         if with_targets:
                             data.append(targets)
