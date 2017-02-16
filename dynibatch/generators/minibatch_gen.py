@@ -155,7 +155,11 @@ class MiniBatchGen:
         if config['feature']['name'] == "audio_chunk":
             sfe_ext = AudioChunkExtractor(dp_config['audio_root'], af_config['sample_rate'])
         else:
-            sfe_ext = FrameFeatureChunkExtractor(config['feature']['name'])
+            if "scaler" in config['feature']:
+                scaler = joblib.load(config['feature']['scaler'])
+            else:
+                scaler = None
+            sfe_ext = FrameFeatureChunkExtractor(config['feature']['name'], scaler=scaler)
 
         # create a segment feature processor, in charge of computing all segment-based features
         sf_pro = SegmentFeatureProcessor(
