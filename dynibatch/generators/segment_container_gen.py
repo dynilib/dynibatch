@@ -98,5 +98,3 @@ class SegmentContainerGenerator:
             self._sf_pro.execute(sc)
 
             yield sc
-
-        self._sc_gen = None
