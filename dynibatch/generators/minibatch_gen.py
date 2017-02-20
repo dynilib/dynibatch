@@ -59,19 +59,19 @@ class MiniBatchGen:
     def __init__(self,
                  segment_container_gen,
                  batch_size,
-                 feature_shape_list):
+                 feature_shape_dict):
         """Initializes minibatch generator.
 
         Args:
             segment_container_gen (SegmentContainerGenerator)
             batch_size (int): minibatch size in number of segments
-            feature_shape_list (list): list of tuple (feature_name, feature_size, n_time_bins)
+            feature_shape_dict (dict): dictionnary (keys: feature_name) of dictionnary (keys: feature_size, n_time_bins)
                 for the feature to pull from segments
         """
 
         self._segment_container_gen = segment_container_gen
         self._batch_size = batch_size
-        self._feature_shape_list = feature_shape_list
+        self._feature_shape_dict = feature_shape_dict
 
     @classmethod
     def from_config(cls, config):
@@ -197,28 +197,31 @@ class MiniBatchGen:
                     seg_overlap=seg_config["seg_overlap"],
                     randomize=mb_config["randomize_batch"])
 
-        # get all shape (feature_size, num_time_bins) for every feature
+        # get all shape (feature_size, n_time_bins) for every feature
         # and build argument to be passed to the minibatch generators init
-        # (i.e. a list of tuple (name, feature size, num time bins))
-        feature_shape_list = []
+        # (i.e. a dict of dict {name: {feature size: value, num time bins: value}})
+        feature_shape_dict = {}
         frame_feature_count = 0 # count frame features only, not audio_chunk
         for feature_config in config['features']:
             if feature_config['name'] == "audio_chunk":
                 feature_size = 1
-                num_time_bins = int(af_config["sample_rate"] * seg_config["seg_duration"])
+                n_time_bins = int(af_config["sample_rate"] * seg_config["seg_duration"])
             else:
                 feature_size = mb_frame_feature_extractors[frame_feature_count].size
-                num_time_bins = int(seg_config["seg_duration"] *
-                                    af_config["sample_rate"] / af_config["hop_size"])
+                n_time_bins = int(seg_config["seg_duration"] *
+                                  af_config["sample_rate"] / af_config["hop_size"])
                 frame_feature_count += 1
-            feature_shape_list.append((feature_config['name'], feature_size, num_time_bins))
+            feature_shape_dict[feature_config['name']] = {
+                "feature_size": feature_size,
+                "n_time_bins": n_time_bins
+            }
 
         mb_gen_dict = {}
         for set_name, sc_gen in sc_gen_dict.items():
             mb_gen_dict[set_name] = MiniBatchGen(
                 sc_gen,
                 mb_config["batch_size"],
-                feature_shape_list)
+                feature_shape_dict)
 
         return mb_gen_dict
 
@@ -227,22 +230,22 @@ class MiniBatchGen:
         """Return label_parser associated with the MiniBatchGen"""
         return self._segment_container_gen._label_parser
 
-    
-    def mb_feature_shape(self, i):
+
+    def mb_feature_shape(self, name):
         """
         Get the shape of the data returned in the minibatch
-        for the ith feature.
+        for the 'name' feature.
         """
-        
-        if self._feature_shape_list[i][1] > 1:
+
+        if self._feature_shape_dict[name]["feature_size"] > 1:
             return (self._batch_size,
                     1,
-                    self._feature_shape_list[i][1],
-                    self._feature_shape_list[i][2])
+                    self._feature_shape_dict[name]["feature_size"],
+                    self._feature_shape_dict[name]["n_time_bins"])
         else:
             return (self._batch_size,
                     1,
-                    self._feature_shape_list[i][2])
+                    self._feature_shape_dict[name]["n_time_bins"])
 
 
     def execute(self,
@@ -262,8 +265,8 @@ class MiniBatchGen:
             tuple(features, targets (if with_targets), filenames (if with_filenames))
         """
 
-        features = [np.empty(self.mb_feature_shape(i), dtype=np.float32)
-                    for i in range(len(self._feature_shape_list))]
+        features = {key: np.empty(self.mb_feature_shape(key), dtype=np.float32)
+                    for key in self._feature_shape_dict.keys()}
 
         if with_filenames:
             filenames = np.empty((self._batch_size), dtype="|U200")
@@ -275,7 +278,7 @@ class MiniBatchGen:
             logger.debug("iterate_minibatch: %s", sc.audio_path)
             for seg in sc.segments:
                 missing_feature = False
-                for feature_name, _, _ in self._feature_shape_list:
+                for feature_name in self._feature_shape_dict.keys():
                     if feature_name not in seg.features:
                         missing_feature = True
                 if missing_feature:
@@ -283,11 +286,11 @@ class MiniBatchGen:
                 if ((not active_segments_only or (hasattr(seg, 'activity')) and seg.activity) and
                         (not known_labels_only or seg.label != CommonLabels.unknown.value)):
 
-                    for i, (feature_name, feature_size, n_time_bins) in enumerate(self._feature_shape_list):
-                        if feature_size == 1:
-                            features[i][count, 0, :] = seg.features[feature_name].T
+                    for feature_name in self._feature_shape_dict:
+                        if self._feature_shape_dict[feature_name]["feature_size"] == 1:
+                            features[feature_name][count, 0, :] = seg.features[feature_name].T
                         else:
-                            features[i][count, 0, :, :] = seg.features[feature_name].T
+                            features[feature_name][count, 0, :, :] = seg.features[feature_name].T
                     if with_filenames:
                         filenames[count] = sc.audio_path
                     if with_targets:
@@ -299,8 +302,8 @@ class MiniBatchGen:
                         data = [features]
 
                         # create new array
-                        features = [np.empty(self.mb_feature_shape(i), dtype=np.float32)
-                                    for i in range(len(self._feature_shape_list))]
+                        features = {key: np.empty(self.mb_feature_shape(key), dtype=np.float32)
+                                    for key in self._feature_shape_dict.keys()}
 
                         if with_targets:
                             data.append(targets)
