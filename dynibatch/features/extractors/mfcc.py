@@ -80,7 +80,8 @@ class MFCCExtractor(PowerSpectrumFrameFeatureExtractor):
             n_mels=feature_config["n_mels"],
             n_mfcc=feature_config["n_mfcc"],
             min_freq=feature_config["min_freq"],
-            max_freq=feature_config["max_freq"])
+            max_freq=feature_config["max_freq"],
+            top_db=feature_config.get("top_db", None))
 
     @property
     def name(self):
