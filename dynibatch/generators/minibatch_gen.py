@@ -231,28 +231,48 @@ class MiniBatchGen:
         return self._segment_container_gen._label_parser
 
 
-    def mb_feature_shape(self, name):
+    def mb_feature_shape(self, name, data_format):
         """
         Get the shape of the data returned in the minibatch
         for the 'name' feature.
+
+        Args:
+            name (str): name of the feature
+            data_format (str): either "NCHW" or "NHWC", where
+                N = Num_samples
+                H = Height
+                W = Width
+                C = Channels
         """
 
         if self._feature_shape_dict[name]["feature_size"] > 1:
-            return (self._batch_size,
-                    1,
-                    self._feature_shape_dict[name]["feature_size"],
-                    self._feature_shape_dict[name]["n_time_bins"])
+            if data_format == "NCHW":
+                return (self._batch_size,
+                        1,
+                        self._feature_shape_dict[name]["feature_size"],
+                        self._feature_shape_dict[name]["n_time_bins"])
+            else:
+                return (self._batch_size,
+                        self._feature_shape_dict[name]["feature_size"],
+                        self._feature_shape_dict[name]["n_time_bins"],
+                        1)
         else:
-            return (self._batch_size,
-                    1,
-                    self._feature_shape_dict[name]["n_time_bins"])
+            if data_format == "NCHW":
+                return (self._batch_size,
+                        1,
+                        self._feature_shape_dict[name]["n_time_bins"])
+            else:
+                return (self._batch_size,
+                        self._feature_shape_dict[name]["n_time_bins"],
+                        1)
 
 
     def execute(self,
                 active_segments_only=False,
                 known_labels_only=False,
                 with_targets=False,
-                with_filenames=False):
+                with_filenames=False,
+                data_format="NCHW"):
         """Executes the minibatch generator
 
         Args:
@@ -265,7 +285,7 @@ class MiniBatchGen:
             tuple(features, targets (if with_targets), filenames (if with_filenames))
         """
 
-        features = {key: np.empty(self.mb_feature_shape(key), dtype=np.float32)
+        features = {key: np.empty(self.mb_feature_shape(key, data_format), dtype=np.float32)
                     for key in self._feature_shape_dict.keys()}
 
         if with_filenames:
@@ -288,9 +308,15 @@ class MiniBatchGen:
 
                     for feature_name in self._feature_shape_dict:
                         if self._feature_shape_dict[feature_name]["feature_size"] == 1:
-                            features[feature_name][count, 0, :] = seg.features[feature_name].T
+                            if data_format == "NCHW":
+                                features[feature_name][count, 0, :] = seg.features[feature_name].T
+                            else:
+                                features[feature_name][count, :, 0] = seg.features[feature_name].T
                         else:
-                            features[feature_name][count, 0, :, :] = seg.features[feature_name].T
+                            if data_format == "NCHW":
+                                features[feature_name][count, 0, :, :] = seg.features[feature_name].T
+                            else:
+                                features[feature_name][count, :, :, 0] = seg.features[feature_name].T
                     if with_filenames:
                         filenames[count] = sc.audio_path
                     if with_targets:
@@ -302,7 +328,7 @@ class MiniBatchGen:
                         data = [features]
 
                         # create new array
-                        features = {key: np.empty(self.mb_feature_shape(key), dtype=np.float32)
+                        features = {key: np.empty(self.mb_feature_shape(key, data_format), dtype=np.float32)
                                     for key in self._feature_shape_dict.keys()}
 
                         if with_targets:
