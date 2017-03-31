@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='dynibatch',
@@ -7,5 +7,5 @@ setup(
     author='DYNI team',
     author_email='dyni.contact@gmail.com',
     license='MIT',
-    packages=['dynibatch', 'tests'],
+    packages=find_packages()
 )
