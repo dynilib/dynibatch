@@ -51,3 +51,7 @@ def factory(name, audio_frame_config={}, feature_config={}):
 
     # configure extractor and return
     return clsmembers[0].from_config_dict(audio_frame_config, feature_config)
+
+
+def is_feature_implemented(name):
+    return True if importlib.util.find_spec("." + name, package=str(__package__)) is not None else False
