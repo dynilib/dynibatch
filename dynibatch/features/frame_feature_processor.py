@@ -36,7 +36,7 @@ __all__ = ['FrameFeatureProcessor']
 logger = logging.getLogger(__name__)
 
 
-class FrameFeatureProcessor(object):
+class FrameFeatureProcessor:
     """Class holding all objects needed to run frame-based feature extractors.
 
     If feature_container_root is set, an existing feature container with the
