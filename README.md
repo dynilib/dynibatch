@@ -26,9 +26,7 @@ The instructions below have been tested on Ubuntu 16.04 and [Miniconda](http://c
 
 ### Get Dynibatch source
 
-```
-$ git clone https://<yourusername>@bitbucket.org/jul_dyni/dynibatch.git
-```
+Clone repository.
 
 ### Create conda environment
 
