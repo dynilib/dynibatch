@@ -21,8 +21,6 @@
 
 
 import logging
-from os.path import join, splitext
-import joblib
 from dynibatch.features.extractors.segment_feature import SegmentFeatureExtractor
 
 
@@ -37,55 +35,50 @@ class GenericChunkExtractor(SegmentFeatureExtractor):
     frame-based features, as defined in the feature container).
     """
 
-    def __init__(self, name, sample_rate, generic_feature_root,
-                 extension=".pkl", pca=None, scaler=None):
-        """Initializes frame feature chunk extractor.
+    def __init__(self, name, sample_rate, feature_size):
+        """Initializes generic feature chunk extractor.
 
         Args:
             name (str): name of the feature.
             sample_rate (int): sample rate of the feature
-            generic_feature_root (str): root path of the features (every audio
-                file must have a corrsponding feature file, with the same path, e.g.
-                <audio_root>/some/path/somefile.wav ->
-                <generic_feature_root>/some/path/somefile.<extension>)
-            pca (sklearn.decomposition.PCA) (optional): Principal component analysis
-                (PCA)
-            scaler (sklearn.preprocessing.StandardScaler) (optional): standardize
-                features by removing the mean and scaling to unit variance.
-
-        Note: if both scaler and pca are set, the pca is performed first
+            feature_size (int): feature size
         """
 
         super().__init__()
         self._name = name
         self._sample_rate = sample_rate
-        self._generic_feature_root = generic_feature_root
-        self._extension = extension
-        self._pca = pca
-        self._scaler = scaler
+        self._feature_size = feature_size
 
     @property
     def name(self):
         return self._name
 
-    def execute(self, segment_container):
+    def execute(self, segment_container, feature_container):
+        """Gets chunk of features from a feature container and sets it to every
+        segment in a segment container.
 
-        features = joblib.load(join(self._generic_feature_root, splitext(
-            segment_container.audio_path)[0] + self._extension)).T
+        Args:
+            segment_container (SegmentContainer): segment container to set the
+                chunk of data to.
+            feature_container (FeatureContainer): feature container to get the
+                chunk of data from.
+
+        Sets the chunks of features to every segment in segment_container.
+        """
 
         for seg in segment_container.segments:
-
             start_ind = int(seg.start_time * self._sample_rate)
             end_ind = int(start_ind + seg.duration * self._sample_rate)
 
-            # If features might not be computed over the whole file,
-            # not all segments will have data.
-            if end_ind >= features.shape[0]:
+            if end_ind > len(feature_container.features[self.name]["data"]):
+                # that can happen if the end time of the latest analysis frame
+                # is earlier than the end time of the segment
+                logger.debug("Segment {0:.3f}-{1:.3f} from {2} end time".format(
+                    seg.start_time,
+                    seg.end_time,
+                    segment_container.audio_path) +
+                             " exceed feature container size for feature {}.".format(self.name))
                 break
 
-            data = features[start_ind:end_ind]
-            if self._pca:
-                data = self._pca.transform(data)
-            if self._scaler:
-                data = self._scaler.transform(data)
-            seg.features[self.name] = data
+            seg.features[self.name] = \
+                feature_container.features[self.name]["data"][start_ind:end_ind]

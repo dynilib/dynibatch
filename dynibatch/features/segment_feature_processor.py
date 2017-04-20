@@ -20,14 +20,15 @@
 #CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+import os
 import logging
 from itertools import compress
 
 from dynibatch.features.extractors.segment_feature import SegmentFeatureExtractor
-from dynibatch.features.extractors.segment_feature \
-    import SegmentFrameBasedFeatureExtractor
 from dynibatch.features.extractors.audio_chunk import AudioChunkExtractor
+from dynibatch.features.extractors.frame_feature_chunk import FrameFeatureChunkExtractor
 from dynibatch.features.extractors.generic_feature_chunk import GenericChunkExtractor
+from dynibatch.utils import feature_container
 
 __all__ = ['SegmentFeatureProcessor']
 
@@ -60,6 +61,10 @@ class SegmentFeatureProcessor:
             self._frame_feature_pro = kwargs.get("ff_pro")
         if "audio_root" in kwargs:
             self._audio_root = kwargs.get("audio_root")
+        if "feature_container_root" in kwargs:
+            feature_container_root = kwargs.get("feature_container_root")
+            if feature_container_root: 
+                self._feature_container_root = feature_container_root
 
     def execute(self, segment_container):
         """
@@ -80,10 +85,22 @@ class SegmentFeatureProcessor:
             logger.debug("Segment container has all requested features")
             return
 
-        # get feature container if needed
+        # if any extractor is a GenericChunkExtractor, get fc
+        # directly
         if any(isinstance(fe,
-                          SegmentFrameBasedFeatureExtractor) for fe in compress(
-                              self._feature_extractors, [not hf for hf in has_features])):
+                          GenericChunkExtractor) for fe in self._feature_extractors):
+
+            feature_container_path = os.path.join(
+                self._feature_container_root,
+                os.path.splitext(segment_container.audio_path)[0] +
+                feature_container.FC_EXTENSION)
+
+            fc = feature_container.FeatureContainer.load(feature_container_path)
+        # else if any extractor is a FrameFeaturechunkExtractor, get fc
+        # from frame_feature_processor
+        elif any(isinstance(fe,
+                            FrameFeatureChunkExtractor) for fe in compress(
+                                self._feature_extractors, [not hf for hf in has_features])):
             fc, created = self._frame_feature_pro.execute(
                 (self._audio_root, segment_container.audio_path))
             if created:
@@ -91,10 +108,9 @@ class SegmentFeatureProcessor:
 
         for fe in compress(self._feature_extractors,
                            [not hf for hf in has_features]):
-            if(isinstance(fe, AudioChunkExtractor)
-               or isinstance(fe, GenericChunkExtractor)):
+            if isinstance(fe, AudioChunkExtractor):
                 fe.execute(segment_container)
-            elif isinstance(fe, SegmentFrameBasedFeatureExtractor):
+            elif isinstance(fe, SegmentFeatureExtractor):
                 fe.execute(segment_container, fc)
             else:
                 raise TypeError(
