@@ -25,8 +25,8 @@ import logging
 from itertools import compress
 
 from dynibatch.features.extractors.segment_feature import SegmentFeatureExtractor
+from dynibatch.features.extractors.segment_feature import SegmentFrameBasedFeatureExtractor
 from dynibatch.features.extractors.audio_chunk import AudioChunkExtractor
-from dynibatch.features.extractors.frame_feature_chunk import FrameFeatureChunkExtractor
 from dynibatch.features.extractors.generic_feature_chunk import GenericChunkExtractor
 from dynibatch.utils import feature_container
 
@@ -96,10 +96,10 @@ class SegmentFeatureProcessor:
                 feature_container.FC_EXTENSION)
 
             fc = feature_container.FeatureContainer.load(feature_container_path)
-        # else if any extractor is a FrameFeaturechunkExtractor, get fc
+        # else if any extractor is a SegmentFrameBasedFeatureExtractor, get fc
         # from frame_feature_processor
         elif any(isinstance(fe,
-                            FrameFeatureChunkExtractor) for fe in compress(
+                            SegmentFrameBasedFeatureExtractor) for fe in compress(
                                 self._feature_extractors, [not hf for hf in has_features])):
             fc, created = self._frame_feature_pro.execute(
                 (self._audio_root, segment_container.audio_path))
