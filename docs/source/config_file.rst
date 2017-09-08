@@ -16,7 +16,7 @@ Each configuration file may have this block. The possible keys are as follow:
 * **"file2label_filename"** or **"seg2label_root"** (optional):
 
   * **"file2label_filename"**: path to a file containing all labels
-  
+
   * **"seg2label_root"**: path to a root folder containing all the label files
 
 * **"datasplit_path"** (required): if not "", file path to a given datasplit (can be created with dynibatch.utils.datasplit_utils)
@@ -133,7 +133,7 @@ Example:
 **features** content
 --------------------
 
-It is a list of block describing each features.
+It is a list of blocks describing each feature to compute for the user.
 TODO list them; in practice all the features in dynibatch.features.extractors
 
 Example:
