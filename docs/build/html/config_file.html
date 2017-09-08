@@ -1,0 +1,248 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Dynibatch’s config file documentation &#8212; Dynibatch  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to Dynibatch’s documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="dynibatch-s-config-file-documentation">
+<h1>Dynibatch’s config file documentation<a class="headerlink" href="#dynibatch-s-config-file-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Here we describe how to create your own configuration file.
+Like in the tutorial we will use the JSON format.
+Each part of this file is explained in this page.</p>
+<div class="section" id="data-path-config-content">
+<h2><strong>data_path_config</strong> content<a class="headerlink" href="#data-path-config-content" title="Permalink to this headline">¶</a></h2>
+<p>Each configuration file may have this block. The possible keys are as follow:</p>
+<ul class="simple">
+<li><strong>“audio_root”</strong> (required): the root folder path to the audios</li>
+<li><strong>“file2label_filename”</strong> or <strong>“seg2label_root”</strong> (optional):<ul>
+<li><strong>“file2label_filename”</strong>: path to a file containing all labels</li>
+<li><strong>“seg2label_root”</strong>: path to a root folder containing all the label files</li>
+</ul>
+</li>
+<li><strong>“datasplit_path”</strong> (required): if not “”, file path to a given datasplit (can be created with dynibatch.utils.datasplit_utils)</li>
+<li><strong>“features_root”</strong> (optional): if not “”, the computed features will be cached</li>
+</ul>
+<p>Example:</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;data_path_config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;audio_root&quot;</span><span class="p">:</span> <span class="s2">&quot;data/audio&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;file2label_filename&quot;</span><span class="p">:</span> <span class="s2">&quot;data/labels.csv&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;datasplit_path&quot;</span><span class="p">:</span> <span class="s2">&quot;data/datasplit_1504196263.jl&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;features_root&quot;</span><span class="p">:</span> <span class="s2">&quot;data/features/&quot;</span>
+    <span class="p">},</span>
+
+    <span class="nt">&quot;others&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id1">
+<h2><strong>data_path_config</strong> content<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Each configuration file may have this block. The possible keys are as follow:</p>
+<ul>
+<li><p class="first"><strong>“batch_size”</strong> (required): the number of examples per batch</p>
+</li>
+<li><dl class="first docutils">
+<dt><strong>“randomize_batch”</strong> (required):</dt>
+<dd><p class="first">0 means the files are taken without shuffle and sequentially</p>
+<p class="last">1 means shuffle of all files at each epoch and taken sequentially</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Example:</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;others&quot;</span><span class="p">,</span>
+
+    <span class="nt">&quot;minibatch_config&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;batch_size&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span>
+        <span class="nt">&quot;randomize_batch&quot;</span><span class="p">:</span><span class="mi">1</span>
+    <span class="p">},</span>
+
+    <span class="nt">&quot;others&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="segment-config-content">
+<h2><strong>segment_config</strong> content<a class="headerlink" href="#segment-config-content" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+<p>Example:</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;others&quot;</span><span class="p">,</span>
+
+    <span class="nt">&quot;segment_config&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;seg_duration&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+        <span class="nt">&quot;seg_overlap&quot;</span><span class="p">:</span> <span class="mf">0.5</span>
+    <span class="p">},</span>
+
+    <span class="nt">&quot;others&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="audio-frame-config-content">
+<h2><strong>audio_frame_config</strong> content<a class="headerlink" href="#audio-frame-config-content" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+<p>Example:</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;others&quot;</span><span class="p">,</span>
+
+    <span class="nt">&quot;audio_frame_config&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;sample_rate&quot;</span><span class="p">:</span> <span class="mi">44100</span><span class="p">,</span>
+        <span class="nt">&quot;win_size&quot;</span><span class="p">:</span><span class="mi">512</span><span class="p">,</span>
+        <span class="nt">&quot;hop_size&quot;</span><span class="p">:</span><span class="mi">256</span>
+    <span class="p">},</span>
+
+    <span class="nt">&quot;others&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="activity-detection-content">
+<h2><strong>activity_detection</strong> content<a class="headerlink" href="#activity-detection-content" title="Permalink to this headline">¶</a></h2>
+<p>This optional block allow to configure an activity detector that can be use when generating data (conditionally to the detections).</p>
+<p>Example:</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;others&quot;</span><span class="p">,</span>
+
+    <span class="nt">&quot;activity_detection&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;config&quot;</span><span class="p">:{</span>
+            <span class="nt">&quot;energy_threshold&quot;</span><span class="p">:</span><span class="mf">0.2</span><span class="p">,</span>
+            <span class="nt">&quot;spectral_flatness_threshold&quot;</span><span class="p">:</span><span class="mf">0.3</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+
+    <span class="nt">&quot;others&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="features-content">
+<h2><strong>features</strong> content<a class="headerlink" href="#features-content" title="Permalink to this headline">¶</a></h2>
+<p>It is a list of block describing each features.
+TODO list them; in practice all the features in dynibatch.features.extractors</p>
+<p>Example:</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;others&quot;</span><span class="p">,</span>
+
+    <span class="nt">&quot;features&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;mel_spectrum&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;n_mels&quot;</span><span class="p">:</span> <span class="mi">56</span><span class="p">,</span>
+                <span class="nt">&quot;min_freq&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+                <span class="nt">&quot;max_freq&quot;</span><span class="p">:</span> <span class="mi">22050</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Dynibatch</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dynibatch’s config file documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#data-path-config-content"><strong>data_path_config</strong> content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1"><strong>data_path_config</strong> content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#segment-config-content"><strong>segment_config</strong> content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#audio-frame-config-content"><strong>audio_frame_config</strong> content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#activity-detection-content"><strong>activity_detection</strong> content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#features-content"><strong>features</strong> content</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Dynibatch’s documentation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Dyni Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/config_file.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

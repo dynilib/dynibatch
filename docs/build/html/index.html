@@ -1,0 +1,148 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Welcome to Dynibatch’s documentation &#8212; Dynibatch  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Dynibatch’s config file documentation" href="config_file.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-dynibatch-s-documentation">
+<h1>Welcome to Dynibatch’s documentation<a class="headerlink" href="#welcome-to-dynibatch-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Dynibatch is a Python library dedicated to providing mini-batches of audio data to machine learning algorithms.</p>
+<p>It has been designed to deal with the following issues:</p>
+<ul>
+<li><p class="first"><strong>Reproducibility</strong>: given a dataset (data + train/valid/test split + labels) and some parameters (e.g. segment size and overlap, audio feature to be used…), an experiment should be easily reproducible. Dynibatch allows to keep all this information in dedicated objects and a configuration file.</p>
+</li>
+<li><p class="first"><strong>Big data</strong>: because some datasets are huge, Dynibatch keeps a low memory footprint by generating mini-batches on the fly. To avoid recomputing at every epoch the data needed to generate the mini-batches, it can be cached in the disk.</p>
+</li>
+<li><p class="first"><strong>Label management</strong>: labels are typically provided either <em>per file</em> (i.e. one label for the whole audio file) or <em>per chunk</em> (i.e. one label for an audio chunk, delimited by a start time and an end time). In either case, Dynibatch automatically maps the labels provided with the dataset to <em>one label per segment</em>, where a segment is one fixed-size observation (see [the tutorial](examples/tutorial.ipynb) for more details). Labels are not mandatory, so that unsupervised algorithms can be run.</p>
+</li>
+<li><p class="first"><strong>Usability</strong>: with a given config file, generating mini-batches is as easy as</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">mb_gen</span> <span class="o">=</span> <span class="n">MiniBatchGen</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="n">mb_gen_e</span> <span class="o">=</span> <span class="n">mb_gen</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">with_targets</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># get the first mini-batch</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">mb_gen_e</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="section" id="starting-using-dynibatch">
+<h2>Starting using dynibatch<a class="headerlink" href="#starting-using-dynibatch" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="config_file.html">Dynibatch’s config file documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#data-path-config-content"><strong>data_path_config</strong> content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#id1"><strong>data_path_config</strong> content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#segment-config-content"><strong>segment_config</strong> content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#audio-frame-config-content"><strong>audio_frame_config</strong> content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#activity-detection-content"><strong>activity_detection</strong> content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#features-content"><strong>features</strong> content</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">Dynibatch</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="config_file.html">Dynibatch’s config file documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="config_file.html" title="next chapter">Dynibatch’s config file documentation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Dyni Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
