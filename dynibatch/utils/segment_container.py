@@ -22,7 +22,7 @@
 
 import os
 import re
-from random import shuffle
+import random
 import joblib
 
 import soundfile as sf
@@ -114,12 +114,12 @@ class SegmentContainer:
 
 
 def create_segment_containers_from_audio_files(audio_root,
-                                               randomize=False,
+                                               shuffle=False,
                                                **kwargs):
     """
     Args:
         audio_root
-        random_list
+        shuffle
         (seg_duration
         (seg_overlap)
     Yields: segment container
@@ -134,8 +134,8 @@ def create_segment_containers_from_audio_files(audio_root,
                     os.path.relpath(os.path.join(root, filename),
                                     audio_root))  # only get audio files
 
-    if randomize:
-        shuffle(audio_filenames)
+    if shuffle:
+        random.shuffle(audio_filenames)
     else:
         # os.walk does not generate files always in the same order, so we sort
         # them

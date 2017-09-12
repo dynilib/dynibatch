@@ -46,7 +46,7 @@ class SegmentContainerGenerator:
                  dataset=None,
                  seg_duration=0.5,
                  seg_overlap=0.9,
-                 randomize=False):
+                 shuffle_files=False):
         """Initializes segment container generator.
 
         Args:
@@ -58,7 +58,7 @@ class SegmentContainerGenerator:
             seg_duration (float): segment duration in seconds
             seg_overlap (float): segment overlap ratio. Segments overlap by
                 seg_duration * seg_overlap seconds
-            randomize (bool): randomize the SegmentContainer objects
+            shuffle_files (bool): shuffle the SegmentContainer objects
         """
 
         self._audio_root = audio_root
@@ -67,7 +67,7 @@ class SegmentContainerGenerator:
         self._dataset = dataset
         self._seg_duration = seg_duration
         self._seg_overlap = seg_overlap
-        self._randomize = randomize
+        self._shuffle_files = shuffle_files
 
         self._sc_gen = None
 
@@ -76,7 +76,7 @@ class SegmentContainerGenerator:
         # create segment container with fixed-length segments
         self._sc_gen = create_segment_containers_from_audio_files(
             self._audio_root,
-            self._randomize,
+            shuffle=self._shuffle_files,
             seg_duration=self._seg_duration,
             seg_overlap=self._seg_overlap)
 

@@ -8,7 +8,7 @@
 
     "minibatch_config": {
         "batch_size":50,
-        "randomize_batch":0
+        "shuffle_files":0
     },
 
     "segment_config" : {

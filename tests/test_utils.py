@@ -166,14 +166,14 @@ class TestSegmentContainer:
     def test_create_random_segment_containers(self):
         sc_ref = segment_container.create_segment_containers_from_audio_files(
             DATA_PATH,
-            randomize=True,
+            shuffle=True,
             label_parser=None)
 
         sc_generated = []
         for _ in range(SEGMENT_CONTAINER_LISTS_TO_GENERATE):
             sc_generated.append(segment_container.create_segment_containers_from_audio_files(
                 DATA_PATH,
-                randomize=True,
+                shuffle=True,
                 label_parser=None))
 
         sc_ref = list(sc_ref)

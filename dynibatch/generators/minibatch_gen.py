@@ -200,7 +200,7 @@ class MiniBatchGen:
                 label_parser=label_parser,
                 seg_duration=seg_config["seg_duration"],
                 seg_overlap=seg_config["seg_overlap"],
-                randomize=mb_config["randomize_batch"])
+                shuffle_files=mb_config["shuffle_files"])
         else:
             # else create one per set in the datasplit
             datasplit = joblib.load(datasplit_path)
@@ -212,7 +212,7 @@ class MiniBatchGen:
                     dataset=datasplit["sets"][set_name],
                     seg_duration=seg_config["seg_duration"],
                     seg_overlap=seg_config["seg_overlap"],
-                    randomize=mb_config["randomize_batch"])
+                    shuffle_files=mb_config["shuffle_files"])
 
         # get all shape (feature_size, n_time_bins) for every feature
         # and build argument to be passed to the minibatch generators init
