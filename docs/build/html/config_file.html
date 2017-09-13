@@ -72,16 +72,16 @@ Each part of this file is explained in this page.</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="id1">
-<h2><strong>data_path_config</strong> content<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="minibatch-config-content">
+<h2><strong>minibatch_config</strong> content<a class="headerlink" href="#minibatch-config-content" title="Permalink to this headline">¶</a></h2>
 <p>Each configuration file may have this block. The possible keys are as follow:</p>
 <ul>
 <li><p class="first"><strong>“batch_size”</strong> (required): the number of examples per batch</p>
 </li>
 <li><dl class="first docutils">
-<dt><strong>“randomize_batch”</strong> (required):</dt>
-<dd><p class="first">0 means the files are taken without shuffle and sequentially</p>
-<p class="last">1 means shuffle of all files at each epoch and taken sequentially</p>
+<dt><strong>“shuffle_files”</strong> (required):</dt>
+<dd><p class="first">0 means files are not shuffled</p>
+<p class="last">1 means flies are shuffled</p>
 </dd>
 </dl>
 </li>
@@ -92,7 +92,8 @@ Each part of this file is explained in this page.</p>
 
     <span class="nt">&quot;minibatch_config&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="nt">&quot;batch_size&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span>
-        <span class="nt">&quot;randomize_batch&quot;</span><span class="p">:</span><span class="mi">1</span>
+        <span class="nt">&quot;shuffle_files&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;shuffle_mb_block_size&quot;</span><span class="p">:</span><span class="mi">1000</span>
     <span class="p">},</span>
 
     <span class="nt">&quot;others&quot;</span>
@@ -198,7 +199,7 @@ TODO list them; in practice all the features in dynibatch.features.extractors</p
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Dynibatch’s config file documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#data-path-config-content"><strong>data_path_config</strong> content</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id1"><strong>data_path_config</strong> content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#minibatch-config-content"><strong>minibatch_config</strong> content</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#segment-config-content"><strong>segment_config</strong> content</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#audio-frame-config-content"><strong>audio_frame_config</strong> content</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#activity-detection-content"><strong>activity_detection</strong> content</a></li>

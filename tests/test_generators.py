@@ -196,7 +196,8 @@ class TestMiniBatch:
         mb_gen = MiniBatchGen(
             sc_gen,
             batch_size,
-            {"audio_chunk": {"feature_size": 1, "n_time_bins": n_time_bins}}
+            {"audio_chunk": {"feature_size": 1, "n_time_bins": n_time_bins}},
+            0
         )
 
         for _ in range(n_epochs):
@@ -316,7 +317,8 @@ class TestMiniBatch:
         mb_gen = MiniBatchGen(
             sc_gen,
             batch_size,
-            {"mel_spectrum": {"feature_size": num_features, "n_time_bins": n_time_bins}}
+            {"mel_spectrum": {"feature_size": num_features, "n_time_bins": n_time_bins}},
+            0
         )
 
         mb_gen_e = mb_gen.execute(active_segments_only=True,
@@ -405,7 +407,8 @@ class TestMiniBatch:
             batch_size,
             {"mel_spectrum": {"feature_size": num_features_mel, "n_time_bins": n_time_bins_mel},
              "audio_chunk": {"feature_size": num_features_audio, "n_time_bins": n_time_bins_audio}
-            }
+            },
+            0
         )
 
         for _ in range(n_epochs):
@@ -529,7 +532,8 @@ class TestMiniBatch:
             batch_size,
             {"audio_chunk": {"feature_size": num_features_audio, "n_time_bins": n_time_bins_audio},
              "mel_spectrum": {"feature_size": num_features_mel, "n_time_bins": n_time_bins_mel}
-            }
+            },
+            0
         )
 
         mb_gen_e = mb_gen.execute(active_segments_only=True,
@@ -610,6 +614,7 @@ class TestMiniBatch:
             sc_gen,
             batch_size,
             {"mel_spectrum": {"feature_size": num_features, "n_time_bins": n_time_bins}},
+            0
         )
 
         mb_gen_e = mb_gen.execute(active_segments_only=True,
@@ -689,7 +694,8 @@ class TestMiniBatch:
         mb_gen = MiniBatchGen(
             sc_gen,
             batch_size,
-            {"mel_spectrum": {"feature_size": num_features, "n_time_bins": n_time_bins}}
+            {"mel_spectrum": {"feature_size": num_features, "n_time_bins": n_time_bins}},
+            0
         )
 
         mb_gen_e = mb_gen.execute(active_segments_only=True,
@@ -779,7 +785,8 @@ class TestMiniBatchGenFromConfig:
         mb_gen_1 = MiniBatchGen(
             sc_gen,
             batch_size,
-            {"mel_spectrum": {"feature_size":num_features, "n_time_bins":n_time_bins}}
+            {"mel_spectrum": {"feature_size":num_features, "n_time_bins":n_time_bins}},
+            0
         )
 
         # parse json file
@@ -844,7 +851,8 @@ class TestMiniBatchGenFromConfig:
         mb_gen_1 = MiniBatchGen(
             sc_gen,
             batch_size,
-            {"audio_chunk": {"feature_size": num_features, "n_time_bins": n_time_bins}}
+            {"audio_chunk": {"feature_size": num_features, "n_time_bins": n_time_bins}},
+            0
         )
 
 
@@ -927,7 +935,8 @@ class TestMiniBatchGenFromConfig:
         mb_gen_1 = MiniBatchGen(
             sc_gen,
             batch_size,
-            {"mel_spectrum": {"feature_size": num_features, "n_time_bins": n_time_bins}}
+            {"mel_spectrum": {"feature_size": num_features, "n_time_bins": n_time_bins}},
+            0
         )
 
         # parse json file

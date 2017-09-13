@@ -23,6 +23,7 @@
 import logging
 import numpy as np
 import joblib
+import random
 
 # generators
 from dynibatch.generators.audio_frame_gen import AudioFrameGen
@@ -39,6 +40,7 @@ from dynibatch.features import activity_detection
 # utils
 from dynibatch.parsers import label_parsers
 from dynibatch.utils.segment import CommonLabels
+from dynibatch.utils.exceptions import DynibatchError
 
 
 logger = logging.getLogger(__name__)
@@ -60,7 +62,8 @@ class MiniBatchGen:
     def __init__(self,
                  segment_container_gen,
                  batch_size,
-                 feature_shape_dict):
+                 feature_shape_dict,
+                 shuffle_mb_block_size):
         """Initializes minibatch generator.
 
         Args:
@@ -69,11 +72,21 @@ class MiniBatchGen:
             feature_shape_dict (dict): dictionnary (keys: feature_name) of
                 dictionnary (keys: feature_size, n_time_bins)
                 for the feature to pull from segments
+            shuffle_mb_block_size (int): number of minibatch to concatenate for the shuffle.
+                If greater than 0, shuffle_mb_block_size minibatches are stacked, the resulting stack of segments
+                is shuffled, and the result is split again in minibatches of batch_size segments.
+                If 0, no shuffle is performed on the segments.
+                Large values give better shuffle but need more memory.
         """
+
+        if shuffle_mb_block_size % batch_size != 0:
+            raise DynibatchError("shuffle_mb_block_size must be a multiple of batch_size")
 
         self._segment_container_gen = segment_container_gen
         self._batch_size = batch_size
         self._feature_shape_dict = feature_shape_dict
+        self._shuffle_mb_block_size = shuffle_mb_block_size
+        
 
     @classmethod
     def from_config(cls, config):
@@ -241,7 +254,9 @@ class MiniBatchGen:
             mb_gen_dict[set_name] = MiniBatchGen(
                 sc_gen,
                 mb_config["batch_size"],
-                feature_shape_dict)
+                feature_shape_dict,
+                mb_config["shuffle_mb_block_size"]
+            )
 
         return mb_gen_dict
 
@@ -287,6 +302,37 @@ class MiniBatchGen:
                         1)
 
 
+    def list2mb(self, data_format, n_segments, features, filenames=[], targets=[], shuffle=False):
+
+        for feature_name in self._feature_shape_dict:
+            features[feature_name] = np.array(features[feature_name])
+            if data_format == "NCHW":
+                features[feature_name] = np.expand_dims(features[feature_name], axis=1)
+            else:
+                features[feature_name] = np.expand_dims(features[feature_name], axis=-1)
+
+        targets = np.array(targets)
+        filenames = np.array(filenames)
+
+        # generate random indices
+        ind = np.arange(n_segments)
+        if shuffle:
+            np.random.shuffle(ind)
+
+        # compute the number of minibatches
+        n_mb = n_segments // self._batch_size
+
+        # split to yield minibatches
+        for ind_split in np.split(ind, n_mb):
+            data = [{feature_name: features[feature_name][ind_split] for feature_name in self._feature_shape_dict}]
+            if targets.size > 0:
+                data.append(targets[ind_split])
+            if filenames.size > 0:
+                data.append(filenames[ind_split])
+
+            yield tuple(data)
+
+
     def execute(self,
                 active_segments_only=False,
                 known_labels_only=False,
@@ -304,16 +350,11 @@ class MiniBatchGen:
         Returns:
             tuple(features, targets (if with_targets), filenames (if with_filenames))
         """
+        
+        features = {key: [] for key in self._feature_shape_dict.keys()}
+        targets = []
+        filenames = []
 
-        features = {key: np.empty(self.mb_feature_shape(key, data_format), dtype=np.float32)
-                    for key in self._feature_shape_dict.keys()}
-
-        if with_filenames:
-            filenames = np.empty((self._batch_size), dtype="|U200")
-        if with_targets:
-            targets = np.empty((self._batch_size), dtype=np.int16)
-
-        count = 0
         for sc in self._segment_container_gen.execute():
             logger.debug("iterate_minibatch: %s", sc.audio_path)
             for seg in sc.segments:
@@ -327,38 +368,43 @@ class MiniBatchGen:
                         (not known_labels_only or seg.label != CommonLabels.unknown.value)):
 
                     for feature_name in self._feature_shape_dict:
-                        if self._feature_shape_dict[feature_name]["feature_size"] == 1:
-                            if data_format == "NCHW":
-                                features[feature_name][count, 0, :] = seg.features[feature_name].T
-                            else:
-                                features[feature_name][count, :, 0] = seg.features[feature_name].T
-                        else:
-                            if data_format == "NCHW":
-                                features[feature_name][count, 0, :, :] = \
-                                    seg.features[feature_name].T
-                            else:
-                                features[feature_name][count, :, :, 0] = \
-                                    seg.features[feature_name].T
+                        features[feature_name].append(seg.features[feature_name].T)
                     if with_filenames:
-                        filenames[count] = sc.audio_path
+                        filenames.append(sc.audio_path)
                     if with_targets:
-                        targets[count] = seg.label
+                        targets.append(seg.label)
+                    
+                    n_segments = len(list(features.values())[0])
 
-                    count += 1
-                    if count == self._batch_size:
-                        count = 0
-                        data = [features]
+                    if (self._shuffle_mb_block_size > 0 and
+                            n_segments == self._shuffle_mb_block_size * self._batch_size):
 
-                        # create new array
-                        features = {
-                            key: np.empty(self.mb_feature_shape(key, data_format), dtype=np.float32)
-                            for key in self._feature_shape_dict.keys()
-                        }
+                        for mb in self.list2mb(data_format, n_segments, features,
+                                filenames = filenames, targets = targets, shuffle=True):
+                            yield mb
 
-                        if with_targets:
-                            data.append(targets)
-                            targets = np.empty((self._batch_size), dtype=np.int16)
-                        if with_filenames:
-                            data.append(filenames)
-                            filenames = np.empty((self._batch_size), dtype="|U200")
-                        yield tuple(data)
+                        features = {key: [] for key in self._feature_shape_dict.keys()}
+                        targets = []
+                        filenames = []
+
+                    elif (self._shuffle_mb_block_size == 0 and n_segments == self._batch_size):
+
+                        for mb in self.list2mb(data_format, n_segments, features,
+                                filenames = filenames, targets = targets, shuffle=False):
+                            yield mb
+
+                        features = {key: [] for key in self._feature_shape_dict.keys()}
+                        targets = []
+                        filenames = []
+
+
+
+        # remaining minibatches if last block is < shuffle_mb_block_size
+
+        if self._shuffle_mb_block_size > 0: 
+
+            n_segments = (len(list(features.values())[0]) // self._batch_size) * self._batch_size            
+
+            for mb in self.list2mb(data_format, n_segments, features,
+                    filenames = filenames, targets = targets, shuffle=True):
+                yield mb

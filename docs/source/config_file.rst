@@ -40,16 +40,16 @@ Example:
 
 
 
-**data_path_config** content
+**minibatch_config** content
 ----------------------------
 
 Each configuration file may have this block. The possible keys are as follow:
 
 * **"batch_size"** (required): the number of examples per batch
-* **"randomize_batch"** (required):
-      0 means the files are taken without shuffle and sequentially
+* **"shuffle_files"** (required):
+      0 means files are not shuffled
 
-      1 means shuffle of all files at each epoch and taken sequentially
+      1 means flies are shuffled
 
 Example:
 
@@ -60,7 +60,8 @@ Example:
 
       "minibatch_config": {
           "batch_size":10,
-          "randomize_batch":1
+          "shuffle_files":1,
+          "shuffle_mb_block_size":1000
       },
 
       "others"
