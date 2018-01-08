@@ -72,7 +72,8 @@ class MelSpectrumExtractor(PowerSpectrumFrameFeatureExtractor):
             fft_size=audio_frame_config["win_size"],
             n_mels=feature_config["n_mels"],
             min_freq=feature_config["min_freq"],
-            max_freq=feature_config["max_freq"])
+            max_freq=feature_config["max_freq"],
+            log_amp=feature_config["log_amp"])
 
     @property
     def name(self):
