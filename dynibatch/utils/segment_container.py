@@ -214,7 +214,7 @@ def create_segment_containers_from_seg_files(seg_file_root,
 
 
 def create_segment_container_from_seg_file(seg_file_path_tuple,
-                                           labels,
+                                           label_dict,
                                            audio_file_ext=".wav",
                                            seg_file_ext=".seg",
                                            seg_file_separator="\t"):
@@ -222,7 +222,7 @@ def create_segment_container_from_seg_file(seg_file_path_tuple,
     Args:
         - seg_file_path_tuple: seg file path as a tuple (<audio root>,
             <audio file relative path>)
-        - labels: list of label set to be used
+            - label_dict: dict of labels with id:name mapping
         - (audio_file_ext)
         - (seg_file_ext)
         - (seg_file_separator)
@@ -244,12 +244,12 @@ def create_segment_container_from_seg_file(seg_file_path_tuple,
             seg_file_path_tuple[1].replace(seg_file_ext,
                                            audio_file_ext))
         for line in audio_file:
-            start_time, end_time, label = _parse_segment_file_line(
+            start_time, end_time, label_id = _parse_segment_file_line(
                 line, seg_file_separator)
             segment_container.segments.append(
                 Segment(start_time,
                         end_time,
-                        labels.index(label) if label in labels else CommonLabels.unknown.value))
+                        label_id if label_id in label_dict.keys() else CommonLabels.unknown.value))
 
         return segment_container
 
@@ -280,15 +280,8 @@ def create_fixed_duration_segments(file_duration, seg_duration, seg_overlap=0.5)
 
 def _parse_segment_file_line(line, field_separator):
 
-    pattern = re.compile(
-        "^\\s*[0-9]+\\.[0-9]+\\s*" + re.escape(field_separator) +
-        "\\s*[0-9]+\\.[0-9]+\\s*" + re.escape(field_separator) + "\\s*.+\\s*$")
-    if line.count(field_separator) != 2 and re.match(pattern, line):
-        raise exceptions.ParsingError(
-            "Cannot parse line '{}'".format(line))
-
-    tmp = line.split(field_separator)
-    start_time = float(tmp[0].strip())
-    end_time = float(tmp[1].strip())
-    label = tmp[2].strip()
-    return start_time, end_time, label
+    start_time, end_time, label_id = line.split(field_separator)
+    start_time = float(start_time)
+    end_time = float(end_time)
+    label_id = int(label_id)
+    return start_time, end_time, label_id

@@ -3,6 +3,7 @@
         "audio_root": "tests/data",
         "features_root": "tests/data/feature_root",
         "file2label_filename": "tests/data/file2label.csv",
+        "label_file": "tests/data/labels.txt",
         "datasplit_path": ""
     },
 

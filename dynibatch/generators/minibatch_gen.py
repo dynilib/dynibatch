@@ -121,7 +121,7 @@ class MiniBatchGen:
         # with a root path, two different keys are used
         if "file2label_filename" in dp_config:
             label_parser = label_parsers.CSVFileLabelParser(dp_config["file2label_filename"],
-                                                            label_file=dp_config.get("label_file"))
+                                                            label_file=dp_config["label_file"])
         elif "seg2label_root" in dp_config:
             label_parser = label_parsers.CSVSegmentLabelParser(dp_config["seg2label_root"],
                                                                dp_config["label_file"])

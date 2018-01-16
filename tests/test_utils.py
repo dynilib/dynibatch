@@ -199,35 +199,31 @@ class TestSegmentContainer:
         assert np.abs(sc.segments[0].duration - TEST_DURATION) < 1e-03
 
     def test_create_segment_container_from_seg_file_tuple(self):
-        with open(TEST_LABELS_PATH, "r") as f:
-            labels = [l.strip() for l in f.readlines() if l.strip()]
-            with pytest.raises(TypeError):
-                segment_container.create_segment_container_from_seg_file(
-                    os.path.join(*TEST_SEG_PATH_TUPLE_1), labels)
+        labels = label_parsers.parse_label_file(TEST_LABELS_PATH, separator=",")
+        with pytest.raises(TypeError):
+            segment_container.create_segment_container_from_seg_file(
+                os.path.join(*TEST_SEG_PATH_TUPLE_1), labels, seg_file_separator=",")
 
     def test_create_segment_container_from_seg_file_n_segment(self):
-        with open(TEST_LABELS_PATH, "r") as f:
-            labels = [l.strip() for l in f.readlines() if l.strip()]
-            sc = segment_container.create_segment_container_from_seg_file(
-                TEST_SEG_PATH_TUPLE_1, labels)
-            assert sc.n_segments == TEST_N_SEGMENTS
+        labels = label_parsers.parse_label_file(TEST_LABELS_PATH, separator=",")
+        sc = segment_container.create_segment_container_from_seg_file(
+            TEST_SEG_PATH_TUPLE_1, labels, seg_file_separator=",")
+        assert sc.n_segments == TEST_N_SEGMENTS
 
     def test_create_segment_container_from_seg_file_segment_duration(self):
-        with open(TEST_LABELS_PATH, "r") as f:
-            labels = [l.strip() for l in f.readlines() if l.strip()]
-            sc = segment_container.create_segment_container_from_seg_file(
-                TEST_SEG_PATH_TUPLE_1, labels)
-            assert np.abs(sc.segments[0].duration - TEST_FIRST_SEGMENT_DURATION) < 1e-03
+        labels = label_parsers.parse_label_file(TEST_LABELS_PATH, separator=",")
+        sc = segment_container.create_segment_container_from_seg_file(
+            TEST_SEG_PATH_TUPLE_1, labels, seg_file_separator=",")
+        assert np.abs(sc.segments[0].duration - TEST_FIRST_SEGMENT_DURATION) < 1e-03
 
     def test_create_segment_container_from_seg_file_labels(self):
-        with open(TEST_LABELS_PATH, "r") as f:
-            labels = [l.strip() for l in f.readlines() if l.strip()]
-            sc_1 = segment_container.create_segment_container_from_seg_file(
-                TEST_SEG_PATH_TUPLE_1, labels)
-            sc_2 = segment_container.create_segment_container_from_seg_file(
-                TEST_SEG_PATH_TUPLE_2, labels)
-            assert sc_1.segments[0].label == segment.CommonLabels.unknown.value
-            assert sc_2.segments[0].label == labels.index("bird_c")
+        labels = label_parsers.parse_label_file(TEST_LABELS_PATH, separator=",")
+        sc_1 = segment_container.create_segment_container_from_seg_file(
+            TEST_SEG_PATH_TUPLE_1, labels, seg_file_separator=",")
+        sc_2 = segment_container.create_segment_container_from_seg_file(
+            TEST_SEG_PATH_TUPLE_2, labels, seg_file_separator=",")
+        assert sc_1.segments[0].label == segment.CommonLabels.unknown.value
+        assert sc_2.segments[0].label == 3
 
     def test_create_fixed_duration_segments_duration(self):
         file_duration = 12.5
@@ -252,11 +248,11 @@ class TestSegmentContainer:
             seg_overlap)
 
     def test_parse_segment_file_line(self):
-        line = "0.12; 0.15 ;  bird_a  "
-        start_time, end_time, label = (
+        line = "0.12; 0.15 ;  3  "
+        start_time, end_time, label_id = (
             segment_container._parse_segment_file_line(line, ";"))
         assert (np.isclose(start_time, 0.12) and np.isclose(end_time, 0.15) and
-                label == "bird_a")
+                label_id == 3)
 
 
 class TestFeatureContainer:

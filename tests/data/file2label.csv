@@ -1,6 +1,6 @@
-dataset1/ID0130.wav,bird_a
-dataset1/ID0131.wav,bird_b
-dataset1/ID0132.wav,bird_c
-dataset1/ID0133.wav,bird_c
-dataset2/ID1238.wav,bird_d
-dataset2/ID1322.wav,bird_d
+dataset1/ID0130.wav,5
+dataset1/ID0131.wav,2
+dataset1/ID0132.wav,3
+dataset1/ID0133.wav,3
+dataset2/ID1238.wav,6
+dataset2/ID1322.wav,6

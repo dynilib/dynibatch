@@ -57,6 +57,7 @@ TEST_AUDIO_PATH_TUPLE_2 = (DATA_PATH, "dataset1/ID0133.wav")
 TEST_AUDIO_PATH_TUPLE_3 = (DATA_PATH, "dataset2/ID1238.wav")
 TEST_AUDIO_PATH_TUPLE_4 = (DATA_PATH, "dataset2/ID1322.wav")
 TEST_FILE2LABEL_PATH = os.path.join(DATA_PATH, "file2label.csv")
+TEST_LABEL_PATH = os.path.join(DATA_PATH, "labels.txt")
 
 FEATURE_ROOT = os.path.join(DATA_PATH, "feature_root")
 
@@ -102,7 +103,7 @@ class TestSegmentContainerGenerator:
 
     def test_init(self):
         try:
-            parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
+            parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH, label_file=TEST_LABEL_PATH)
             sf_pro = SegmentFeatureProcessor([])
             SegmentContainerGenerator("fake_audio_root",
                                       sf_pro,
@@ -117,7 +118,7 @@ class TestSegmentContainerGenerator:
         seg_duration = 0.1
         seg_overlap = 0.5
 
-        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH, label_file=TEST_LABEL_PATH)
         sf_pro = SegmentFeatureProcessor([ac_ext])
         sc_gen = SegmentContainerGenerator(TEST_AUDIO_PATH_TUPLE_1[0],
                                            sf_pro,
@@ -158,7 +159,7 @@ class TestMiniBatch:
         seg_overlap = 0.5
         seg_size = int(seg_duration * sample_rate)
 
-        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH, label_file=TEST_LABEL_PATH)
         classes = parser.get_labels()
         sf_pro = SegmentFeatureProcessor([ac_ext])
         sc_gen = SegmentContainerGenerator(DATA_PATH,
@@ -212,7 +213,7 @@ class TestMiniBatch:
                     start_ind = int(start_time * sample_rate)
                     if chunk_count < id0132_n_chunks:
                         assert f == "dataset1/ID0132.wav"
-                        assert t == classes.index("bird_c")
+                        assert t == 3
                         assert np.all(d == id0132_data[start_ind:start_ind+seg_size])
                     elif chunk_count < id0132_n_chunks + id0133_n_chunks:
                         if is_dataset1:
@@ -221,7 +222,7 @@ class TestMiniBatch:
                             start_ind = 0
 
                         assert f == "dataset1/ID0133.wav"
-                        assert t == classes.index("bird_c")
+                        assert t == 3
                         assert np.all(d == id0133_data[start_ind:start_ind+seg_size])
                     elif chunk_count < id0132_n_chunks + id0133_n_chunks + id1238_n_chunks:
                         if is_dataset2:
@@ -230,7 +231,7 @@ class TestMiniBatch:
                             start_ind = 0
 
                         assert f == "dataset2/ID1238.wav"
-                        assert t == classes.index("bird_d")
+                        assert t == -3
                         assert np.all(d == id1238_data[start_ind:start_ind+seg_size])
                     else:
                         if is_dataset3:
@@ -239,7 +240,7 @@ class TestMiniBatch:
                             start_ind = 0
 
                         assert f == "dataset2/ID1322.wav"
-                        assert t == classes.index("bird_d")
+                        assert t == -3
                         assert np.all(d == id1322_data[start_ind:start_ind+seg_size])
 
                     start_time += (1 - seg_overlap) * seg_duration
@@ -286,7 +287,7 @@ class TestMiniBatch:
                                          ff_pro=ff_pro,
                                          audio_root=DATA_PATH)
 
-        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH, label_file=TEST_LABEL_PATH)
         sc_gen = SegmentContainerGenerator(DATA_PATH,
                                            sf_pro,
                                            label_parser=parser,
@@ -341,7 +342,7 @@ class TestMiniBatch:
         seg_overlap = 0.5
         seg_size = int(seg_duration * sample_rate)
 
-        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH, label_file=TEST_LABEL_PATH)
         classes = parser.get_labels()
 
         n_epochs = 1
@@ -423,7 +424,7 @@ class TestMiniBatch:
                     start_ind = int(start_time * sample_rate)
                     if chunk_count < id0132_n_chunks:
                         assert f == "dataset1/ID0132.wav"
-                        assert t == classes.index("bird_c")
+                        assert t == 3
                         assert np.all(d == id0132_data[start_ind:start_ind+seg_size])
                     elif chunk_count < id0132_n_chunks + id0133_n_chunks:
                         if is_dataset1:
@@ -432,7 +433,7 @@ class TestMiniBatch:
                             start_ind = 0
 
                         assert f == "dataset1/ID0133.wav"
-                        assert t == classes.index("bird_c")
+                        assert t == 3
                         assert np.all(d == id0133_data[start_ind:start_ind+seg_size])
                     elif chunk_count < id0132_n_chunks + id0133_n_chunks + id1238_n_chunks:
                         if is_dataset2:
@@ -441,7 +442,7 @@ class TestMiniBatch:
                             start_ind = 0
 
                         assert f == "dataset2/ID1238.wav"
-                        assert t == classes.index("bird_d")
+                        assert t == -3
                         assert np.all(d == id1238_data[start_ind:start_ind+seg_size])
                     else:
                         if is_dataset3:
@@ -450,7 +451,7 @@ class TestMiniBatch:
                             start_ind = 0
 
                         assert f == "dataset2/ID1322.wav"
-                        assert t == classes.index("bird_d")
+                        assert t == -3
                         assert np.all(d == id1322_data[start_ind:start_ind+seg_size])
 
                     start_time += (1 - seg_overlap) * seg_duration
@@ -499,7 +500,7 @@ class TestMiniBatch:
                                          ff_pro=ff_pro,
                                          audio_root=DATA_PATH)
 
-        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH, label_file=TEST_LABEL_PATH)
         sc_gen = SegmentContainerGenerator(DATA_PATH,
                                            sf_pro,
                                            label_parser=parser,
@@ -585,7 +586,7 @@ class TestMiniBatch:
                                          ff_pro=ff_pro,
                                          audio_root=DATA_PATH)
 
-        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH, label_file=TEST_LABEL_PATH)
         sc_gen = SegmentContainerGenerator(DATA_PATH,
                                            sf_pro,
                                            label_parser=parser,
@@ -665,7 +666,7 @@ class TestMiniBatch:
                                          ff_pro=ff_pro,
                                          audio_root=DATA_PATH)
 
-        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH, label_file=TEST_LABEL_PATH)
         sc_gen = SegmentContainerGenerator(DATA_PATH,
                                            sf_pro,
                                            label_parser=parser,
@@ -775,7 +776,7 @@ class TestMiniBatchGenFromConfig:
                                          ff_pro=ff_pro,
                                          audio_root=DATA_PATH)
 
-        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH, label_file=TEST_LABEL_PATH)
         sc_gen = SegmentContainerGenerator(DATA_PATH,
                                            sf_pro,
                                            label_parser=parser,
@@ -841,7 +842,7 @@ class TestMiniBatchGenFromConfig:
                                          ff_pro=None,
                                          audio_root=DATA_PATH)
 
-        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH, label_file=TEST_LABEL_PATH)
         sc_gen = SegmentContainerGenerator(DATA_PATH,
                                            sf_pro,
                                            label_parser=parser,
@@ -925,7 +926,7 @@ class TestMiniBatchGenFromConfig:
                                          ff_pro=ff_pro,
                                          audio_root=DATA_PATH)
 
-        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH)
+        parser = CSVFileLabelParser(TEST_FILE2LABEL_PATH, label_file=TEST_LABEL_PATH)
         sc_gen = SegmentContainerGenerator(DATA_PATH,
                                            sf_pro,
                                            label_parser=parser,
@@ -945,7 +946,7 @@ class TestMiniBatchGenFromConfig:
 
         config["features"] = [
             {'name': 'audio_chunk', 'config': {}},
-            {'name': 'mel_spectrum', 'config': {'n_mels': 64, 'min_freq': 0, 'max_freq': 11025}}
+            {'name': 'mel_spectrum', 'config': {'n_mels': 64, 'min_freq': 0, 'max_freq': 11025, 'log_amp': 1}}
         ]
 
         # construct minibatch generator from config

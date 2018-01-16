@@ -1,2 +1,2 @@
-bird_b
-bird_c
+2,bird_b
+3,bird_c
