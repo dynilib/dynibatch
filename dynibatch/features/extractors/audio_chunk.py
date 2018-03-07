@@ -22,8 +22,7 @@
 
 import logging
 from os.path import join
-from soundfile import SoundFile
-from soundfile import info
+from librosa.core.audio import load as load_audio
 import numpy as np
 from dynibatch.utils.exceptions import DynibatchError
 from dynibatch.features.extractors.segment_feature import SegmentFeatureExtractor
@@ -60,31 +59,23 @@ class AudioChunkExtractor(SegmentFeatureExtractor):
         """
 
         audio_path = join(self._audio_root, segment_container.audio_path)
-        with SoundFile(audio_path) as audio_file:
 
-            if not audio_file.seekable():
-                raise ValueError("file must be seekable")
+        audio, sr = load_audio(audio_path, sr=self._sample_rate)
 
-            # make sure the actual sample rate is the same as specified in the init
-            if audio_file.samplerate != self._sample_rate:
-                raise DynibatchError("Sample rate mismatch in file {}: ".format(audio_path) +
-                                     "{} instead of {}.".format(info(audio_path).samplerate,
-                                                                self._sample_rate))
+        for seg in segment_container.segments:
 
-            for seg in segment_container.segments:
+            start_time = seg.start_time
+            end_time = seg.end_time
 
-                start_time = seg.start_time
-                end_time = seg.end_time
+            n_samples = int(np.rint(
+                (end_time - start_time) * self._sample_rate))
 
-                n_samples = int(np.rint(
-                    (end_time - start_time) * self._sample_rate))
+            start_ind = int(start_time * self._sample_rate)
 
-                start_ind = int(start_time * self._sample_rate)
+            if start_ind + n_samples > len(audio):
+                raise ValueError(
+                    "Segments {0}-{1} exceeds file {2} duration".format(
+                        start_time, end_time, segment_container.audio_path))
 
-                if start_ind + n_samples > len(audio_file):
-                    raise ValueError(
-                        "Segments {0}-{1} exceeds file {2} duration".format(
-                            start_time, end_time, segment_container.audio_path))
+            seg.features[self.name] = audio[start_ind:start_ind+n_samples]
 
-                audio_file.seek(start_ind)
-                seg.features[self.name] = audio_file.read(n_samples, dtype="float32")
