@@ -66,6 +66,24 @@ Example:
 """
 
 
+def create_datasplit_default(dataset, name=None):
+    """Create a datasplit dict from a single user-defined data set
+
+    Args:
+        dataset (set): set of audio file paths
+        name (str): name of the datasplit (set to unix timestamp if not
+            specified)
+
+    Returns:
+        a dict with a set of audio file paths
+    """
+    if not name:
+        name = int(time.time())
+    return {"id": "{}".format(name),
+            "sets": {"default": dataset}
+           }
+
+
 def create_datasplit(train_set, validation_set, test_set, name=None):
     """Create a datasplit dict from user-defined data sets
 
@@ -167,6 +185,7 @@ def create_random_datasplit(segment_containers,
         logger.warning("Some files are in several sets")
 
     return create_datasplit(train_set, validation_set, test_set)
+
 
 def write_datasplit(datasplit, path, compress=0):
     """Writes datasplit to joblib pickle
