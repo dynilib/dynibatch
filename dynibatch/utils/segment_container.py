@@ -272,9 +272,18 @@ def create_fixed_duration_segments(file_duration, seg_duration, seg_overlap=0.5)
     segments = []
 
     start_time = 0.0
+
+    # Create chunks of length seg_duration.
+    # The last chunk is ignored.
     while start_time + seg_duration < file_duration:
         segments.append(Segment(start_time, start_time + seg_duration))
         start_time += (1 - seg_overlap) * seg_duration
+    
+    # If the audio file is shorter than seg_duration,
+    # add one segment anyway
+    if not segments:
+        segments.append(Segment(start_time, start_time + seg_duration))
+
     return segments
 
 

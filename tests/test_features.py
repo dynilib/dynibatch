@@ -114,14 +114,6 @@ class TestAudioChunkExtractor:
             np.all(sc.segments[1].features["audio_chunk"] == \
                     data[int(14*sample_rate):int(15*sample_rate)]))
 
-    def test_execute_value_error(self):
-        with pytest.raises(ValueError):
-            _, sample_rate = sf.read(os.path.join(*TEST_AUDIO_PATH_TUPLE))
-            sc = SegmentContainer(TEST_AUDIO_PATH_TUPLE[1])
-            sc.segments.append(Segment(15, 16))
-            ac_ext = AudioChunkExtractor(TEST_AUDIO_PATH_TUPLE[0], sample_rate)
-            ac_ext.execute(sc)
-
 
 class TestEnergyExtractor:
 

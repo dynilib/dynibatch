@@ -246,6 +246,15 @@ class TestSegmentContainer:
             file_duration,
             seg_duration,
             seg_overlap)
+    
+    def test_create_fixed_duration_segments_from_short_audio(self):
+        file_duration = 2
+        seg_duration = 3
+        seg_overlap = 0.3
+        segments = segment_container.create_fixed_duration_segments(file_duration,
+                                                                    seg_duration,
+                                                                    seg_overlap)
+        assert len(segments) == 1
 
     def test_parse_segment_file_line(self):
         line = "0.12; 0.15 ;  3  "

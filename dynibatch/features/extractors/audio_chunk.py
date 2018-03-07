@@ -33,7 +33,11 @@ logger = logging.getLogger(__name__)
 
 class AudioChunkExtractor(SegmentFeatureExtractor):
     """Extracts the audio chunk corresponding to every segment in a segment
-    container."""
+    container.
+    The last chunk of audio, shorter than the segment size, is ignored,
+    excepted when there is only one chunk, in which case it is padded with 0s to match
+    segment size.    
+    """
 
     def __init__(self, audio_root, sample_rate):
         """Initializes audio chunk extractor.
@@ -73,9 +77,14 @@ class AudioChunkExtractor(SegmentFeatureExtractor):
             start_ind = int(start_time * self._sample_rate)
 
             if start_ind + n_samples > len(audio):
-                raise ValueError(
-                    "Segments {0}-{1} exceeds file {2} duration".format(
-                        start_time, end_time, segment_container.audio_path))
-
-            seg.features[self.name] = audio[start_ind:start_ind+n_samples]
+                if start_ind == 0:
+                    # The audio size is smaller than the segment size,
+                    # so we pad it with 0s
+                    seg.features[self.name] = np.zeros((n_samples,))
+                    seg.features[self.name][:len(audio)] = audio
+                else:
+                    # Ignore if it is not the first segment
+                    continue
+            else:
+                seg.features[self.name] = audio[start_ind:start_ind+n_samples]
 
