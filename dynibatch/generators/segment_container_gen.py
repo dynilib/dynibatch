@@ -80,6 +80,10 @@ class SegmentContainerGenerator:
             seg_duration=self._seg_duration,
             seg_overlap=self._seg_overlap)
 
+        if ((isinstance(self._dataset, set) or isinstance(self._dataset, list)) and
+             len(self._dataset)==0):
+            return
+
         # process
         for sc in self._sc_gen:
 
