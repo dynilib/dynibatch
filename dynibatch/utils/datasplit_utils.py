@@ -153,11 +153,13 @@ def create_random_datasplit(segment_containers,
 
         train_file_subset_size = int(round(num_files * train_ratio))
         validation_file_subset_size = int(round(num_files * validation_ratio))
-        if validation_file_subset_size > len(file_set - train_file_subset):
-            validation_file_subset_size = len(file_set - train_file_subset)
 
         # create train_set from random subset of size train_subset_size
         train_file_subset = set(random.sample(file_set, train_file_subset_size))
+        
+        # fix possible size error due to rounding
+        if validation_file_subset_size > len(file_set - train_file_subset):
+            validation_file_subset_size = len(file_set - train_file_subset)
 
         # then create validation_set from remaining files
         validation_file_subset = set(random.sample(file_set - train_file_subset,
